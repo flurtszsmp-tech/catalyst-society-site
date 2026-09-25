@@ -1,0 +1,139 @@
+/* ===========================================================
+   Hero: roda program. Roda (WebGL), piring berarsir, nama di lubang,
+   deskripsi di pita kiri roda. Posisi semua dihitung hero-ring.js dan
+   dikirim lewat variabel --rcx --rcy --rr --rh --rhx --rfs pada #hero.
+   =========================================================== */
+
+/* ---------- teks hero rata kiri, sejajar logo di bilah atas ---------- */
+@media (min-width:1000px){
+  .hero .hero-inner{max-width:none;margin-inline:0;
+    padding-left:calc((100% - min(1320px,100% - 32px)) / 2 + 22px);padding-right:0}
+  .hero .hero-top{max-width:min(620px,54%)}
+  .hero .hero-bottom{max-width:min(540px,44%)}
+
+  /* padat ke atas: judul naik, paragraf dan tombol menempel di bawahnya */
+  .hero{min-height:max(100svh,600px);padding-top:calc(70px + 5vh);padding-bottom:5vh}
+  .hero .hero-inner{justify-content:flex-start;gap:clamp(18px,3.2vh,34px)}
+  .hero .hero-top{flex:none}
+  .hero .hero-top h1{font-size:clamp(38px,6.5vw,98px);line-height:1.03}
+  .hero .hero-explore{margin-top:18px}
+  .hero .hero-bottom{flex-direction:column;align-items:flex-start;gap:20px;padding-top:22px}
+}
+
+/* ---------- panggung roda ---------- */
+.hero-ring{position:absolute;inset:0;z-index:0;pointer-events:auto;user-select:none;-webkit-user-select:none;
+  touch-action:pan-y;opacity:0;transition:opacity 1.2s cubic-bezier(.16,1,.3,1)}
+.hero-ring.siap{opacity:1}
+.hero-ring canvas{position:absolute;inset:0;z-index:1;display:block;width:100%;height:100%}
+.hero .hero-inner{pointer-events:none}
+.hero .hero-inner :is(a,button,.desc,.hero-explore){pointer-events:auto}
+
+/* piring di belakang roda: kaca bening berarsir. Arsir diagonal tipis
+   memberi batas yang jelas dan menegaskan lengkung roda, lalu memudar ke
+   dalam supaya tidak mengganggu teks deskripsi. */
+.ring-halo{position:absolute;z-index:0;pointer-events:none;border-radius:50%;overflow:hidden;
+  left:calc(var(--rcx,0px) - var(--rh,0px));top:calc(var(--rcy,0px) - var(--rh,0px));
+  width:calc(var(--rh,0px) * 2);height:calc(var(--rh,0px) * 2);
+  background:radial-gradient(circle at 26% 36%,#e6e8ec,#d3d6dc 58%,#c3c7cf);
+  box-shadow:inset 0 0 0 1px rgba(10,10,14,.28),inset 0 3px 2px rgba(255,255,255,.7),
+             0 50px 110px -60px rgba(10,10,14,.55)}
+.ring-halo::before{content:"";position:absolute;inset:0;border-radius:50%;
+  background:repeating-linear-gradient(135deg,rgba(10,10,14,.4) 0 1px,transparent 1px 7px);
+  -webkit-mask-image:radial-gradient(circle,transparent 56%,rgba(0,0,0,.5) 74%,#000 100%);
+          mask-image:radial-gradient(circle,transparent 56%,rgba(0,0,0,.5) 74%,#000 100%)}
+.ring-halo::after{content:"";position:absolute;inset:clamp(12px,1.6vw,22px);border-radius:50%;
+  box-shadow:inset 0 0 0 1px rgba(10,10,14,.2)}
+html.dark-theme .ring-halo{
+  background:radial-gradient(circle at 26% 36%,rgba(255,255,255,.1),rgba(255,255,255,.04) 62%,rgba(255,255,255,.02));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.22),inset 0 3px 2px rgba(255,255,255,.12),
+             0 50px 110px -60px rgba(0,0,0,.95)}
+html.dark-theme .ring-halo::before{
+  background:repeating-linear-gradient(135deg,rgba(255,255,255,.36) 0 1px,transparent 1px 7px)}
+html.dark-theme .ring-halo::after{box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+
+/* ---------- nama program di lubang roda ----------
+   Nomor kecil di atas, nama besar dengan huruf Inter (bukan Arial), dan
+   garis penunjuk tipis berujung panah yang mengarah ke segmen di kiri. */
+.ring-center{position:absolute;z-index:2;pointer-events:none;
+  left:var(--rhx,50%);top:var(--rcy,50%);transform:translate(-50%,-50%);
+  display:flex;align-items:center;
+  font-family:var(--body);font-size:var(--rfs,32px);color:var(--ink);
+  transition:opacity .15s cubic-bezier(.4,0,.2,1)}
+.ring-center.ganti{opacity:0}
+.rc-no{position:absolute;left:calc(var(--rgl,3.4em) + .35em);bottom:calc(100% + .7em);white-space:nowrap;
+  font-size:.3em;font-weight:500;letter-spacing:.24em;color:rgba(10,10,14,.55);
+  font-variant-numeric:tabular-nums}
+.rc-baris{display:flex;align-items:center;gap:.35em}
+.rc-garis{position:relative;flex:none;width:var(--rgl,3.4em);height:1.5px;background:currentColor;
+  transform-origin:right center;animation:garisMasuk .55s cubic-bezier(.16,1,.3,1) both}
+.rc-garis::before{content:"";position:absolute;left:1px;top:50%;width:.26em;height:.26em;
+  border-left:1.5px solid currentColor;border-bottom:1.5px solid currentColor;
+  transform:translateY(-50%) rotate(45deg)}
+.rc-nama{font-weight:500;letter-spacing:-.045em;line-height:1;text-transform:capitalize;white-space:nowrap}
+@keyframes garisMasuk{from{transform:scaleX(.2);opacity:0}to{transform:none;opacity:1}}
+.ring-center.ganti .rc-garis{animation:none}
+
+/* nama segmen saat kursor di atasnya */
+.ring-tip{position:absolute;z-index:4;pointer-events:none;transform:translate(14px,-130%);
+  padding:5px 11px;border-radius:100px;font-size:11px;letter-spacing:.04em;white-space:nowrap;
+  background:var(--ink);color:var(--bg);opacity:0;transition:opacity .18s cubic-bezier(.16,1,.3,1)}
+.ring-tip.tampil{opacity:1}
+
+/* ---------- deskripsi di pita ---------- */
+.ring-info{position:absolute;z-index:3;
+  left:calc(var(--rcx,0px) - var(--rh,0px) + 46px);top:var(--rcy,50%);transform:translateY(-50%);
+  width:calc(var(--rh,0px) - var(--rr,0px) - 78px);
+  opacity:0;pointer-events:none;transition:opacity .15s cubic-bezier(.4,0,.2,1)}
+.hero.ada-roda .ring-info{opacity:1;pointer-events:auto}
+.ring-info.ganti{opacity:0!important}
+.ri-atas{display:flex;align-items:center;gap:9px;margin-bottom:13px}
+.ri-no{font-family:var(--body);font-weight:500;font-size:11px;letter-spacing:.1em;
+  padding:4px 9px;border-radius:7px;border:1px solid rgba(10,10,14,.32);color:rgba(10,10,14,.7)}
+.ri-akses{font-size:9px;letter-spacing:.16em;text-transform:uppercase;padding:4px 10px;border-radius:100px;
+  border:1px solid rgba(10,10,14,.32);color:rgba(10,10,14,.7)}
+.ri-akses.free{background:var(--black);border-color:var(--black);color:#fff}
+.ri-judul{font-family:var(--body);font-weight:500;font-size:clamp(16px,1.5vw,21px);line-height:1.2;
+  letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;color:var(--ink)}
+.ri-desc{font-size:13px;line-height:1.55;margin-bottom:9px;color:var(--ink)}
+.ri-isi{font-size:12px;line-height:1.66;color:rgba(10,10,14,.74);margin-bottom:16px}
+.ri-aksi{display:flex;align-items:center;gap:10px}
+.ri-buka{display:inline-flex;align-items:center;gap:8px;padding:9px 17px;border-radius:100px;white-space:nowrap;
+  background:var(--black);color:#fff;font-size:12px;
+  transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s cubic-bezier(.16,1,.3,1)}
+.ri-buka svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:1.6;transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.ri-buka:hover{transform:translateY(-2px);box-shadow:0 14px 26px -14px rgba(0,0,0,.55)}
+.ri-buka:hover svg{transform:translateX(3px)}
+.ri-next{width:32px;height:32px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(10,10,14,.35);background:transparent;color:var(--ink);
+  transition:background .25s cubic-bezier(.16,1,.3,1),color .25s,border-color .25s,transform .3s cubic-bezier(.16,1,.3,1)}
+.ri-next svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ri-next:hover{background:var(--ink);border-color:var(--ink);color:var(--bg);transform:translateX(2px)}
+.ri-next:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+html.dark-theme .ri-akses.free{background:#fff;border-color:#fff;color:#000}
+html.dark-theme .ri-isi{color:rgba(255,255,255,.72)}
+html.dark-theme .ri-buka{background:#fff;color:#000}
+html.dark-theme .ri-buka svg{stroke:#000}
+
+/* tombol untuk papan ketik dan pembaca layar: muncul hanya saat difokuskan */
+.ring-a11y{position:absolute;z-index:5;left:-9999px;top:auto}
+.ring-a11y:focus-within{left:clamp(16px,3vw,44px);bottom:16px;display:flex;flex-wrap:wrap;gap:6px;max-width:80%}
+.ring-a11y button{padding:7px 12px;border-radius:100px;border:1px solid var(--line);background:#fff;font-size:11.5px;color:#111}
+
+/* ---------- layar sempit: roda utuh di bawah teks, deskripsi di bawah roda ---------- */
+@media (max-width:999px){
+  .hero-ring{position:relative;inset:auto;height:min(92vw,440px);margin-top:8px;order:3}
+  .ring-halo{display:none}
+  .ring-info{position:relative;left:auto;top:auto;transform:none;width:100%;order:4;margin-top:6px;
+    padding-top:18px;border-top:1px solid var(--line)}
+}
+@media (prefers-reduced-motion:reduce){
+  .hero-ring{transition-duration:.3s}
+  .ring-center,.ring-info{transition-duration:.01s}
+  .rc-garis{animation:none}
+}
+
+/* penyesuaian tema gelap untuk elemen yang warnanya ditulis untuk tema terang */
+html.dark-theme .ri-no,html.dark-theme .ri-akses:not(.free){border-color:rgba(255,255,255,.35);color:rgba(255,255,255,.75)}
+html.dark-theme .ri-next{border-color:rgba(255,255,255,.35)}
+html.dark-theme .rc-no{color:rgba(255,255,255,.55)}

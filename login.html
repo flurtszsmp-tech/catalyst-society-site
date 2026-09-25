@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="id" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Masuk ke Catalyst Society</title>
+<meta name="description" content="Masuk atau daftar ke Catalyst Society. Satu akun untuk Passport, Finder, dan Academy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#000;--d-gray:#333;--gray:#7a7a7a;--l-gray:#e5e5e5;--paper:#f4f4f3;--white:#fff;
+    --ink:#000;--line:rgba(0,0,0,.12);--bg:#fff;
+    --ff:"Inter","Helvetica Neue","Helvetica",Arial,sans-serif;
+    --display:"Helvetica Neue","Helvetica",Arial,sans-serif;
+    --ease:cubic-bezier(.16,1,.3,1);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--ff);font-weight:400;background:var(--bg);color:var(--ink);
+    line-height:1.62;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+  input,select{font:inherit;color:inherit}
+  img,svg{display:block;max-width:100%}
+  b,strong{font-weight:500}
+  h1,h2,h3{font-weight:400}
+
+  .shell{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+
+  /* ---------- panel kiri (brand) ---------- */
+  .brandside{background:var(--black);color:#fff;padding:44px clamp(30px,4vw,64px);
+    display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+  .bs-glow{position:absolute;width:70%;aspect-ratio:1;border-radius:50%;right:-18%;top:22%;
+    background:radial-gradient(closest-side,rgba(255,255,255,.10),transparent 72%);filter:blur(40px)}
+  .bs-top{display:flex;align-items:center;gap:11px;position:relative}
+  .bs-top svg{width:30px;height:30px;fill:#fff}
+  .bs-name{font-size:13px;letter-spacing:.06em;line-height:1.15}
+  .bs-name span{display:block;font-size:8.5px;letter-spacing:.34em;color:#9a9a9a}
+  .bs-mid{position:relative}
+  .bs-mid h1{font-size:clamp(30px,3.4vw,50px);line-height:.99;letter-spacing:normal;font-weight:300}
+  .bs-mid p{font-size:13px;line-height:1.72;color:#9a9a9a;margin-top:20px;max-width:38ch}
+  .bs-flow{position:relative;margin-top:34px;display:flex;flex-direction:column;gap:15px}
+  /* label sejajar teks, dengan kolom lebar dan jarak besar supaya nama
+     terpanjang sekali pun tidak pernah menempel ke keterangan. */
+  .bs-flow div{display:flex;align-items:flex-start;gap:34px;font-size:12px;line-height:1.55;color:#c8c8c8}
+  .bs-flow i{font-style:normal;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:#6d6d6d;width:118px;flex:none;white-space:nowrap;padding-top:1px}
+  .bs-bot{position:relative;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:#6d6d6d;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .bs-ig{display:inline-flex;align-items:center;gap:7px;letter-spacing:.04em;text-transform:none;
+    font-size:11.5px;color:#9a9a9a;transition:color .3s var(--ease)}
+  .bs-ig svg{width:14px;height:14px;stroke:currentColor;fill:none;flex:none}
+  .bs-ig:hover{color:#fff}
+
+  /* ---------- panel kanan (form) ---------- */
+  .formside{display:flex;align-items:center;justify-content:center;padding:44px clamp(22px,4vw,64px)}
+  .card{width:100%;max-width:392px}
+  .kicker{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--gray);
+    display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .card h2{font-size:clamp(25px,2.6vw,34px);line-height:1.02;letter-spacing:normal;font-weight:300}
+  .card .sub{font-size:13px;color:var(--d-gray);margin-top:11px;line-height:1.72}
+
+  /* Pil penanda bergeser, bukan latar yang berpindah mendadak antar tombol */
+  .tabs{display:flex;gap:0;margin:26px 0 22px;padding:4px;border:1px solid var(--line);
+    border-radius:100px;position:relative;isolation:isolate}
+  /* Lebar dan posisi pil diukur dari tombol yang benar-benar aktif, lalu
+     digeser dengan transform. Transform berjalan di compositor sehingga
+     gerakannya mulus, dan tidak mungkin melewati tepi karena angkanya nyata. */
+  .tabs::before{content:"";position:absolute;z-index:-1;
+    top:4px;bottom:4px;left:0;width:var(--pil-w,calc(50% - 4px));
+    transform:translate3d(var(--pil-x,4px),0,0);
+    border-radius:100px;
+    background:linear-gradient(140deg,rgba(24,24,28,.96),rgba(8,8,10,.99));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.22),
+               inset 0 0 0 1px rgba(255,255,255,.06),
+               0 8px 20px -10px rgba(0,0,0,.5);
+    transition:transform .5s cubic-bezier(.22,1,.36,1),
+               width .5s cubic-bezier(.22,1,.36,1)}
+  /* kaca tipis di badan kontainer supaya setema dengan panel lain */
+  .tabs{background:linear-gradient(140deg,rgba(255,255,255,.7),rgba(246,246,248,.5));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 1px 2px rgba(18,20,26,.05)}
+  .tabs button{flex:1;padding:10px 14px;border-radius:100px;font-size:12px;letter-spacing:.04em;
+    color:var(--gray);background:none;transition:color .3s var(--ease);
+    -webkit-tap-highlight-color:transparent;user-select:none;
+    /* tanpa ini Chrome menggambar kotak fokus dan kilat sorot saat ditekan */
+    outline:none;-webkit-appearance:none;appearance:none;
+    border:0;box-shadow:none;touch-action:manipulation}
+  .tabs button.on{color:#fff}
+  .tabs button:active{background:none;box-shadow:none;transform:none}
+  .tabs button:focus{outline:none;box-shadow:none;background:none}
+
+  .field{margin-bottom:15px}
+  /* Field opsional membuka dan menutup dengan tinggi teranimasi, tanpa lompatan */
+  .field.anim{margin-bottom:0;max-height:0;opacity:0;overflow:hidden;
+    transition:max-height .44s var(--ease),opacity .3s var(--ease),margin-bottom .44s var(--ease)}
+  .field.anim.show{max-height:120px;opacity:1;margin-bottom:15px}
+  .field label{display:block;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--gray);margin-bottom:7px}
+  .field input,.field select{width:100%;padding:13px 15px;border:1px solid var(--line);border-radius:11px;
+    background:var(--white);font-size:13.5px;transition:.25s var(--ease)}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--black);
+    box-shadow:0 0 0 3px rgba(0,0,0,.05)}
+  .field select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7a7a' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 15px center}
+  .hint{font-size:11px;color:var(--gray);margin-top:0;max-height:0;opacity:0;overflow:hidden;
+    transition:max-height .38s var(--ease),opacity .28s var(--ease),margin-top .38s var(--ease)}
+  .hint.show{max-height:40px;opacity:1;margin-top:6px}
+
+  .submit{width:100%;padding:14px;border-radius:100px;background:var(--black);color:#fff;
+    font-size:13px;letter-spacing:.02em;margin-top:8px;
+    transition:transform .3s var(--ease),box-shadow .3s var(--ease),opacity .25s var(--ease);
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    -webkit-tap-highlight-color:transparent}
+  .submit:hover{transform:translateY(-2px);box-shadow:0 16px 30px -16px rgba(0,0,0,.5)}
+  /* umpan balik tekan tanpa lompatan tata letak */
+  .submit:active{transform:translateY(0) scale(.985);box-shadow:0 6px 14px -10px rgba(0,0,0,.5)}
+  .submit[disabled]{opacity:.5;pointer-events:none}
+  .submit svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:1.6;
+    transition:transform .3s var(--ease)}
+  .submit:hover svg{transform:translateX(3px)}
+
+  /* judul berganti dengan sapuan halus, bukan tukar teks mendadak */
+  #judul,#sub,#labelKirim{transition:opacity .22s var(--ease)}
+  .swap #judul,.swap #sub,.swap #labelKirim{opacity:0}
+
+  .tabs button,.submit,.back{-webkit-tap-highlight-color:transparent}
+  /* Outline fokus pada tab dibuat di DALAM tombol. Dengan outline-offset positif,
+     cincinnya melebar keluar pil dan tampak seperti tombol melompat saat ditekan. */
+  .tabs button:focus-visible{outline:1px solid var(--gray);outline-offset:-3px}
+  .tabs button.on:focus-visible{outline-color:rgba(255,255,255,.6)}
+  .submit:focus-visible{outline:2px solid var(--black);outline-offset:3px}
+
+  .msg{margin-top:0;padding:0 15px;border-radius:11px;font-size:12.5px;line-height:1.6;
+    max-height:0;opacity:0;overflow:hidden;border:1px solid transparent;
+    transition:max-height .4s var(--ease),opacity .3s var(--ease),
+               margin-top .4s var(--ease),padding .4s var(--ease)}
+  .msg.err,.msg.ok,.msg.warn{max-height:220px;opacity:1;margin-top:16px;padding:12px 15px}
+  .msg.err{background:#fdf0f0;border-color:#f2c9c9;color:#8c2020}
+  .msg.ok{background:#f0f6f1;border-color:#c6dfcb;color:#1f5c2c}
+  .msg.warn{background:#fdf8ec;border-color:#ecd9a8;color:#7a5a12}
+  .msg code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;
+    background:rgba(0,0,0,.06);padding:1px 5px;border-radius:4px}
+
+  .back{margin-top:26px;font-size:11.5px;color:var(--gray);display:inline-flex;align-items:center;gap:8px;
+    transition:.25s var(--ease)}
+  .back:hover{color:var(--ink)}
+  .back svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.6}
+
+  .formside{position:relative}
+  .formside .lang{position:absolute;top:22px;right:clamp(18px,3vw,40px);z-index:5}
+
+  @media (max-width:880px){
+    .shell{grid-template-columns:1fr}
+    .brandside{min-height:auto;padding:26px 22px 30px}
+    .bs-mid{margin:30px 0}
+    .bs-mid h1{font-size:30px}
+    .bs-flow,.bs-bot{display:none}
+    .formside{padding:34px 22px 60px}
+  }
+
+  /* ---------- tirai penerima ----------
+     Halaman utama menaikkan tirai hitam sebelum berpindah ke sini. Tanpa
+     pasangannya, kedatangan berakhir dengan kedipan putih. Tirai ini mulai
+     menutup layar lalu turun begitu halaman siap. */
+  .tirai{position:fixed;inset:0;z-index:400;background:#000;pointer-events:none;
+    transform:translate3d(0,0,0);
+    transition:transform .62s cubic-bezier(.4,0,.1,1)}
+  .tirai.turun{transform:translate3d(0,100%,0)}
+  @media (prefers-reduced-motion:reduce){ .tirai{display:none} }
+</style>
+<link rel="stylesheet" href="assets/platform-lang.css">
+</head>
+<body>
+
+<div class="tirai" id="tirai" aria-hidden="true"></div>
+<script>
+/* Diturunkan pada bingkai berikutnya. Kalau JS mati, tirai tidak boleh
+   menahan halaman, jadi ada juga pengaman berbasis waktu. */
+requestAnimationFrame(function(){
+  requestAnimationFrame(function(){ document.getElementById('tirai').classList.add('turun'); });
+});
+setTimeout(function(){
+  var t = document.getElementById('tirai');
+  if(t) t.classList.add('turun');
+}, 900);
+</script>
+<noscript><style>.tirai{display:none}</style></noscript>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <g id="i-arrow" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></g>
+  <g id="i-ig" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></g>
+</defs></svg>
+
+<div class="shell">
+
+  <!-- panel brand -->
+  <aside class="brandside">
+    <div class="bs-glow"></div>
+    <div class="bs-top">
+      <svg viewBox="-108 -118 244 236" aria-hidden="true">
+        <path d="M 79.86 -60.18 A 100 100 0 1 0 79.86 60.18 L 49.52 37.31 A 62 62 0 1 1 49.52 -37.31 Z"/>
+        <path d="M 126.5 -87.7 Q 108.05 -84.22 104.8 -64.5 Q 101.55 -84.22 83.1 -87.7 Q 101.55 -91.18 104.8 -110.9 Q 108.05 -91.18 126.5 -87.7 Z"/>
+      </svg>
+      <div class="bs-name">CATALYST<span>SOCIETY</span></div>
+    </div>
+
+    <div class="bs-mid">
+      <h1 data-i18n="lg.h1">Satu akun.<br>Seluruh<br>ekosistem.</h1>
+      <p data-i18n="lg.p">Catalyst Society adalah ekosistem kolaboratif yang menghubungkan investor, profesional, builder, innovator dan learner di Indonesia melalui lima channel industri dan lima program berjenjang.</p>
+      <div class="bs-flow">
+        <div><i>Academy</i><span data-i18n="lg.f1">Belajar lebih dalam industri melalui E-Course, Event, dan Workshop</span></div>
+        <div><i>Matchmaking</i><span data-i18n="lg.f2">Bertemu partners, mentors, workers, company, dan jobs</span></div>
+        <div><i>Labs</i><span data-i18n="lg.f3">Membangun project bersama mentor</span></div>
+        <div><i>Ventures</i><span data-i18n="lg.f4">Mencari pendanaan project hingga bertemu investor</span></div>
+        <div><i>Summit</i><span data-i18n="lg.f5">Showcase project dan sharing di event tahunan Catalyst</span></div>
+      </div>
+    </div>
+
+    <div class="bs-bot">
+      <span>Learn. Build. Impact.</span>
+      <a class="bs-ig" href="https://www.instagram.com/catalystsociety.id/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><use href="#i-ig"/></svg>catalystsociety.id
+      </a>
+    </div>
+  </aside>
+
+  <!-- panel form -->
+  <main class="formside">
+    <div class="lang" id="langMenu"></div>
+    <div class="card">
+      <div class="kicker" id="kicker">Catalyst Passport</div>
+      <h2 id="judul">Masuk ke akun Anda.</h2>
+      <p class="sub" id="sub">Lanjutkan perjalanan Anda di Passport, Finder, dan Academy.</p>
+
+      <div class="tabs" id="tabs" data-mode="masuk">
+        <button id="tabMasuk" class="on" type="button" data-i18n="lg.tabMasuk">Masuk</button>
+        <button id="tabDaftar" type="button" data-i18n="lg.tabDaftar">Daftar</button>
+      </div>
+
+      <form id="form" novalidate>
+        <div class="field anim" id="fNama">
+          <label for="nama" data-i18n="lg.nama">Nama lengkap</label>
+          <input id="nama" type="text" autocomplete="name" placeholder="Bagas Dwi Putra">
+        </div>
+
+        <div class="field anim" id="fChannel">
+          <label for="channel" data-i18n="lg.channel">Channel industri</label>
+          <select id="channel">
+            <option value="business" data-i18n="lg.opt.business">Business (Businessman &amp; Entrepreneur)</option>
+            <option value="investments" data-i18n="lg.opt.investments">Investments (Finance &amp; Investments)</option>
+            <option value="ai_technology" data-i18n="lg.opt.ai_technology">AI &amp; Technology</option>
+            <option value="builders" data-i18n="lg.opt.builders">Builders (Developer &amp; Builder)</option>
+            <option value="social_impact" data-i18n="lg.opt.social_impact">Social Impact (Sustainability &amp; Social Impact)</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="email" data-i18n="lg.email">Email atau username</label>
+          <input id="email" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="nama@email.com" required>
+        </div>
+
+        <div class="field">
+          <label for="sandi" data-i18n="lg.sandi">Kata sandi</label>
+          <input id="sandi" type="password" autocomplete="current-password" placeholder="Minimal 6 karakter" data-i18n-ph="lg.sandiPh" required>
+          <p class="hint" id="hintSandi" data-i18n="lg.hint">Gunakan minimal 6 karakter.</p>
+        </div>
+
+        <button class="submit" id="kirim" type="submit">
+          <span id="labelKirim" data-i18n="lg.kirim.masuk">Masuk</span>
+          <svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg>
+        </button>
+      </form>
+
+      <div class="msg" id="pesan" role="status" aria-live="polite"></div>
+
+      <a class="back" href="index.html">
+        <svg viewBox="0 0 24 24" style="transform:rotate(180deg)"><use href="#i-arrow"/></svg>
+        <span data-i18n="lg.kembali">Kembali ke beranda</span>
+      </a>
+    </div>
+  </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="assets/catalyst.js"></script>
+<script src="assets/platform-i18n.js"></script>
+<script>
+(function(){
+  var PI = window.PI18N, T = PI.t;
+  var mode = 'masuk';
+  var form   = document.getElementById('form');
+  var pesan  = document.getElementById('pesan');
+  var kirim  = document.getElementById('kirim');
+
+  function tampilPesan(teks, jenis){
+    pesan.className = 'msg ' + jenis;
+    pesan.innerHTML = teks;
+  }
+
+  /* Supabase belum diisi: halaman berjalan sebagai demo dengan satu akun contoh */
+  var DEMO = !CATALYST.siap;
+  function pesanDemo(){
+    tampilPesan(T('lg.demo', { u: CATALYST.DEMO_AKUN.username, p: CATALYST.DEMO_AKUN.sandi }), 'warn');
+  }
+
+  var kartu = document.querySelector('.card');
+  var tabs  = document.getElementById('tabs');
+
+  /* Ukur tombol aktif, lalu beri tahu pil ke mana harus bergeser dan selebar apa. */
+  function geserPil(){
+    var aktif = tabs.querySelector('button.on');
+    if(!aktif) return;
+    var t = aktif.getBoundingClientRect(), c = tabs.getBoundingClientRect();
+    tabs.style.setProperty('--pil-w', t.width + 'px');
+    tabs.style.setProperty('--pil-x', (t.left - c.left) + 'px');
+  }
+  addEventListener('resize', geserPil);
+
+  function setMode(m, langsung){
+    if(m === mode && !langsung) return;
+    mode = m;
+    var daftar = m === 'daftar';
+
+    /* pil penanda dan warna label tab */
+    document.getElementById('tabs').dataset.mode = m;
+    document.getElementById('tabMasuk').classList.toggle('on', !daftar);
+    document.getElementById('tabDaftar').classList.toggle('on', daftar);
+    geserPil();
+
+    /* field opsional membuka/menutup dengan tinggi teranimasi */
+    document.getElementById('fNama').classList.toggle('show', daftar);
+    document.getElementById('fChannel').classList.toggle('show', daftar);
+    document.getElementById('hintSandi').classList.toggle('show', daftar);
+    document.getElementById('sandi').setAttribute('autocomplete', daftar ? 'new-password' : 'current-password');
+    if(DEMO) pesanDemo(); else pesan.className = 'msg';
+
+    /* teks ditukar saat tak terlihat supaya tidak terlihat berkedip */
+    var tulis = function(){
+      document.getElementById('judul').textContent = T(daftar ? 'lg.daftar.judul' : 'lg.masuk.judul');
+      document.getElementById('sub').textContent   = T(daftar ? 'lg.daftar.sub' : 'lg.masuk.sub');
+      document.getElementById('labelKirim').textContent = T(daftar ? 'lg.kirim.daftar' : 'lg.kirim.masuk');
+    };
+
+    if(langsung){ tulis(); return; }
+    kartu.classList.add('swap');
+    setTimeout(function(){ tulis(); kartu.classList.remove('swap'); }, 220);
+  }
+
+  document.getElementById('tabMasuk').addEventListener('click', function(){ setMode('masuk'); });
+  document.getElementById('tabDaftar').addEventListener('click', function(){ setMode('daftar'); });
+
+  /* Sudah punya sesi aktif: langsung ke aplikasi */
+  if(DEMO && CATALYST.demoAktif()) location.href = 'app.html';
+  if(CATALYST.db){
+    CATALYST.db.auth.getSession().then(function(r){
+      if(r.data.session) location.href = 'app.html';
+    });
+  }
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+
+    var email = document.getElementById('email').value.trim();
+    var sandi = document.getElementById('sandi').value;
+    var nama  = document.getElementById('nama').value.trim();
+
+    if(!email || !sandi){ tampilPesan(T('lg.errIsi'), 'err'); return; }
+
+    if(DEMO){
+      if(mode === 'daftar'){
+        tampilPesan(T('lg.daftarDemo', { u: CATALYST.DEMO_AKUN.username, p: CATALYST.DEMO_AKUN.sandi }), 'warn');
+        return;
+      }
+      if(CATALYST.demoMasuk(email, sandi)){ location.href = 'app.html'; return; }
+      tampilPesan(T('lg.salahDemo'), 'err');
+      return;
+    }
+
+    if(email.indexOf('@') < 0){ tampilPesan(T('lg.emailValid'), 'err'); return; }
+    if(mode === 'daftar'){
+      if(sandi.length < 6){ tampilPesan(T('lg.sandiMin'), 'err'); return; }
+      if(!nama){ tampilPesan(T('lg.namaWajib'), 'err'); return; }
+    }
+
+    kirim.disabled = true;
+    document.getElementById('labelKirim').textContent = T('lg.proses');
+
+    try{
+      if(mode === 'daftar'){
+        var res = await CATALYST.db.auth.signUp({
+          email: email,
+          password: sandi,
+          options: { data: { full_name: nama, channel: document.getElementById('channel').value } }
+        });
+        if(res.error) throw res.error;
+
+        if(res.data.session){ location.href = 'app.html'; return; }
+        setMode('masuk');
+        tampilPesan(T('lg.daftarOk'), 'ok');
+      } else {
+        var login = await CATALYST.db.auth.signInWithPassword({ email: email, password: sandi });
+        if(login.error) throw login.error;
+        location.href = 'app.html';
+        return;
+      }
+    } catch(err){
+      var m = (err && err.message) || T('lg.errUmum');
+      if(/invalid login credentials/i.test(m)) m = T('lg.errKredensial');
+      if(/already registered/i.test(m))        m = T('lg.errTerdaftar');
+      if(/email not confirmed/i.test(m))       m = T('lg.errKonfirmasi');
+      tampilPesan(m, 'err');
+    } finally {
+      kirim.disabled = false;
+      document.getElementById('labelKirim').textContent = T(mode === 'daftar' ? 'lg.kirim.daftar' : 'lg.kirim.masuk');
+    }
+  });
+
+  /* mode awal dipasang tanpa animasi supaya tidak ada kedipan saat halaman dibuka */
+  PI.apply();
+  document.title = T('lg.title');
+  if(new URLSearchParams(location.search).get('mode') === 'daftar') setMode('daftar', true);
+  else setMode('masuk', true);
+
+  /* ganti bahasa tanpa memuat ulang supaya isian formulir tidak hilang */
+  PI.pasangPemilih(document.getElementById('langMenu'), function(){
+    PI.apply();
+    document.title = T('lg.title');
+    setMode(mode, true);
+    geserPil();
+  });
+})();
+</script>
+</body>
+</html>

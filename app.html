@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="id" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalyst: Passport, Finder, Academy</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#000;--d-gray:#333;--gray:#7a7a7a;--l-gray:#e5e5e5;--paper:#f4f4f3;--white:#fff;
+    --ink:#000;--line:rgba(0,0,0,.11);--bg:#fff;--soft:#f6f6f5;
+    --ff:"Inter","Helvetica Neue","Helvetica",Arial,sans-serif;
+    --display:"Helvetica Neue","Helvetica",Arial,sans-serif;
+    --ease:cubic-bezier(.16,1,.3,1);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--ff);font-weight:400;background:var(--soft);color:var(--ink);
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+  input,select{font:inherit;color:inherit}
+  img,svg{display:block;max-width:100%}
+  b,strong{font-weight:500}
+  h1,h2,h3,h4{font-weight:400}
+  ul{list-style:none}
+
+  .app{min-height:100vh}
+
+  /* ---------------- dock: menu melayang di kiri atas ----------------
+     Logo bundar hitam polos. Hover (atau tap di layar sentuh) melebarkannya
+     jadi pil, lalu dua panel kaca bening turun di bawahnya. */
+  .dock{position:fixed;top:9px;left:clamp(14px,2vw,22px);z-index:70;width:200px;pointer-events:none}
+  .dock-pill{pointer-events:auto;display:flex;align-items:center;height:46px;width:46px;padding:0;
+    border-radius:23px;background:#000;color:#fff;overflow:hidden;
+    box-shadow:0 10px 26px -12px rgba(0,0,0,.6);
+    transition:width .55s var(--ease),box-shadow .4s var(--ease);
+    -webkit-tap-highlight-color:transparent}
+  .dock.open .dock-pill{width:200px}
+  .dock-pill:focus-visible{outline:2px solid #000;outline-offset:3px}
+  .dock-mark{width:46px;height:46px;flex:none;display:flex;align-items:center;justify-content:center}
+  .dock-mark svg{width:24px;height:24px;fill:#fff}
+  .dock-word{font-size:12px;letter-spacing:.08em;line-height:1.15;text-align:left;white-space:nowrap;
+    opacity:0;transform:translateX(-8px);
+    transition:opacity .25s var(--ease),transform .5s var(--ease)}
+  .dock.open .dock-word{opacity:1;transform:none;transition-delay:.12s}
+  .dock-word span{display:block;font-size:8.5px;letter-spacing:.34em;color:#9a9a9a}
+
+  /* padding-top (bukan margin) supaya tidak ada celah mati yang menutup menu
+     saat kursor turun dari pil ke panel */
+  .dock-menu{display:flex;flex-direction:column;gap:8px;padding:8px 10px 26px;margin:0 -10px;
+    max-height:calc(100vh - 64px);overflow-y:auto;scrollbar-width:none;
+    visibility:hidden;transition:visibility 0s linear .4s}
+  .dock-menu::-webkit-scrollbar{display:none}
+  .dock.open .dock-menu{visibility:visible;pointer-events:auto;transition-delay:0s}
+
+  /* liquid glass bening: tint putih tipis, blur + saturasi, tepi terang di atas
+     dan bayangan halus di bawah. Teks gelap supaya tetap terbaca di atas kartu hitam. */
+  .dp{border-radius:22px;padding:8px;
+    background:
+      radial-gradient(120% 70% at 0% 0%,rgba(255,255,255,.55),transparent 58%),
+      linear-gradient(150deg,rgba(255,255,255,.68),rgba(255,255,255,.54));
+    -webkit-backdrop-filter:blur(18px) saturate(1.8);backdrop-filter:blur(18px) saturate(1.8);
+    text-shadow:0 1px 8px rgba(255,255,255,.6);
+    border:1px solid rgba(255,255,255,.72);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(0,0,0,.05),
+               0 0 0 1px rgba(0,0,0,.06),0 20px 42px -24px rgba(0,0,0,.5);
+    opacity:0;transform:translateY(-10px) scale(.96);transform-origin:top left;
+    transition:opacity .3s var(--ease),transform .55s var(--ease)}
+  .dock.open .dp{opacity:1;transform:none}
+  .dock.open .dp2{transition-delay:.05s}
+  .dock.open .dp3{transition-delay:.1s}
+
+  .dp .grp{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(0,0,0,.5);
+    padding:9px 12px 6px}
+  .dp a,.dp button{display:flex;align-items:center;gap:11px;width:100%;padding:9px 12px;border-radius:14px;
+    font-size:12.5px;color:#0b0b0d;text-align:left;transition:background .22s var(--ease),color .22s var(--ease)}
+  .dp a svg,.dp button svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;flex:none}
+  .dp a:hover,.dp button:hover{background:rgba(0,0,0,.075)}
+  .dp a.on{background:#000;color:#fff}
+  .dp2 a{color:rgba(0,0,0,.72)}
+  .dp2 a.on{color:#fff}
+  .dp3 a,.dp3 button{font-size:11.5px}
+
+  /* ---------------- topbar ---------------- */
+  .main{display:flex;flex-direction:column;min-width:0}
+  .top{position:sticky;top:0;z-index:20;background:rgba(246,246,245,.86);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);padding:13px clamp(18px,2.4vw,32px);
+    padding-left:calc(clamp(14px,2vw,22px) + 46px + 16px);
+    display:flex;align-items:center;gap:16px}
+  .search{flex:1;max-width:460px;position:relative}
+  .search input{width:100%;padding:10px 14px 10px 38px;border:1px solid var(--line);border-radius:100px;
+    background:var(--white);font-size:12.5px}
+  .search input:focus{outline:none;border-color:rgba(0,0,0,.34)}
+  .search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);
+    width:14px;height:14px;stroke:var(--gray);fill:none;stroke-width:1.7}
+  .top-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+  .xp{display:flex;align-items:center;gap:7px;padding:7px 13px;border-radius:100px;
+    border:1px solid var(--line);background:var(--white);font-size:12px}
+  .xp svg{width:13px;height:13px;stroke:var(--ink);fill:none;stroke-width:1.6}
+  .me{display:flex;align-items:center;gap:9px;padding:5px 12px 5px 5px;border-radius:100px;
+    border:1px solid var(--line);background:var(--white)}
+  .ava{width:29px;height:29px;border-radius:50%;background:var(--black);color:#fff;flex:none;
+    display:flex;align-items:center;justify-content:center;font-size:10.5px;letter-spacing:.04em}
+  .me div{font-size:11.5px;line-height:1.25}
+  .me small{display:block;font-size:9.5px;color:var(--gray)}
+
+  /* ---------------- konten ---------------- */
+  .page{padding:clamp(18px,2.4vw,30px);display:none}
+  .page.on{display:block}
+  .phead{margin-bottom:20px}
+  .phead h1{font-size:clamp(21px,2.2vw,29px);line-height:1.04;font-weight:300;letter-spacing:normal}
+  .phead p{font-size:12.5px;color:var(--gray);margin-top:5px}
+
+  .card{background:var(--white);border:1px solid var(--line);border-radius:15px;padding:19px}
+  .card.dark{background:var(--black);color:#fff;border-color:#000}
+  .card h3{font-size:13px;letter-spacing:.01em;margin-bottom:3px}
+  .card .cap{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gray)}
+  .card.dark .cap{color:#8d8d8d}
+
+  .grid{display:grid;gap:14px}
+  .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .g2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .split{display:grid;grid-template-columns:minmax(0,1fr) 336px;gap:14px;align-items:start}
+  .split>*{min-width:0}
+
+  /* passport hero */
+  .pp{background:var(--black);color:#fff;border-radius:17px;padding:clamp(20px,2.4vw,30px);position:relative;overflow:hidden}
+  .pp-glow{position:absolute;right:-12%;top:-40%;width:52%;aspect-ratio:1;border-radius:50%;
+    background:radial-gradient(closest-side,rgba(255,255,255,.11),transparent 72%);filter:blur(34px)}
+  .pp-in{position:relative;display:flex;gap:clamp(16px,2vw,26px);align-items:flex-start;flex-wrap:wrap}
+  .pp-ava{width:88px;height:88px;border-radius:15px;background:#151515;flex:none;
+    display:flex;align-items:center;justify-content:center;font-size:25px;font-weight:300;
+    border:1px solid rgba(255,255,255,.14)}
+  .pp-body{flex:1;min-width:220px}
+  .pp-cap{font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:#8d8d8d}
+  .pp-name{font-size:clamp(23px,2.6vw,34px);line-height:1.04;font-weight:300;margin-top:7px;
+    display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .pp-name svg{width:16px;height:16px;fill:#fff;flex:none}
+  .pp-role{font-size:12.5px;color:#c2c2c2;margin-top:4px}
+  .pp-loc{font-size:11.5px;color:#8d8d8d;margin-top:3px;display:flex;align-items:center;gap:6px}
+  .pp-loc svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.6}
+  .pp-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+  .pp-tags span{font-size:10.5px;padding:4px 11px;border-radius:100px;
+    border:1px solid rgba(255,255,255,.2);color:#d4d4d4}
+  .pp-id{border:1px solid rgba(255,255,255,.16);border-radius:11px;padding:11px 14px;flex:none}
+  .pp-id .cap{font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;color:#8d8d8d}
+  .pp-id b{display:block;font-size:13px;letter-spacing:.06em;margin-top:3px}
+  .pp-stats{position:relative;display:flex;gap:clamp(18px,3vw,44px);flex-wrap:wrap;
+    margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.13)}
+  .pp-stats div b{display:block;font-size:22px;font-weight:300;line-height:1}
+  .pp-stats div span{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:#8d8d8d}
+  .pp-bar{position:relative;margin-top:19px}
+  .pp-bar .lbl{display:flex;justify-content:space-between;font-size:10px;
+    letter-spacing:.18em;text-transform:uppercase;color:#8d8d8d;margin-bottom:7px}
+  .pp-track{height:4px;border-radius:100px;background:rgba(255,255,255,.16);overflow:hidden}
+  .pp-fill{height:100%;background:#fff;border-radius:100px;width:0;transition:width 1.1s var(--ease)}
+
+  /* journey */
+  /* Tahap dibungkus ke baris berikutnya kalau sempit, tidak pernah digeser atau terpotong. */
+  .jr{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:9px}
+  .jr-step{min-width:0;border:1px solid var(--line);border-radius:12px;padding:13px}
+  .jr-step.done{background:var(--white)}
+  .jr-step.now{background:var(--black);color:#fff;border-color:#000}
+  .jr-step .n{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gray)}
+  .jr-step.now .n{color:#8d8d8d}
+  .jr-step b{display:block;font-size:12.5px;margin-top:4px}
+  .jr-step small{font-size:10.5px;color:var(--gray);display:block;margin-top:2px}
+  .jr-step.now small{color:#a9a9a9}
+
+  /* badge */
+  .bdg{display:grid;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:11px}
+  .bdg div{text-align:center;padding:13px 7px;border:1px solid var(--line);border-radius:11px;background:var(--white)}
+  .bdg svg{width:20px;height:20px;stroke:var(--ink);fill:none;stroke-width:1.4;margin:0 auto 7px}
+  .bdg b{font-size:10.5px;display:block;line-height:1.3;overflow-wrap:anywhere}
+
+  /* finder */
+  .filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+  .filters button{padding:7px 15px;border-radius:100px;border:1px solid var(--line);
+    background:var(--white);font-size:11.5px;color:var(--gray);transition:.22s var(--ease)}
+  .filters button.on{background:var(--black);color:#fff;border-color:#000}
+  .opp{background:var(--white);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    display:flex;flex-direction:column;transition:.28s var(--ease)}
+  .opp:hover{transform:translateY(-3px);box-shadow:0 22px 40px -26px rgba(0,0,0,.3)}
+  .opp-top{height:96px;background:var(--black);position:relative;display:flex;align-items:flex-start;padding:11px}
+  .opp-kind{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:#000;background:#fff;
+    padding:4px 9px;border-radius:100px}
+  .opp-body{padding:14px;flex:1;display:flex;flex-direction:column}
+  .opp-body h4{font-size:13px;line-height:1.25}
+  .opp-body .org{font-size:11px;color:var(--gray);margin-top:3px}
+  .opp-body p{font-size:11.5px;color:var(--d-gray);margin-top:8px;line-height:1.6}
+  .opp-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:11px}
+  .opp-tags span{font-size:10px;padding:3px 9px;border-radius:100px;background:var(--soft);color:var(--d-gray)}
+  .opp-foot{margin-top:auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between;gap:9px}
+  .opp-foot button{font-size:11px;padding:7px 15px;border-radius:100px;background:var(--black);color:#fff}
+  .fund{margin-top:10px}
+  .fund .row{display:flex;justify-content:space-between;font-size:10.5px;color:var(--gray);margin-bottom:5px}
+  .fund .track{height:3px;background:var(--l-gray);border-radius:100px;overflow:hidden}
+  .fund .bar{height:100%;background:var(--black);border-radius:100px}
+
+  /* academy */
+  .crs{background:var(--white);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    transition:.28s var(--ease)}
+  .crs:hover{transform:translateY(-3px);box-shadow:0 22px 40px -26px rgba(0,0,0,.3)}
+  .crs-top{height:112px;background:var(--black);color:#fff;padding:13px;display:flex;flex-direction:column}
+  .crs-cat{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:#000;background:#fff;
+    padding:4px 9px;border-radius:100px;align-self:flex-start}
+  .crs-top h4{font-size:14.5px;margin-top:auto;line-height:1.2}
+  .crs-body{padding:13px}
+  .crs-body p{font-size:11.5px;color:var(--d-gray);line-height:1.6}
+  .crs-meta{display:flex;gap:13px;margin-top:11px;font-size:10.5px;color:var(--gray)}
+  .crs-prog{margin-top:11px}
+  .crs-prog .track{height:3px;background:var(--l-gray);border-radius:100px;overflow:hidden}
+  .crs-prog .bar{height:100%;background:var(--black);border-radius:100px}
+  .crs-prog .row{display:flex;justify-content:space-between;font-size:10px;color:var(--gray);margin-bottom:5px}
+  .crs-btn{width:100%;margin-top:12px;padding:9px;border-radius:100px;background:var(--black);color:#fff;font-size:11.5px}
+  .crs-btn.ghost{background:var(--soft);color:var(--ink);border:1px solid var(--line)}
+
+  .evt{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+  .evt:last-child{border-bottom:0}
+  .evt-date{flex:none;width:44px;text-align:center;border:1px solid var(--line);border-radius:9px;padding:6px 0}
+  .evt-date b{display:block;font-size:15px;line-height:1}
+  .evt-date span{font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray)}
+  .evt-body{flex:1;min-width:0}
+  .evt-body b{font-size:12px;display:block;line-height:1.3}
+  .evt-body small{font-size:10.5px;color:var(--gray)}
+  .evt button{font-size:10.5px;padding:6px 13px;border-radius:100px;border:1px solid var(--line);flex:none}
+
+  .empty{padding:40px 20px;text-align:center;color:var(--gray);font-size:12.5px}
+  .skel{background:linear-gradient(90deg,#eee,#f6f6f6,#eee);background-size:200% 100%;
+    animation:sk 1.3s linear infinite;border-radius:8px;height:12px}
+  @keyframes sk{to{background-position:-200% 0}}
+
+  .warn{margin:18px;padding:15px 18px;border-radius:13px;background:#fdf8ec;border:1px solid #ecd9a8;
+    color:#7a5a12;font-size:12.5px;line-height:1.7}
+  .warn .tautan{background:none;border:0;padding:0;margin-left:6px;
+    color:inherit;text-decoration:underline;cursor:pointer;font:inherit}
+  .warn code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;
+    background:rgba(0,0,0,.06);padding:1px 5px;border-radius:4px}
+
+
+  /* Di desktop, kolom cari mulai setelah pil menu yang melebar (200px) supaya tidak tertabrak. */
+  @media (min-width:881px){ .top{padding-left:calc(clamp(14px,2vw,22px) + 200px + 18px)} }
+  @media (max-width:1080px){ .g4{grid-template-columns:repeat(2,1fr)} .split{grid-template-columns:1fr} }
+  @media (max-width:880px){
+    .g3,.g2{grid-template-columns:1fr}
+    .me div:not(.ava){display:none}
+  .me{padding:5px}
+    .xp{display:none}
+  }
+  @media (max-width:560px){ .g4{grid-template-columns:1fr} }
+  @media (prefers-reduced-motion:reduce){
+    .dock-pill,.dp,.dock-word{transition-duration:.18s!important;transition-delay:0s!important}
+  }
+</style>
+<link rel="stylesheet" href="assets/platform-lang.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <g id="i-home" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></g>
+  <g id="i-user" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></g>
+  <g id="i-search" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></g>
+  <g id="i-cap" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2 9l10 5 10-5z"/><path d="M6 11.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-5.5"/></g>
+  <g id="i-users" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M2.6 19a6.4 6.4 0 0 1 12.8 0"/><path d="M16.5 5.2a3.2 3.2 0 0 1 0 5.6M17.6 13.4A6.4 6.4 0 0 1 21.4 19"/></g>
+  <g id="i-cube" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 3v18M4 7.5l8 4.5 8-4.5"/></g>
+  <g id="i-flask" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.6 18A2 2 0 0 0 6.3 21h11.4a2 2 0 0 0 1.7-3L14 9V3"/></g>
+  <g id="i-chart" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></g>
+  <g id="i-spark" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/></g>
+  <g id="i-badge" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="5.2"/><path d="m8.6 13.4-1.1 7 4.5-2.4 4.5 2.4-1.1-7"/></g>
+  <g id="i-globe" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 2.6 15.2 0 18M12 3c-2.6 2.8-2.6 15.2 0 18"/></g>
+  <g id="i-rocket" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3.5 2 5.5 5.6 5.5 9.4L12 17l-5.5-4.6C6.5 8.6 8.5 5 12 3z"/><circle cx="12" cy="10" r="1.8"/><path d="M9 17.5 7 21l3.4-1M15 17.5 17 21l-3.4-1"/></g>
+  <g id="i-pin" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s6.5-5.4 6.5-10a6.5 6.5 0 1 0-13 0c0 4.6 6.5 10 6.5 10z"/><circle cx="12" cy="11" r="2.4"/></g>
+  <g id="i-bolt" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></g>
+  <g id="i-out" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17 5 12l5-5M5 12h11"/></g>
+  <g id="i-menu" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></g>
+  <g id="i-check" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></g>
+  <g id="i-ig" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></g>
+</defs></svg>
+
+<div class="app">
+
+  <!-- ============ DOCK (menu melayang) ============ -->
+  <aside class="dock" id="side">
+    <button class="dock-pill" id="dockBtn" type="button" aria-expanded="false" aria-controls="dockMenu" aria-label="Menu Catalyst">
+      <span class="dock-mark">
+        <svg viewBox="-108 -118 244 236" aria-hidden="true">
+          <path d="M 79.86 -60.18 A 100 100 0 1 0 79.86 60.18 L 49.52 37.31 A 62 62 0 1 1 49.52 -37.31 Z"/>
+          <path d="M 126.5 -87.7 Q 108.05 -84.22 104.8 -64.5 Q 101.55 -84.22 83.1 -87.7 Q 101.55 -91.18 104.8 -110.9 Q 108.05 -91.18 126.5 -87.7 Z"/>
+        </svg>
+      </span>
+      <span class="dock-word">CATALYST<span>SOCIETY</span></span>
+    </button>
+
+    <div class="dock-menu" id="dockMenu">
+      <nav class="dp dp1" aria-label="Program">
+        <a href="#home" data-page="home" class="on"><svg viewBox="0 0 24 24"><use href="#i-home"/></svg><span data-i18n="nav.home">Home</span></a>
+        <div class="grp" data-i18n="nav.program">Program</div>
+        <a href="#passport" data-page="passport"><svg viewBox="0 0 24 24"><use href="#i-user"/></svg>Passport</a>
+        <a href="#finder"   data-page="finder"><svg viewBox="0 0 24 24"><use href="#i-search"/></svg>Finder</a>
+        <a href="#academy"  data-page="academy"><svg viewBox="0 0 24 24"><use href="#i-cap"/></svg>Academy</a>
+      </nav>
+
+      <nav class="dp dp2" aria-label="Segera hadir">
+        <div class="grp" data-i18n="nav.soon">Segera hadir</div>
+        <a href="#soon" data-page="soon"><svg viewBox="0 0 24 24"><use href="#i-users"/></svg>Communities</a>
+        <a href="#soon" data-page="soon"><svg viewBox="0 0 24 24"><use href="#i-flask"/></svg>Labs</a>
+        <a href="#soon" data-page="soon"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg>Ventures</a>
+        <a href="#soon" data-page="soon"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg>Summit</a>
+      </nav>
+
+      <div class="dp dp3">
+        <a class="side-ig" href="https://www.instagram.com/catalystsociety.id/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><use href="#i-ig"/></svg>catalystsociety.id
+        </a>
+        <button id="keluar" type="button"><svg viewBox="0 0 24 24"><use href="#i-out"/></svg><span data-i18n="nav.keluar">Keluar</span></button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <header class="top">
+      <div class="search">
+        <svg viewBox="0 0 24 24"><use href="#i-search"/></svg>
+        <input id="cari" type="search" placeholder="Cari peluang, kursus, komunitas..." data-i18n-ph="top.cari">
+      </div>
+      <div class="top-right">
+        <div class="lang" id="langMenu"></div>
+        <div class="xp"><svg viewBox="0 0 24 24"><use href="#i-bolt"/></svg><b id="xpTop">0</b></div>
+        <div class="me">
+          <div class="ava" id="avaTop">?</div>
+          <div><b id="namaTop">Memuat</b><small id="idTop">Memuat</small></div>
+        </div>
+      </div>
+    </header>
+
+    <div id="peringatan"></div>
+
+    <!-- ---------- HOME ---------- -->
+    <section class="page on" id="p-home">
+      <div class="phead">
+        <h1 id="hSelamat">Selamat datang kembali, Builder.</h1>
+        <p data-i18n="home.sub">Ekosistem Anda hari ini: komunitas, peluang, dan kelas yang sedang berjalan.</p>
+      </div>
+
+      <div class="grid g4" style="margin-bottom:14px">
+        <div class="card"><div class="cap">CATA Points</div><h3 style="font-size:23px;margin-top:5px" id="hXp">0</h3></div>
+        <div class="card"><div class="cap" data-i18n="home.kom">Komunitas</div><h3 style="font-size:23px;margin-top:5px" id="hKom">0</h3></div>
+        <div class="card"><div class="cap" data-i18n="home.badge">Badge</div><h3 style="font-size:23px;margin-top:5px" id="hBdg">0</h3></div>
+        <div class="card dark"><div class="cap" data-i18n="home.stage">Journey Stage</div><h3 style="font-size:23px;margin-top:5px" id="hStage">Explorer</h3></div>
+      </div>
+
+      <div class="split">
+        <div>
+          <div class="card" style="margin-bottom:14px">
+            <div class="cap" style="margin-bottom:12px" data-i18n="home.alur">Alur ekosistem Anda</div>
+            <div class="jr" id="alurEko"></div>
+          </div>
+          <div class="card">
+            <div class="cap" style="margin-bottom:12px" data-i18n="home.kelas">Kelas yang sedang berjalan</div>
+            <div id="homeKelas"></div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:14px">
+            <div class="cap" style="margin-bottom:10px" data-i18n="home.event">Event mendatang</div>
+            <div id="homeEvent"></div>
+          </div>
+          <div class="card dark">
+            <div class="cap" style="margin-bottom:8px" data-i18n="home.dapat">Apa yang Anda dapatkan</div>
+            <ul style="font-size:11.5px;line-height:2;color:#c2c2c2">
+              <li data-i18n="get.1">Join the Community</li><li data-i18n="get.2">Access to the Event</li><li data-i18n="get.3">Collaboration</li>
+              <li data-i18n="get.4">Growing a Business</li><li data-i18n="get.5">Fundraising</li><li data-i18n="get.6">Job Opportunities</li>
+              <li data-i18n="get.7">Contest &amp; Competitions</li><li data-i18n="get.8">Networking &amp; Sharing</li>
+              <li data-i18n="get.9">Building a Project</li><li data-i18n="get.10">Showcasing a Project</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- PASSPORT ---------- -->
+    <section class="page" id="p-passport">
+      <div class="phead">
+        <h1>Catalyst Passport</h1>
+        <p data-i18n="pp.sub">Bangun identitas profesional dalam satu digital profile.</p>
+      </div>
+
+      <div class="pp" style="margin-bottom:14px">
+        <div class="pp-glow"></div>
+        <div class="pp-in">
+          <div class="pp-ava" id="ppAva">?</div>
+          <div class="pp-body">
+            <div class="pp-cap">Catalyst Passport</div>
+            <div class="pp-name"><span id="ppNama">Memuat</span>
+              <svg viewBox="0 0 24 24" id="ppVerif" hidden><path d="M12 2l2.4 1.8 3 .1.9 2.8 2.4 1.8-.9 2.8.9 2.8-2.4 1.8-.9 2.8-3 .1L12 22l-2.4-1.8-3-.1-.9-2.8L3.3 15.5l.9-2.8-.9-2.8 2.4-1.8.9-2.8 3-.1z" fill="#fff"/><path d="m8.8 12.2 2.2 2.2 4.2-4.4" stroke="#000" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="pp-role" id="ppRole">Member of Catalyst Society</div>
+            <div class="pp-loc"><svg viewBox="0 0 24 24"><use href="#i-pin"/></svg><span id="ppLoc">Indonesia</span></div>
+            <div class="pp-tags" id="ppTags"></div>
+          </div>
+          <div class="pp-id"><div class="cap">Catalyst ID</div><b id="ppId">Memuat</b></div>
+        </div>
+
+        <div class="pp-stats">
+          <div><b id="ppXp">0</b><span>CATA Points</span></div>
+          <div><b id="ppKom">0</b><span data-i18n="pp.communities">Communities</span></div>
+          <div><b id="ppBdg">0</b><span data-i18n="pp.badges">Badges</span></div>
+          <div><b id="ppStage">Explorer</b><span data-i18n="home.stage">Journey Stage</span></div>
+        </div>
+
+        <div class="pp-bar">
+          <div class="lbl"><span id="ppFrom">Explorer</span><span>Innovator</span></div>
+          <div class="pp-track"><div class="pp-fill" id="ppFill"></div></div>
+        </div>
+      </div>
+
+      <div class="split">
+        <div>
+          <div class="card" style="margin-bottom:14px">
+            <div class="cap" style="margin-bottom:5px" data-i18n="pp.about">About Me</div>
+            <p style="font-size:12.5px;color:var(--d-gray);line-height:1.72" id="ppAbout">Belum ada deskripsi.</p>
+          </div>
+          <div class="card" style="margin-bottom:14px">
+            <div class="cap" style="margin-bottom:12px" data-i18n="pp.journey">Journey</div>
+            <div class="jr" id="ppJourney"></div>
+          </div>
+          <div class="card">
+            <div class="cap" style="margin-bottom:12px" data-i18n="pp.communities">Communities</div>
+            <div class="grid g3" id="ppKomList"></div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:14px">
+            <div class="cap" style="margin-bottom:12px" data-i18n="pp.badges">Badges</div>
+            <div class="bdg" id="ppBadges"></div>
+          </div>
+          <div class="card">
+            <div class="cap" style="margin-bottom:12px" data-i18n="pp.certs">Certificates</div>
+            <div id="ppCerts"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- FINDER ---------- -->
+    <section class="page" id="p-finder">
+      <div class="phead">
+        <h1>Catalyst Finder</h1>
+        <p data-i18n="fi.sub">Temukan peluang dan dukung inovasi yang berdampak.</p>
+      </div>
+
+      <div class="filters" id="fFilter">
+        <button class="on" data-kind="" data-i18n="fi.semua">Semua</button>
+        <button data-kind="hiring" data-i18n="fi.hiring">Hiring</button>
+        <button data-kind="partner" data-i18n="fi.partner">Looking for Partner</button>
+        <button data-kind="fundraising" data-i18n="fi.fundraising">Fundraising</button>
+        <button data-kind="support" data-i18n="fi.support">Seeking Support</button>
+      </div>
+
+      <div class="grid g4" id="oppList"></div>
+    </section>
+
+    <!-- ---------- ACADEMY ---------- -->
+    <section class="page" id="p-academy">
+      <div class="phead">
+        <h1>Catalyst Academy</h1>
+        <p data-i18n="ac.sub">Belajar langsung dari praktisi industri. Learn. Earn. Impact.</p>
+      </div>
+
+      <div class="grid g4" style="margin-bottom:14px">
+        <div class="card"><div class="cap" data-i18n="ac.jalan">Sedang berjalan</div><h3 style="font-size:23px;margin-top:5px" id="acJalan">0</h3></div>
+        <div class="card"><div class="cap" data-i18n="ac.selesai">Selesai</div><h3 style="font-size:23px;margin-top:5px" id="acSelesai">0</h3></div>
+        <div class="card"><div class="cap" data-i18n="ac.cert">Sertifikat</div><h3 style="font-size:23px;margin-top:5px" id="acCert">0</h3></div>
+        <div class="card dark"><div class="cap" data-i18n="ac.xp">XP Earned</div><h3 style="font-size:23px;margin-top:5px" id="acXp">0</h3></div>
+      </div>
+
+      <div class="split">
+        <div>
+          <div class="cap" style="margin-bottom:11px" data-i18n="ac.explore">Explore Top Categories</div>
+          <div class="grid g3" id="crsList"></div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="cap" style="margin-bottom:10px" data-i18n="ac.events">Upcoming Events</div>
+            <div id="acEvent"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- SEGERA HADIR ---------- -->
+    <section class="page" id="p-soon">
+      <div class="phead"><h1 data-i18n="so.judul">Segera hadir</h1><p data-i18n="so.sub">Modul ini sedang dibangun mengikuti roadmap Catalyst Society.</p></div>
+      <div class="card"><div class="empty" data-i18n="so.isi">Communities, Labs, Ventures, dan Summit akan aktif mengikuti Timeline Planning 2027.</div></div>
+    </section>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="assets/catalyst.js"></script>
+<script src="assets/demo.js"></script>
+<script src="assets/platform-i18n.js"></script>
+<script>
+(async function(){
+  var $  = function(s){ return document.querySelector(s); };
+  var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
+
+  /* Mode demo: platform hanya terbuka setelah masuk dengan akun contoh */
+  if(!CATALYST.siap && !CATALYST.demoAktif()){ location.replace('login.html'); return; }
+
+  /* Bahasa: teks statis diterjemahkan lewat data-i18n, teks yang digambar JS lewat T() dan X().
+     Pindah bahasa memuat ulang halaman karena banyak bagian digambar dari data. */
+  var PI = window.PI18N, T = PI.t, X = PI.x;
+  PI.apply();
+  PI.pasangPemilih($('#langMenu'), function(){ location.reload(); });
+
+  /* ---------- navigasi ---------- */
+  function buka(nama){
+    $$('.page').forEach(function(p){ p.classList.toggle('on', p.id === 'p-' + nama); });
+    $$('.dock a[data-page]').forEach(function(a){ a.classList.toggle('on', a.dataset.page === nama); });
+    if(!terkunci || !kursorHalus.matches) tutupDock();
+    try { sessionStorage.setItem('catalyst-halaman', nama); } catch(e){}
+    window.scrollTo({ top: 0 });
+  }
+  $$('.dock a[data-page]').forEach(function(a){
+    a.addEventListener('click', function(e){ e.preventDefault(); buka(a.dataset.page); });
+  });
+
+  /* ---------- dock ----------
+     Desktop: mendekatkan kursor membuka menu sementara. Klik logo MENGUNCI
+     menu tetap terbuka, klik lagi menutupnya. Layar sentuh: ketuk membuka
+     dan mengunci, ketuk lagi menutup. */
+  var dock = $('#side'), dockBtn = $('#dockBtn'), timerTutup = 0;
+  var terkunci = false, redamHover = false;
+  var kursorHalus = window.matchMedia('(hover:hover) and (pointer:fine)');
+  function bukaDock(){
+    clearTimeout(timerTutup);
+    dock.classList.add('open');
+    dockBtn.setAttribute('aria-expanded', 'true');
+  }
+  function tutupDock(){
+    clearTimeout(timerTutup);
+    terkunci = false;
+    dock.classList.remove('open');
+    dockBtn.setAttribute('aria-expanded', 'false');
+  }
+  dock.addEventListener('mouseenter', function(){
+    if(kursorHalus.matches && !redamHover) bukaDock();
+  });
+  dock.addEventListener('mouseleave', function(){
+    redamHover = false;
+    if(!kursorHalus.matches || terkunci) return;
+    clearTimeout(timerTutup);
+    /* jeda kecil supaya menu tidak menutup saat kursor melintas antar panel */
+    timerTutup = setTimeout(tutupDock, 280);
+  });
+  dockBtn.addEventListener('click', function(){
+    if(terkunci){
+      /* kursor masih di atas logo: jangan langsung terbuka lagi lewat hover */
+      tutupDock();
+      redamHover = true;
+    } else {
+      terkunci = true;
+      bukaDock();
+    }
+  });
+  /* papan ketik: fokus terlihat membuka, fokus keluar menutup kecuali terkunci */
+  dock.addEventListener('focusin', function(e){ if(e.target.matches(':focus-visible')) bukaDock(); });
+  dock.addEventListener('focusout', function(e){
+    if(!terkunci && !dock.contains(e.relatedTarget)) tutupDock();
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && dock.classList.contains('open')){ tutupDock(); dockBtn.focus(); }
+  });
+  /* layar sentuh: ketuk di luar menutup. Di desktop menu terkunci dibiarkan,
+     hanya klik logo yang menutupnya. */
+  document.addEventListener('pointerdown', function(e){
+    if(!kursorHalus.matches && !dock.contains(e.target)) tutupDock();
+  });
+  $('#keluar').addEventListener('click', function(){
+    if(!CATALYST.siap){ CATALYST.demoKeluar(); location.href='index.html'; return; }
+    CATALYST.keluar();
+  });
+
+  /* ---------- sumber data: Supabase kalau siap, kalau belum pakai data contoh ---------- */
+  var demo = !CATALYST.siap;
+  var D    = window.CATALYST_DEMO;
+  var db   = CATALYST.db;
+  var prof, user;
+
+  if(demo){
+    $('#peringatan').innerHTML =
+      '<div class="warn"><b>' + T('demo.judul') + '</b>' + T('demo.isi') +
+      '<button id="ulangDemo" class="tautan">' + T('demo.ulang') + '</button></div>';
+    document.getElementById('ulangDemo').addEventListener('click', function(){ D.ulang(); });
+    prof = D.data.profil;
+  } else {
+    user = await CATALYST.wajibLogin();
+    if(!user) return;
+    prof = (await db.from('profiles').select('*').eq('id', user.id).single()).data;
+    if(!prof){
+      $('#peringatan').innerHTML = '<div class="warn">' + T('profil.hilang') + '</div>';
+      return;
+    }
+  }
+
+  var inisial = CATALYST.inisial(prof.full_name);
+  $('#avaTop').textContent = inisial;
+  $('#ppAva').textContent  = inisial;
+  $('#namaTop').textContent = prof.full_name;
+  $('#idTop').textContent   = prof.catalyst_id;
+  $('#hSelamat').textContent = T('home.selamat', { nama: prof.full_name.split(' ')[0] });
+  $('#ppNama').textContent  = prof.full_name;
+  $('#ppId').textContent    = prof.catalyst_id;
+  $('#ppAbout').textContent = X(prof.about) || T('pp.aboutKosong');
+  $('#ppLoc').textContent   = X(prof.location) || 'Indonesia';
+  if(prof.headline) $('#ppRole').textContent = prof.headline;
+  if(prof.is_verified) $('#ppVerif').hidden = false;
+
+  var ch = CATALYST.CHANNEL[prof.channel];
+  var tags = (prof.skills && prof.skills.length) ? prof.skills.slice(0,4) : (ch ? [ch.label] : []);
+  $('#ppTags').innerHTML = tags.map(function(t){ return '<span>' + t + '</span>'; }).join('');
+
+  var stage = prof.journey_stage || 'explorer';
+  var idx   = Math.max(0, CATALYST.JOURNEY.indexOf(stage));
+  var cap   = function(s){ return s.charAt(0).toUpperCase() + s.slice(1); };
+
+  $('#xpTop').textContent  = CATALYST.angka(prof.cata_points);
+  $('#hXp').textContent    = CATALYST.angka(prof.cata_points);
+  $('#ppXp').textContent   = CATALYST.angka(prof.cata_points);
+  $('#hStage').textContent = cap(stage);
+  $('#ppStage').textContent= cap(stage);
+  $('#ppFrom').textContent = cap(stage);
+  setTimeout(function(){
+    $('#ppFill').style.width = Math.round((idx / (CATALYST.JOURNEY.length - 1)) * 100) + '%';
+  }, 260);
+
+  /* ---------- alur ekosistem ---------- */
+  var alur = [
+    ['Community', T('alur.1')],
+    ['Academy',   T('alur.2')],
+    ['Matchmaking', T('alur.3')],
+    ['Labs',      T('alur.4')],
+    ['Ventures',  T('alur.5')],
+    ['Summit',    T('alur.6')]
+  ];
+  $('#alurEko').innerHTML = alur.map(function(a, i){
+    return '<div class="jr-step' + (i === 0 ? ' now' : '') + '"><div class="n">0' + (i+1) + '</div>' +
+           '<b>' + a[0] + '</b><small>' + a[1] + '</small></div>';
+  }).join('');
+
+  /* ---------- journey ---------- */
+  var jrEvents = demo ? D.data.journey.filter(function(e){return e.occurred_at;})
+    : ((await db.from('journey_events').select('*').eq('user_id', user.id).order('occurred_at')).data || []);
+  $('#ppJourney').innerHTML = CATALYST.JOURNEY.map(function(s, i){
+    var ev  = jrEvents.filter(function(e){ return e.stage === s; })[0];
+    var cls = i < idx ? 'done' : (i === idx ? 'now' : '');
+    return '<div class="jr-step ' + cls + '"><div class="n">' + T('pp.tahap', { n: i+1 }) + '</div><b>' + cap(s) + '</b>' +
+           '<small>' + (ev ? X(ev.detail || ev.title) : T('pp.belum')) + '</small></div>';
+  }).join('');
+
+  /* ---------- komunitas ---------- */
+  var kom = demo ? D.data.komunitas.map(function(c){return {communities:c};})
+    : ((await db.from('community_members').select('communities(name,channel)').eq('user_id', user.id)).data || []);
+  $('#hKom').textContent  = kom.length;
+  $('#ppKom').textContent = kom.length;
+  $('#ppKomList').innerHTML = kom.length
+    ? kom.map(function(k){
+        var c = k.communities || {};
+        var cc = CATALYST.CHANNEL[c.channel];
+        return '<div class="card" style="padding:13px"><h3>' + c.name + '</h3>' +
+               '<div class="cap" style="margin-top:3px">' + (cc ? cc.label : '') + '</div></div>';
+      }).join('')
+    : '<div class="empty" style="grid-column:1/-1">' + T('pp.komKosong') + '</div>';
+
+  /* ---------- badge ---------- */
+  var ub = demo ? D.data.badge.map(function(b){return {badges:b};})
+    : ((await db.from('user_badges').select('badges(name,icon)').eq('user_id', user.id)).data || []);
+  $('#hBdg').textContent  = ub.length;
+  $('#ppBdg').textContent = ub.length;
+  $('#ppBadges').innerHTML = ub.length
+    ? ub.map(function(b){
+        var bb = b.badges || {};
+        return '<div><svg viewBox="0 0 24 24"><use href="#i-' + (bb.icon || 'badge') + '"/></svg><b>' + bb.name + '</b></div>';
+      }).join('')
+    : '<div class="empty" style="grid-column:1/-1">' + T('pp.bdgKosong') + '</div>';
+
+  /* ---------- sertifikat ---------- */
+  var certs = demo ? D.data.sertifikat
+    : ((await db.from('certificates').select('*').eq('user_id', user.id).order('issued_at', { ascending:false })).data || []);
+  $('#acCert').textContent = certs.length;
+  $('#ppCerts').innerHTML = certs.length
+    ? certs.map(function(c){
+        return '<div class="evt"><div class="evt-date"><b>' + new Date(c.issued_at).getDate() + '</b>' +
+               '<span>' + new Date(c.issued_at).toLocaleDateString(PI.locale(),{month:'short'}) + '</span></div>' +
+               '<div class="evt-body"><b>' + X(c.title) + '</b><small>' + c.issuer + ' · ' + c.cert_code + '</small></div></div>';
+      }).join('')
+    : '<div class="empty">' + T('pp.certKosong') + '</div>';
+
+  /* ---------- FINDER ---------- */
+  var semuaOpp = demo ? D.data.peluang
+    : ((await db.from('opportunities').select('*, profiles(full_name)').eq('is_open', true)
+         .order('created_at', { ascending:false })).data || []);
+  var kindLabel = { hiring:T('fi.kind.hiring'), partner:T('fi.kind.partner'), fundraising:T('fi.kind.fundraising'), support:T('fi.kind.support') };
+
+  function gambarOpp(kind, cari){
+    var list = semuaOpp.filter(function(o){
+      if(kind && o.kind !== kind) return false;
+      if(cari){
+        var t = (o.title + ' ' + (o.org_name||'') + ' ' + (o.category||'') + ' ' + (o.tags||[]).join(' ')).toLowerCase();
+        if(t.indexOf(cari.toLowerCase()) < 0) return false;
+      }
+      return true;
+    });
+    $('#oppList').innerHTML = list.length ? list.map(function(o){
+      var fund = '';
+      if(o.kind === 'fundraising' && o.funding_goal){
+        var pct = Math.min(100, Math.round((o.funding_raised / o.funding_goal) * 100));
+        fund = '<div class="fund"><div class="row"><span>' + T('fi.terkumpul', { pct: pct }) + '</span>' +
+               '<span>Rp ' + CATALYST.angka(o.funding_goal) + '</span></div>' +
+               '<div class="track"><div class="bar" style="width:' + pct + '%"></div></div></div>';
+      }
+      return '<article class="opp">' +
+        '<div class="opp-top"><span class="opp-kind">' + (kindLabel[o.kind]||o.kind) + '</span></div>' +
+        '<div class="opp-body"><h4>' + X(o.title) + '</h4>' +
+        '<div class="org">' + X(o.org_name || (o.profiles && o.profiles.full_name) || '') +
+        (o.location ? ' · ' + X(o.location) : '') + '</div>' +
+        (o.description ? '<p>' + X(o.description) + '</p>' : '') +
+        (o.tags && o.tags.length ? '<div class="opp-tags">' + o.tags.slice(0,3).map(function(t){ return '<span>' + t + '</span>'; }).join('') + '</div>' : '') +
+        fund +
+        '<div class="opp-foot"><small style="font-size:10.5px;color:var(--gray)">' +
+        CATALYST.tanggal(o.created_at) + '</small>' +
+        '<button data-opp="' + o.id + '">' + T('fi.ajukan') + '</button></div></div></article>';
+    }).join('') : '<div class="empty" style="grid-column:1/-1">' + T('fi.kosong') + '</div>';
+
+    $$('#oppList button[data-opp]').forEach(function(b){
+      b.addEventListener('click', async function(){
+        b.disabled = true; b.textContent = T('fi.kirim');
+        if(demo){
+          var sudah = D.data.lamaran.indexOf(b.dataset.opp) >= 0;
+          if(!sudah){ D.data.lamaran.push(b.dataset.opp); D.simpan(); }
+          b.textContent = sudah ? T('fi.sudah') : T('fi.terkirim');
+        } else {
+          var r = await db.from('opportunity_applications').insert({ opportunity_id: b.dataset.opp, user_id: user.id });
+          b.textContent = r.error ? (/duplicate/i.test(r.error.message) ? T('fi.sudah') : T('fi.gagal')) : T('fi.terkirim');
+        }
+      });
+    });
+  }
+  gambarOpp('', '');
+
+  $$('#fFilter button').forEach(function(b){
+    b.addEventListener('click', function(){
+      $$('#fFilter button').forEach(function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      gambarOpp(b.dataset.kind, $('#cari').value.trim());
+    });
+  });
+  $('#cari').addEventListener('input', function(){
+    var aktif = $('#fFilter button.on');
+    gambarOpp(aktif ? aktif.dataset.kind : '', this.value.trim());
+    /* Pencarian hanya bermakna di Finder, jadi mengetik dari halaman lain membukanya. */
+    if(this.value.trim() && !$('#p-finder').classList.contains('on')) buka('finder');
+  });
+
+  /* ---------- ACADEMY ---------- */
+  var kursus = demo ? D.data.kursus : ((await db.from('courses').select('*').order('created_at')).data || []);
+  var enrol  = demo
+    ? Object.keys(D.data.kelas).map(function(id){
+        var p = D.data.kelas[id];
+        return { course_id:id, progress:p, completed_at: p>=100 ? '2026-06-10' : null };
+      })
+    : ((await db.from('enrollments').select('*').eq('user_id', user.id)).data || []);
+  var petaEnrol = {}; enrol.forEach(function(e){ petaEnrol[e.course_id] = e; });
+
+  /* dihitung ulang setiap kali progres berubah, bukan sekali saat memuat */
+  function perbaruiRingkasAcademy(){
+    var daftar = Object.keys(petaEnrol).map(function(k){ return petaEnrol[k]; });
+    $('#acJalan').textContent   = daftar.filter(function(e){ return !e.completed_at; }).length;
+    $('#acSelesai').textContent = daftar.filter(function(e){ return !!e.completed_at; }).length;
+    $('#acXp').textContent = CATALYST.angka(daftar.reduce(function(s, e){
+      var k = kursus.filter(function(c){ return c.id === e.course_id; })[0];
+      return s + (k ? Math.round(k.xp_reward * (e.progress/100)) : 0);
+    }, 0));
+    gambarKelasBerjalan();
+  }
+
+  function gambarKursus(){
+    $('#crsList').innerHTML = kursus.map(function(c){
+      var e = petaEnrol[c.id];
+      var prog = e ? e.progress : 0;
+      return '<article class="crs"><div class="crs-top">' +
+        '<span class="crs-cat">' + X(c.category) + '</span><h4>' + X(c.title) + '</h4></div>' +
+        '<div class="crs-body"><p>' + X(c.description||'') + '</p>' +
+        '<div class="crs-meta"><span>' + T('ac.lesson', { n: c.lesson_count }) + '</span><span>' + T('ac.jam', { n: c.hours }) + '</span>' +
+        '<span>★ ' + c.rating + '</span></div>' +
+        (e ? '<div class="crs-prog"><div class="row"><span>' + T('ac.progress') + '</span><span>' + prog + '%</span></div>' +
+             '<div class="track"><div class="bar" style="width:' + prog + '%"></div></div></div>' : '') +
+        '<button class="crs-btn' + (e ? ' ghost' : '') + '" data-crs="' + c.id + '" data-xp="' + c.xp_reward + '">' +
+        (e ? (e.completed_at ? T('ac.selesaiBtn') : T('ac.lanjut')) : T('ac.mulai')) + '</button>' +
+        '</div></article>';
+    }).join('');
+
+    $$('#crsList button[data-crs]').forEach(function(b){
+      b.addEventListener('click', async function(){
+        var id = b.dataset.crs, e = petaEnrol[id];
+        b.disabled = true;
+        if(demo){
+          var p = D.data.kelas[id] || 0;
+          p = e ? Math.min(100, p + 25) : 10;
+          D.data.kelas[id] = p; D.simpan();
+          petaEnrol[id] = { course_id:id, progress:p, completed_at: p>=100 ? new Date().toISOString() : null };
+        } else if(!e){
+          var r = await db.from('enrollments').insert({ user_id: user.id, course_id: id, progress: 10 }).select().single();
+          if(!r.error){ petaEnrol[id] = r.data; }
+        } else if(!e.completed_at){
+          var baru = Math.min(100, e.progress + 25);
+          var upd = { progress: baru };
+          if(baru === 100) upd.completed_at = new Date().toISOString();
+          var r2 = await db.from('enrollments').update(upd).eq('user_id', user.id).eq('course_id', id).select().single();
+          if(!r2.error) petaEnrol[id] = r2.data;
+        }
+        b.disabled = false;
+        gambarKursus();
+        perbaruiRingkasAcademy();
+      });
+    });
+  }
+  gambarKursus();
+
+  /* ---------- event ---------- */
+  var events = demo ? D.data.event
+    : ((await db.from('events').select('*').gte('starts_at', new Date().toISOString())
+         .order('starts_at').limit(5)).data || []);
+  var htmlEvent = events.length ? events.map(function(e){
+    var d = new Date(e.starts_at);
+    return '<div class="evt"><div class="evt-date"><b>' + d.getDate() + '</b>' +
+      '<span>' + d.toLocaleDateString(PI.locale(),{month:'short'}) + '</span></div>' +
+      '<div class="evt-body"><b>' + e.title + '</b><small>' + (e.speaker||'') +
+      (e.location ? ' · ' + e.location : '') + '</small></div>' +
+      '<button data-ev="' + e.id + '">' + T('ev.join') + '</button></div>';
+  }).join('') : '<div class="empty">' + T('ev.kosong') + '</div>';
+
+  $('#homeEvent').innerHTML = htmlEvent;
+  $('#acEvent').innerHTML   = htmlEvent;
+
+  $$('button[data-ev]').forEach(function(b){
+    b.addEventListener('click', async function(){
+      b.disabled = true;
+      if(demo){
+        if(D.data.eventDiikuti.indexOf(b.dataset.ev) < 0){ D.data.eventDiikuti.push(b.dataset.ev); D.simpan(); }
+        b.textContent = T('ev.terdaftar');
+      } else {
+        var r = await db.from('event_registrations').insert({ event_id: b.dataset.ev, user_id: user.id });
+        b.textContent = r.error ? (/duplicate/i.test(r.error.message) ? T('ev.terdaftar') : T('fi.gagal')) : T('ev.terdaftar');
+      }
+    });
+  });
+
+  /* ---------- kelas berjalan di Home ---------- */
+  function gambarKelasBerjalan(){
+  var berjalan = Object.keys(petaEnrol).map(function(k){ return petaEnrol[k]; })
+                   .filter(function(e){ return !e.completed_at; }).slice(0,3);
+  $('#homeKelas').innerHTML = berjalan.length ? berjalan.map(function(e){
+    var c = kursus.filter(function(k){ return k.id === e.course_id; })[0] || {};
+    return '<div style="padding:11px 0;border-bottom:1px solid var(--line)">' +
+      '<div style="display:flex;justify-content:space-between;gap:12px;font-size:12.5px">' +
+      '<b>' + X(c.title||'') + '</b><span style="color:var(--gray)">' + e.progress + '%</span></div>' +
+      '<div class="track" style="height:3px;background:var(--l-gray);border-radius:100px;margin-top:7px;overflow:hidden">' +
+      '<div style="height:100%;width:' + e.progress + '%;background:var(--black);border-radius:100px"></div></div></div>';
+  }).join('') : '<div class="empty">' + T('home.kelasKosong') + '</div>';
+  }
+  gambarKelasBerjalan();
+  perbaruiRingkasAcademy();
+
+  try {
+    var terakhir = sessionStorage.getItem('catalyst-halaman');
+    if(terakhir && document.getElementById('p-' + terakhir)) buka(terakhir);
+  } catch(e){}
+
+})();
+</script>
+</body>
+</html>
