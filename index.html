@@ -1106,8 +1106,8 @@
     transition:transform .34s var(--ease)}
   .lang.buka .lang-btn .panah{transform:rotate(180deg)}
   .lang-btn:hover{border-color:rgba(0,0,0,.3);color:var(--ink)}
-  .bendera{width:19px;height:19px;flex:none;border-radius:3px;overflow:hidden;
-    box-shadow:0 0 0 1px rgba(0,0,0,.12)}
+  .bendera{width:19px;height:19px;flex:none;border-radius:50%;overflow:hidden;
+    box-shadow:0 0 0 1px rgba(0,0,0,.14)}
   .lang-list .bendera{margin-right:10px}
   .lang-list button{display:flex;align-items:center}
   .menu-lang .bendera{margin-right:9px}
@@ -1124,7 +1124,7 @@
     opacity:0;visibility:hidden;transform:translateY(-6px) scale(.98);transform-origin:top right;
     transition:opacity .28s var(--ease),transform .34s var(--ease),visibility .28s;z-index:130}
   .lang.buka .lang-list{opacity:1;visibility:visible;transform:none}
-  .lang-list button{display:block;width:100%;text-align:left;padding:9px 13px;border-radius:10px;
+  .lang-list button{display:flex;align-items:center;width:100%;text-align:left;padding:9px 13px;border-radius:10px;
     font-size:12.5px;color:var(--d-gray);transition:.2s var(--ease)}
   .lang-list button:hover{background:rgba(0,0,0,.05);color:var(--ink)}
   .lang-list button.on{background:var(--black);color:#fff}
@@ -1359,20 +1359,20 @@
 
   <!-- Bendera digambar sebagai SVG. Emoji bendera tidak tersedia di Windows,
        di sana emoji hanya tampil sebagai dua huruf kode negara. -->
-  <g id="f-id"><rect width="24" height="8" y="4" fill="#ce1126"/><rect width="24" height="8" y="12" fill="#fff"/></g>
-  <g id="f-en">
+  <symbol id="f-id" viewBox="4 4 16 16"><rect width="24" height="8" y="4" fill="#ce1126"/><rect width="24" height="8" y="12" fill="#fff"/></symbol>
+  <symbol id="f-en" viewBox="4 4 16 16">
     <rect width="24" height="16" y="4" fill="#012169"/>
     <path d="M0 4l24 16M24 4L0 20" stroke="#fff" stroke-width="3.2"/>
     <path d="M0 4l24 16M24 4L0 20" stroke="#c8102e" stroke-width="1.9"/>
     <path d="M12 4v16M0 12h24" stroke="#fff" stroke-width="5.4"/>
     <path d="M12 4v16M0 12h24" stroke="#c8102e" stroke-width="3.2"/>
-  </g>
-  <g id="f-zh">
+  </symbol>
+  <symbol id="f-zh" viewBox="0 4 16 16">
     <rect width="24" height="16" y="4" fill="#ee1c25"/>
     <path fill="#ff0" d="M5 7.2l.7 2.1h2.2l-1.8 1.3.7 2.1L5 11.4l-1.8 1.3.7-2.1L2.1 9.3h2.2z"/>
     <circle fill="#ff0" cx="10.4" cy="7" r=".8"/><circle fill="#ff0" cx="12.2" cy="8.8" r=".8"/>
     <circle fill="#ff0" cx="12.2" cy="11.2" r=".8"/><circle fill="#ff0" cx="10.4" cy="12.9" r=".8"/>
-  </g>
+  </symbol>
   <g id="i-passport" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M9 16h6"/></g>
   <g id="i-search" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></g>
   <g id="i-cap" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2 9l10 5 10-5-10-5zM6 11.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5M22 9v5"/></g>
