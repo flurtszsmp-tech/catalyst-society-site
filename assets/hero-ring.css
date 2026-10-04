@@ -138,15 +138,29 @@ html.dark-theme .ri-no,html.dark-theme .ri-akses:not(.free){border-color:rgba(25
 html.dark-theme .ri-next{border-color:rgba(255,255,255,.35)}
 html.dark-theme .rc-no{color:rgba(255,255,255,.55)}
 
-/* ---------- dua tombol utama: satu pil hitam, dua aksi, pemisah miring ---------- */
-.hero-duo{display:inline-flex;align-items:stretch;border-radius:100px;background:var(--black);color:#fff;overflow:hidden;
-  border:1.5px solid var(--black);box-shadow:0 18px 40px -22px rgba(0,0,0,.6)}
-.hero-duo a{display:flex;align-items:center;padding:clamp(15px,1.6vw,19px) clamp(24px,3vw,38px);
+/* ---------- dua tombol utama: satu pil, dua aksi, pemisah miring ----------
+   Bidang hover tiap tombol dipotong miring (clip-path) dan garis pemisah
+   digambar di kotak yang sama, jadi warna mengikuti garis, bukan kotak tegak. */
+.hero-duo{--sl:13px;position:relative;display:inline-flex;align-items:stretch;border-radius:100px;background:var(--black);color:#fff;overflow:hidden;
+  border:1.5px solid var(--black);box-shadow:0 18px 40px -22px rgba(0,0,0,.6);isolation:isolate}
+.hero-duo a{position:relative;display:flex;align-items:center;padding:clamp(15px,1.6vw,19px) clamp(24px,3vw,38px);
   font-family:var(--body);font-weight:600;font-size:clamp(13.5px,1.25vw,15.5px);letter-spacing:-.01em;white-space:nowrap;color:inherit;
-  transition:background .4s cubic-bezier(.16,1,.3,1),color .4s cubic-bezier(.16,1,.3,1)}
-.hero-duo a:hover,.hero-duo a:focus-visible{background:#fff;color:#000}
-.hd-gr{flex:none;width:1.5px;margin:0 -1px;background:#fff;transform:skewX(-24deg) scaleY(1.4)}
+  transition:color .4s cubic-bezier(.16,1,.3,1)}
+.hero-duo a span{position:relative;z-index:1}
+.hero-duo a::before{content:"";position:absolute;top:0;bottom:0;z-index:0;background:#fff;opacity:0;
+  transition:opacity .4s cubic-bezier(.16,1,.3,1)}
+.hero-duo .hd-a::before{left:0;right:calc(var(--sl) * -1);
+  clip-path:polygon(0 0,100% 0,calc(100% - var(--sl) * 2) 100%,0 100%)}
+.hero-duo .hd-b::before{right:0;left:calc(var(--sl) * -1);
+  clip-path:polygon(calc(var(--sl) * 2) 0,100% 0,100% 100%,0 100%)}
+.hero-duo a:hover,.hero-duo a:focus-visible{color:#000;outline:0}
+.hero-duo a:hover::before,.hero-duo a:focus-visible::before{opacity:1}
+.hd-gr{position:relative;flex:none;width:0;z-index:2}
+.hd-gr::before{content:"";position:absolute;top:0;bottom:0;left:calc(var(--sl) * -1);width:calc(var(--sl) * 2);
+  background:linear-gradient(to top left,transparent calc(50% - .8px),#fff calc(50% - .8px),#fff calc(50% + .8px),transparent calc(50% + .8px))}
 html.dark-theme .hero-duo{background:#fff;color:#000;border-color:#fff;box-shadow:0 18px 40px -22px rgba(255,255,255,.25)}
-html.dark-theme .hero-duo a:hover,html.dark-theme .hero-duo a:focus-visible{background:#000;color:#fff}
-html.dark-theme .hd-gr{background:#000}
+html.dark-theme .hero-duo a::before{background:#000}
+html.dark-theme .hero-duo a:hover,html.dark-theme .hero-duo a:focus-visible{color:#fff}
+html.dark-theme .hd-gr::before{background:linear-gradient(to top left,transparent calc(50% - .8px),#000 calc(50% - .8px),#000 calc(50% + .8px),transparent calc(50% + .8px))}
 @media (max-width:420px){.hero-duo a{padding:15px 20px}}
+@media (prefers-reduced-motion:reduce){.hero-duo a,.hero-duo a::before{transition-duration:.01s}}
