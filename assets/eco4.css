@@ -1,0 +1,144 @@
+/* ===========================================================
+   Section Introducing: animasi gulir.
+   Panggung menempel di layar. Awalnya hanya "Anda" berdiri di taman kecil.
+   Digulir ke bawah, delapan bubble muncul satu per satu dan bertahan,
+   taman tumbuh dan berbunga. Semua bergantung pada variabel --p (0 sampai 1)
+   yang diisi eco4.js; tanpa JS atau dengan "kurangi gerak", keadaan akhir
+   langsung tampil.
+   =========================================================== */
+#ecosystem{overflow:clip;padding-bottom:clamp(40px,5vw,72px)}
+#ecosystem .shead--split{margin-bottom:clamp(6px,1.4vw,18px)}
+#ecosystem .shead--split h2{max-width:none;font-size:clamp(40px,5.6vw,88px);line-height:1.02;letter-spacing:-.035em}
+#ecosystem .shead--split h2 br{display:none}
+#ecosystem .eco-side{grid-column:2;align-self:end;max-width:44ch}
+#ecosystem .eco-sub{margin:0 0 12px;max-width:none}
+#ecosystem .eco-side .lead{margin:0}
+@media (max-width:900px){#ecosystem .eco-side{grid-column:1;max-width:none}}
+#ecosystem .eco-note{margin-top:clamp(20px,3vw,36px)}
+
+/* jalur gulir: tinggi menentukan seberapa lama panggung menempel */
+.eco4{position:relative;height:300vh;--p:1}
+.eco4-pin{position:sticky;top:0;height:100vh;min-height:560px;display:flex;align-items:center;justify-content:center;
+  padding-top:70px}
+.eco4-scene{--sh:min(calc(100vh - 150px),640px);--fh:min(calc(var(--sh) * .58),380px);position:relative;width:min(1000px,94vw);height:var(--sh);min-height:440px;
+  transition:transform .7s cubic-bezier(.16,1,.3,1)}
+.eco4.buka .eco4-scene{transform:translateX(-17%) scale(.84)}
+
+/* cahaya halus di belakang sosok, menguat saat ekosistem terbentuk */
+.e4-glow{position:absolute;left:50%;top:44%;width:92%;height:92%;transform:translate(-50%,-50%);pointer-events:none;
+  background:radial-gradient(ellipse 46% 44% at 50% 50%,rgba(10,10,14,.1),rgba(10,10,14,.035) 55%,transparent 72%);
+  opacity:calc(.25 + var(--p) * .75)}
+
+/* alas panggung: taman dan sosok berbagi satu kotak berskala sama */
+.e4-base{position:absolute;left:50%;bottom:0;width:min(92%,640px);aspect-ratio:640/200;transform:translateX(-50%)}
+.e4-taman{position:absolute;inset:0;width:100%;height:100%;overflow:visible;--gr:calc(.3 + min(var(--p) * 1.5,1) * .7)}
+.e4-taman .bl{transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(var(--gr))}
+.e4-taman .fl{transform-box:fill-box;transform-origin:50% 100%;transform:scale(var(--f,1));opacity:min(var(--f,1),1)}
+.e4-taman .tm{transform-box:fill-box;transform-origin:50% 100%;transform:scale(calc(.6 + var(--tm,1) * .4));opacity:var(--tm,1)}
+
+/* sosok Anda: siluet halus, bernapas pelan; kaki berdiri di tengah taman */
+.e4-figur{position:absolute;left:50%;bottom:44%;height:var(--fh);width:auto;transform:translateX(-50%);
+  color:#0a0a0e;overflow:visible;transform-origin:50% 100%;animation:e4Napas 5s ease-in-out infinite;
+  filter:drop-shadow(0 6px 5px rgba(0,0,0,.22))}
+@keyframes e4Napas{0%,100%{transform:translateX(-50%) scaleY(1)}50%{transform:translateX(-50%) scaleY(1.008)}}
+.e4-anda{position:absolute;left:50%;bottom:calc(44% + var(--fh) + 6px);transform:translateX(-50%);text-align:center;
+  font-family:var(--body);font-weight:700;font-size:clamp(14px,1.5vw,18px);letter-spacing:.02em;color:var(--ink);pointer-events:none;
+  animation:e4Anda 2.6s ease-in-out infinite}
+.e4-anda i{display:block;margin:5px auto 0;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:11px solid currentColor}
+@keyframes e4Anda{0%,100%{translate:0 0}50%{translate:0 5px}}
+
+/* bubble: pil hitam bertepi ekor menunjuk ke sosok */
+.e4-b{position:absolute;z-index:2;padding:clamp(8px,1vw,12px) clamp(14px,1.8vw,24px);border-radius:100px;background:#0a0a0e;color:#fff;
+  font-family:var(--body);font-weight:700;font-size:clamp(11.5px,1.25vw,16px);letter-spacing:.01em;white-space:nowrap;
+  opacity:var(--t,1);pointer-events:none;
+  transform:translate(calc((1 - var(--t,1)) * var(--dx,0px)),calc((1 - var(--t,1)) * 16px)) scale(calc(.5 + var(--e,1) * .5));
+  transition:background .3s cubic-bezier(.16,1,.3,1),color .3s,box-shadow .3s}
+.e4-b::after{content:"";position:absolute;top:58%;width:0;height:0;border-style:solid}
+.e4-b.l::after{right:-9px;border-width:7px 0 7px 12px;border-color:transparent transparent transparent #0a0a0e}
+.e4-b.r::after{left:-9px;border-width:7px 12px 7px 0;border-color:transparent #0a0a0e transparent transparent}
+.e4-b.on{pointer-events:auto;cursor:pointer}
+.e4-b.on:hover,.e4-b.on:focus-visible{background:#fff;color:#0a0a0e;box-shadow:0 0 0 1.5px #0a0a0e,0 14px 28px -14px rgba(0,0,0,.5);outline:0}
+.e4-b.l.on:hover::after,.e4-b.l.on:focus-visible::after{border-left-color:#fff;filter:drop-shadow(1.5px 0 0 #0a0a0e)}
+.e4-b.r.on:hover::after,.e4-b.r.on:focus-visible::after{border-right-color:#fff;filter:drop-shadow(-1.5px 0 0 #0a0a0e)}
+.e4-b.l{--dx:60px}.e4-b.r{--dx:-60px}
+.e4-b span{display:block}
+.e4-b.l{right:calc(50% + var(--o))}
+.e4-b.r{left:calc(50% + var(--o))}
+.e4-b.b1{top:12%;--o:13%}.e4-b.b2{top:25%;--o:15%}.e4-b.b3{top:38%;--o:13%}.e4-b.b4{top:51%;--o:15%}
+.e4-b.b5{top:12%;--o:13%}.e4-b.b6{top:25%;--o:15%}.e4-b.b7{top:38%;--o:13%}.e4-b.b8{top:51%;--o:15%}
+
+/* petunjuk gulir */
+.e4-hint{position:absolute;left:50%;bottom:calc(14px + 2vh);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;
+  font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);pointer-events:none;
+  opacity:calc(1 - var(--p) * 14)}
+.e4-hint svg{width:16px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;animation:e4Turun 1.8s ease-in-out infinite}
+@keyframes e4Turun{0%,100%{translate:0 0;opacity:.5}50%{translate:0 6px;opacity:1}}
+
+/* kartu detail: muncul saat bubble diklik */
+.eco4-detail{position:absolute;z-index:4;right:clamp(0px,2vw,32px);top:50%;width:min(400px,38%);max-height:calc(100% - 100px);overflow:auto;
+  padding:clamp(22px,2.4vw,32px);border-radius:26px;background:rgba(255,255,255,.95);border:1px solid var(--line);
+  box-shadow:0 40px 80px -40px rgba(0,0,0,.45);
+  opacity:0;transform:translate(28px,-50%);pointer-events:none;
+  transition:opacity .35s cubic-bezier(.16,1,.3,1),transform .5s cubic-bezier(.16,1,.3,1)}
+.eco4-detail[hidden]{display:none}
+.eco4-detail.on{opacity:1;transform:translate(0,-50%);pointer-events:auto}
+.ed-tutup{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;transition:background .25s,border-color .25s}
+.ed-tutup svg{width:14px;height:14px;fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round;transition:stroke .25s}
+.ed-tutup:hover{background:var(--black);border-color:var(--black)}
+.ed-tutup:hover svg{stroke:#fff}
+.ed-no{font-size:11px;letter-spacing:.24em;color:var(--muted);font-variant-numeric:tabular-nums;margin-bottom:10px}
+.ed-judul{font-family:var(--display);font-weight:400;font-size:clamp(24px,2.4vw,34px);letter-spacing:-.03em;line-height:1.08;margin-bottom:12px;color:var(--ink);padding-right:40px}
+.ed-lead{font-size:13.5px;line-height:1.7;color:var(--d-gray);margin-bottom:18px}
+.ed-sub{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:400;margin-bottom:10px}
+.ed-list{list-style:none;margin:0 0 22px;padding:0;display:grid;gap:9px}
+.ed-list li{position:relative;padding-left:20px;font-size:13px;line-height:1.55;color:var(--ink)}
+.ed-list li::before{content:"";position:absolute;left:0;top:.5em;width:8px;height:8px;border:1px solid var(--ink);transform:rotate(45deg)}
+.ed-cta{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:100px;background:var(--black);color:#fff;font-size:12.5px;
+  transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s cubic-bezier(.16,1,.3,1)}
+.ed-cta svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:1.6;transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.ed-cta:hover{transform:translateY(-2px);box-shadow:0 14px 26px -14px rgba(0,0,0,.55)}
+.ed-cta:hover svg{transform:translateX(3px)}
+.ed-tutup:focus-visible,.ed-cta:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+/* tema gelap */
+html.dark-theme .e4-glow{background:radial-gradient(ellipse 46% 44% at 50% 50%,rgba(255,255,255,.14),rgba(255,255,255,.04) 55%,transparent 72%)}
+html.dark-theme .e4-figur{color:#f2f2f2}
+html.dark-theme .e4-b{background:#fff;color:#0a0a0e}
+html.dark-theme .e4-b.l::after{border-left-color:#fff}
+html.dark-theme .e4-b.r::after{border-right-color:#fff}
+html.dark-theme .e4-b.on:hover,html.dark-theme .e4-b.on:focus-visible{background:#0a0a0e;color:#fff;box-shadow:0 0 0 1.5px #fff}
+html.dark-theme .e4-b.l.on:hover::after,html.dark-theme .e4-b.l.on:focus-visible::after{border-left-color:#0a0a0e;filter:drop-shadow(1.5px 0 0 #fff)}
+html.dark-theme .e4-b.r.on:hover::after,html.dark-theme .e4-b.r.on:focus-visible::after{border-right-color:#0a0a0e;filter:drop-shadow(-1.5px 0 0 #fff)}
+html.dark-theme .eco4-detail{background:rgba(16,16,20,.95);border-color:rgba(255,255,255,.14);box-shadow:0 40px 80px -40px rgba(0,0,0,.9)}
+html.dark-theme .ed-tutup{border-color:rgba(255,255,255,.24)}
+html.dark-theme .ed-tutup svg{stroke:#fff}
+html.dark-theme .ed-tutup:hover{background:#fff;border-color:#fff}
+html.dark-theme .ed-tutup:hover svg{stroke:#000}
+html.dark-theme .ed-list li::before{border-color:#fff}
+html.dark-theme .ed-cta{background:#fff;color:#000}
+html.dark-theme .ed-cta svg{stroke:#000}
+
+/* layar sempit: bubble lebih kecil, kartu jadi lembar dari bawah */
+@media (max-width:900px){
+  .eco4.buka .eco4-scene{transform:none}
+  .eco4-detail{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;max-height:80vh;border-radius:26px 26px 0 0;transform:translateY(100%)}
+  .eco4-detail.on{transform:none}
+}
+@media (max-width:640px){
+  .eco4{height:260vh}
+  .eco4-scene{--sh:min(calc(100vh - 130px),560px);min-height:400px}
+  .e4-b{padding:7px 12px;font-size:11px}
+  .eco4-scene{--fh:calc(var(--sh) * .42)}
+  .e4-b.b1,.e4-b.b5{top:38%;--o:13%}.e4-b.b2,.e4-b.b6{top:49%;--o:15%}.e4-b.b3,.e4-b.b7{top:60%;--o:13%}.e4-b.b4,.e4-b.b8{top:71%;--o:15%}
+  .e4-b.l{--dx:30px}.e4-b.r{--dx:-30px}
+}
+
+/* tanpa gerak atau tanpa JS: tidak menempel, keadaan akhir langsung tampil */
+.eco4.diam{height:auto}
+.eco4.diam .eco4-pin{position:relative;height:auto;min-height:0;padding:20px 0}
+.eco4.diam .e4-hint{display:none}
+@media (prefers-reduced-motion:reduce){
+  .e4-figur,.e4-anda,.e4-hint svg{animation:none}
+  .eco4-scene,.eco4-detail{transition-duration:.01s}
+}
