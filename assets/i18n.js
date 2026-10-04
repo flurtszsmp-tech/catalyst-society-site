@@ -60,6 +60,14 @@ window.CATALYST_I18N = {
     'hero.jelajahi':'Jelajahi Ekosistem',
     'hero.gabung':'Gabung Ekosistem',
     'hero.akses':'Dapatkan Akses', 'hero.komunitas':'Jelajahi Komunitas',
+    /* blok sesudah About Us: kalimat pembuka dan angka. Draf teks, perlu dicek Bagas */
+    'rd.teks':'Di Catalyst Society, kami mendefinisikan ulang cara generasi muda Indonesia bertumbuh. Kami menghubungkan komunitas, mentor, perusahaan, dan investor dalam satu ekosistem, supaya akses ke peluang ditentukan oleh kemampuan, bukan koneksi.',
+    'rd.akses':'Orang Terjangkau',
+    'rd.komunitas':'Komunitas Mitra',
+    'rd.ekosistem':'Mitra Ekosistem &amp; Industri',
+    'rd.brands':'Merek Mitra',
+    'rd.proyek':'Proyek / Startup Terjangkau',
+    'vid.kicker':'Video', 'vid.soon':'Video segera hadir',
     'hero.desc':'Catalyst Society adalah ekosistem generasi muda yang menghubungkan builders, innovators, investors, dan changemakers menjadi dampak nyata.',
 
     /* statistik */
@@ -234,6 +242,14 @@ window.CATALYST_I18N = {
     'hero.jelajahi':'Explore the Ecosystem',
     'hero.gabung':'Join the Ecosystem',
     'hero.akses':'Get Access', 'hero.komunitas':'Explore Community',
+    /* blok sesudah About Us: kalimat pembuka dan angka. Draf teks, perlu dicek Bagas */
+    'rd.teks':'At Catalyst Society, we redefine how young builders in Indonesia grow. We connect communities, mentors, companies, and investors into one ecosystem, so access to opportunity depends on what you can do, not who you know.',
+    'rd.akses':'Access People',
+    'rd.komunitas':'Community Partners',
+    'rd.ekosistem':'Ecosystem &amp; Industry Partners',
+    'rd.brands':'Partnership Brands',
+    'rd.proyek':'Projects / Startup Reached',
+    'vid.kicker':'Video', 'vid.soon':'Video coming soon',
     'hero.desc':'Catalyst Society is an ecosystem for the young generation, connecting builders, innovators, investors, and changemakers into real impact.',
 
     'stat.members':'Active Members', 'stat.projects':'Active Projects',
@@ -397,6 +413,14 @@ window.CATALYST_I18N = {
     'hero.jelajahi':'探索生态',
     'hero.gabung':'加入生态',
     'hero.akses':'立即加入', 'hero.komunitas':'探索社群',
+    /* blok sesudah About Us: kalimat pembuka dan angka. Draf teks, perlu dicek Bagas */
+    'rd.teks':'在 Catalyst Society，我们重新定义印尼年轻创造者的成长方式。我们把社群、导师、企业和投资人连接成一个生态系统，让机会取决于能力，而不是人脉。',
+    'rd.akses':'触达人群',
+    'rd.komunitas':'合作社群',
+    'rd.ekosistem':'生态与行业合作伙伴',
+    'rd.brands':'合作品牌',
+    'rd.proyek':'触达项目 / 初创企业',
+    'vid.kicker':'视频', 'vid.soon':'视频即将上线',
     'hero.desc':'Catalyst Society 是面向年轻一代的生态系统，连接创造者、创新者、投资人与变革者，把想法变成真实的影响力。',
 
     'stat.members':'活跃成员', 'stat.projects':'活跃项目',

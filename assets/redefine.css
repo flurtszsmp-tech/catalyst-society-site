@@ -1,0 +1,20 @@
+/* Blok sesudah About Us: kalimat pembuka besar dan empat angka berpemisah garis. */
+.redef{padding-block:clamp(40px,6vw,88px)}
+.rd-teks{font-family:var(--display);font-weight:300;font-size:clamp(26px,3.6vw,54px);line-height:1.14;letter-spacing:-.03em;
+  max-width:26em;color:var(--ink);margin:0 0 clamp(36px,5vw,72px)}
+.rd-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.rd-st{display:flex;flex-direction:column;justify-content:flex-start;gap:12px;padding:clamp(22px,2.6vw,36px) clamp(16px,2vw,32px);
+  border-left:1px solid var(--line);min-width:0}
+.rd-st:first-child{border-left:0;padding-left:0}
+.rd-l{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);line-height:1.5;min-height:3em}
+.rd-st b{font-family:var(--display);font-weight:300;font-size:clamp(38px,5vw,76px);line-height:1;letter-spacing:-.04em;color:var(--ink);font-variant-numeric:tabular-nums}
+.rd-c{font-size:12.5px;letter-spacing:.02em;color:var(--d-gray);margin-top:-2px}
+html.dark-theme .rd-stats,html.dark-theme .rd-st{border-color:rgba(255,255,255,.16)}
+html.dark-theme .rd-teks,html.dark-theme .rd-st b{color:#fff}
+html.dark-theme .rd-c{color:#b5b5b5}
+@media (max-width:760px){
+  .rd-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rd-st:nth-child(3){border-left:0;padding-left:0}
+  .rd-st:nth-child(n+3){border-top:1px solid var(--line)}
+  html.dark-theme .rd-st:nth-child(n+3){border-top-color:rgba(255,255,255,.16)}
+}
