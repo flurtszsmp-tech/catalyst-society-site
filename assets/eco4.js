@@ -1,135 +1,162 @@
 /* ===========================================================
-   Section Introducing: animasi gulir.
-   - panggung menempel; kemajuan gulir (0 sampai 1) memuncul bubble satu per satu,
-     menumbuhkan rumput, dan mengembangkan bunga di taman
-   - kemajuan dihaluskan (mengejar target dengan peredaman), jadi gulir kasar
-     tetap terasa mulus
-   - klik bubble: kartu penjelasan lengkap, panggung bergeser ke kiri
-   - tanpa gerak: keadaan akhir langsung tampil, tanpa menempel
-   Tidak memakai WebGL; hanya SVG dan variabel CSS.
+   Section Introducing: peta ekosistem bergulir.
+   - kemajuan gulir 0 sampai 1 (dihaluskan) menyambungkan simpul satu per satu:
+     garis tergambar dari kartu Anda, lalu simpulnya muncul
+   - tiap koneksi mengisi meteran dan menaikkan tahap: Idea, Learn, Connect,
+     Build, Fund (jalur dari Pitch Deck)
+   - garis yang sudah tersambung dialiri titik cahaya menuju kartu Anda
+   - klik simpul: kartu penjelasan lengkap
+   Tidak memakai WebGL; hanya SVG, CSS, dan sedikit JS.
    =========================================================== */
 (function () {
   var root = document.getElementById('eco4');
   if (!root) return;
-  var taman = document.getElementById('e4Taman');
+  var scene = root.querySelector('.eco4-scene');
+  var you = document.getElementById('e5You');
+  var svg = document.getElementById('e5Beams');
   var det = document.getElementById('ecoDetail');
-  var bubbles = Array.prototype.slice.call(root.querySelectorAll('.e4-b'));
+  var nodes = Array.prototype.slice.call(root.querySelectorAll('.e5-n'));
+  var meter = Array.prototype.slice.call(root.querySelectorAll('.e5-meter i'));
+  var pathSpans = Array.prototype.slice.call(root.querySelectorAll('.e5-path span'));
+  var elStage = document.getElementById('e5Stage');
+  var elCount = document.getElementById('e5Count');
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
   var NS = 'http://www.w3.org/2000/svg';
+  var N = nodes.length;
 
-  /* ---------- taman kecil berwarna ---------- */
-  function rng(seed) {
-    return function () {
-      seed = (seed + 0x6D2B79F5) | 0;
-      var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
+  /* sudut tiap simpul (derajat, 0 = kanan, positif ke bawah), urutan muncul selang-seling */
+  var SUDUT = [-58, -122, -19, -161, 19, 161, 58, 122];
+
+  function bahasa() { var l = (document.documentElement.lang || 'id').slice(0, 2); return l === 'zh' ? 'zh' : l === 'en' ? 'en' : 'id'; }
+  function t(k) {
+    var K = window.CATALYST_I18N; if (!K) return '';
+    var v = K[bahasa()] && K[bahasa()][k];
+    return v != null ? v : (K.id && K.id[k]) || '';
   }
-  function el(tag, attrs, parent) {
-    var e = document.createElementNS(NS, tag);
-    for (var k in attrs) e.setAttribute(k, attrs[k]);
-    if (parent) parent.appendChild(e);
-    return e;
-  }
-  var flowers = [], trees = [];
-  (function bangunTaman() {
-    if (!taman) return;
-    var R = rng(7);
-    var defs = el('defs', {}, taman);
-    var g1 = el('radialGradient', { id: 'e4g', cx: '.5', cy: '.42', r: '.65' }, defs);
-    [['0', '#b4e692'], ['.55', '#6cc067'], ['1', '#3f9b45']].forEach(function (s) { el('stop', { offset: s[0], 'stop-color': s[1] }, g1); });
-    var g2 = el('linearGradient', { id: 'e4t', x1: '0', y1: '0', x2: '0', y2: '1' }, defs);
-    [['0', '#8a6644'], ['1', '#5f4228']].forEach(function (s) { el('stop', { offset: s[0], 'stop-color': s[1] }, g2); });
 
-    /* bayangan tanah, tepi tanah, permukaan rumput */
-    el('ellipse', { cx: 320, cy: 150, rx: 300, ry: 38, fill: 'rgba(0,0,0,.14)' }, taman);
-    el('path', { d: 'M20 118 L20 136 A300 62 0 0 0 620 136 L620 118 Z', fill: 'url(#e4t)' }, taman);
-    el('ellipse', { cx: 320, cy: 118, rx: 300, ry: 62, fill: 'url(#e4g)' }, taman);
-    [[250, 51], [175, 36]].forEach(function (c) {
-      el('ellipse', { cx: 320, cy: 118, rx: c[0], ry: c[1], fill: 'none', stroke: 'rgba(255,255,255,.14)', 'stroke-width': 1.2 }, taman);
-    });
+  /* ---------- garis ---------- */
+  var beams = [], pulses = [];
+  nodes.forEach(function (n, i) {
+    var p = document.createElementNS(NS, 'path');
+    p.setAttribute('class', 'e5-beam');
+    p.setAttribute('id', 'e5p' + i);
+    svg.appendChild(p);
+    beams.push(p);
+    var c = document.createElementNS(NS, 'circle');
+    c.setAttribute('class', 'e5-pulse');
+    c.setAttribute('r', '2.6');
+    var am = document.createElementNS(NS, 'animateMotion');
+    am.setAttribute('dur', (2.4 + (i % 3) * 0.35) + 's');
+    am.setAttribute('repeatCount', 'indefinite');
+    am.setAttribute('begin', (-i * 0.37) + 's');
+    am.setAttribute('keyPoints', '1;0');
+    am.setAttribute('keyTimes', '0;1');
+    am.setAttribute('calcMode', 'linear');
+    var mp = document.createElementNS(NS, 'mpath');
+    mp.setAttribute('href', '#e5p' + i);
+    am.appendChild(mp); c.appendChild(am);
+    if (!reduce) svg.appendChild(c);
+    pulses.push(c);
+  });
 
-    /* pohon kecil dan semak di belakang */
-    function pohon(x, y, s) {
-      var g = el('g', { class: 'tm' }, taman);
-      el('rect', { x: x - 4 * s, y: y - 30 * s, width: 8 * s, height: 30 * s, rx: 3 * s, fill: '#7a5636' }, g);
-      el('circle', { cx: x, cy: y - 46 * s, r: 24 * s, fill: '#3f9b45' }, g);
-      el('circle', { cx: x - 16 * s, cy: y - 36 * s, r: 16 * s, fill: '#4fb056' }, g);
-      el('circle', { cx: x + 17 * s, cy: y - 38 * s, r: 15 * s, fill: '#34873b' }, g);
-      el('circle', { cx: x - 5 * s, cy: y - 55 * s, r: 9 * s, fill: '#6bc468', opacity: .75 }, g);
-      trees.push(g);
+  var panjang = [];
+  function tataLetak() {
+    var W = scene.clientWidth, H = scene.clientHeight;
+    var cx = W / 2, cy = H / 2;
+    var cw = you.offsetWidth, ch = you.offsetHeight;
+    var sempit = W < 700;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    var rx = sempit ? 0 : Math.min(W * 0.36, cw / 2 + 300);
+    var ry = sempit ? 0 : Math.min(H * 0.4, 280);
+    scene.style.setProperty('--r1w', (rx * 2 * 0.86) + 'px');
+    scene.style.setProperty('--r1h', (ry * 2 * 0.9) + 'px');
+    scene.style.setProperty('--r2w', (rx * 2 * 1.16) + 'px');
+    scene.style.setProperty('--r2h', (ry * 2 * 1.22) + 'px');
+    if (sempit) {
+      scene.style.setProperty('--r1w', (W * 0.8) + 'px'); scene.style.setProperty('--r1h', (H * 0.62) + 'px');
+      scene.style.setProperty('--r2w', (W * 1.05) + 'px'); scene.style.setProperty('--r2h', (H * 0.86) + 'px');
     }
-    function semak(x, y, s) {
-      var g = el('g', { class: 'tm' }, taman);
-      el('circle', { cx: x, cy: y - 8 * s, r: 12 * s, fill: '#3f9b45' }, g);
-      el('circle', { cx: x + 12 * s, cy: y - 5 * s, r: 9 * s, fill: '#4fb056' }, g);
-      el('circle', { cx: x - 12 * s, cy: y - 4 * s, r: 9 * s, fill: '#34873b' }, g);
-      trees.push(g);
-    }
-    pohon(118, 108, 1); semak(520, 104, 1); semak(165, 96, .8); pohon(498, 96, .7);
 
-    /* batu */
-    [[212, 142, 11, 5], [440, 146, 9, 4], [88, 128, 8, 3.5]].forEach(function (b) {
-      el('ellipse', { cx: b[0], cy: b[1], rx: b[2], ry: b[3], fill: '#c4c7cf' }, taman);
-      el('ellipse', { cx: b[0] - b[2] * .25, cy: b[1] - b[3] * .3, rx: b[2] * .5, ry: b[3] * .4, fill: 'rgba(255,255,255,.5)' }, taman);
-    });
-
-    /* rumput: ratusan helai, tumbuh dari bawah */
-    var tinggal = [], i, a, r, x, y;
-    for (i = 0; i < 260; i++) {
-      a = R() * 6.2832; r = Math.sqrt(R());
-      x = 320 + Math.cos(a) * 285 * r; y = 118 + Math.sin(a) * 56 * r;
-      tinggal.push({ t: 'g', x: x, y: y });
-    }
-    var COLORS = ['#ff6b9a', '#ffd23f', '#ffffff', '#ff8a3d', '#b57bff', '#ff5a5a', '#7cc7ff'];
-    for (i = 0; i < 20; i++) {
-      do { a = R() * 6.2832; r = Math.sqrt(R()); x = 320 + Math.cos(a) * 270 * r; y = 118 + Math.sin(a) * 50 * r; }
-      while (Math.abs(x - 320) < 52 && y < 134);
-      tinggal.push({ t: 'f', x: x, y: y, c: COLORS[i % COLORS.length] });
-    }
-    tinggal.sort(function (p, q) { return p.y - q.y; });
-    tinggal.forEach(function (o) {
-      if (o.t === 'g') {
-        var h = 9 + R() * 12, dx = (R() - .5) * 9;
-        el('path', { class: 'bl', d: 'M' + o.x + ' ' + o.y + ' Q' + (o.x + dx * .4) + ' ' + (o.y - h * .6) + ' ' + (o.x + dx) + ' ' + (o.y - h),
-          fill: 'none', stroke: ['#3d8f44', '#58b85d', '#2f7a3a', '#6cc96a'][(R() * 4) | 0], 'stroke-width': 1.7, 'stroke-linecap': 'round' }, taman);
+    nodes.forEach(function (n, i) {
+      var x, y, ax, ex, ey;
+      if (!sempit) {
+        var a = SUDUT[i] * Math.PI / 180, kanan = Math.cos(a) > 0;
+        x = cx + rx * Math.cos(a); y = cy + ry * Math.sin(a);
+        ax = kanan ? '0px' : '-100%';
+        ex = x; ey = y;
+        n.style.setProperty('--dx', (kanan ? -24 : 24) + 'px');
       } else {
-        var s = .85 + R() * .5, sh = 22 + R() * 14, sw = (R() - .5) * 6;
-        var g = el('g', { class: 'fl' }, taman);
-        el('path', { d: 'M' + o.x + ' ' + o.y + ' Q' + (o.x + sw * .3) + ' ' + (o.y - sh * .5) + ' ' + (o.x + sw) + ' ' + (o.y - sh), fill: 'none', stroke: '#3d8f44', 'stroke-width': 1.7, 'stroke-linecap': 'round' }, g);
-        el('ellipse', { cx: o.x + sw * .5 - 4, cy: o.y - sh * .45, rx: 4.5, ry: 2, fill: '#4fb056', transform: 'rotate(-30 ' + (o.x + sw * .5 - 4) + ' ' + (o.y - sh * .45) + ')' }, g);
-        var hx = o.x + sw, hy = o.y - sh;
-        for (var p = 0; p < 5; p++) {
-          var pa = p / 5 * 6.2832 - 1.57;
-          el('circle', { cx: hx + Math.cos(pa) * 5.4 * s, cy: hy + Math.sin(pa) * 5.4 * s, r: 4.6 * s, fill: o.c, stroke: 'rgba(0,0,0,.08)', 'stroke-width': .6 }, g);
-        }
-        el('circle', { cx: hx, cy: hy, r: 3.3 * s, fill: o.c === '#ffd23f' ? '#f08c1d' : '#ffd23f' }, g);
-        flowers.push(g);
+        /* layar sempit: dua baris di atas kartu, dua di bawah, kiri dan kanan */
+        var kiri = Math.cos(SUDUT[i] * Math.PI / 180) < 0;
+        var atas = SUDUT[i] < 0;
+        var baris = Math.abs(SUDUT[i]) > 90 ? (Math.abs(SUDUT[i]) > 140 ? 0 : 1) : (Math.abs(SUDUT[i]) < 40 ? 0 : 1);
+        var jarak = ch / 2 + 46 + baris * 50;
+        x = cx + (kiri ? -1 : 1) * W * 0.235;
+        y = cy + (atas ? -1 : 1) * jarak;
+        ax = '-50%';
+        ex = x; ey = y + (atas ? 14 : -14);
+        n.style.setProperty('--dx', '0px');
       }
-    });
-  })();
+      n.style.setProperty('--x', x + 'px');
+      n.style.setProperty('--y', y + 'px');
+      n.style.setProperty('--ax', ax);
 
-  /* ---------- kemajuan gulir ---------- */
-  var BUBBLE_AWAL = .12, BUBBLE_JEDA = .085, BUBBLE_DURASI = .09;
+      /* titik awal: tepi kartu ke arah simpul */
+      var dx = ex - cx, dy = ey - cy;
+      var k = Math.min((cw / 2 + 4) / Math.max(Math.abs(dx), 1e-3), (ch / 2 + 4) / Math.max(Math.abs(dy), 1e-3));
+      var sx = cx + dx * k, sy = cy + dy * k;
+      var d;
+      if (!sempit) {
+        var mx = sx + (ex - sx) * 0.55;
+        d = 'M' + sx.toFixed(1) + ' ' + sy.toFixed(1) + ' C' + mx.toFixed(1) + ' ' + sy.toFixed(1) + ' ' + mx.toFixed(1) + ' ' + ey.toFixed(1) + ' ' + ex.toFixed(1) + ' ' + ey.toFixed(1);
+      } else {
+        var my = sy + (ey - sy) * 0.5;
+        d = 'M' + sx.toFixed(1) + ' ' + sy.toFixed(1) + ' C' + sx.toFixed(1) + ' ' + my.toFixed(1) + ' ' + ex.toFixed(1) + ' ' + my.toFixed(1) + ' ' + ex.toFixed(1) + ' ' + ey.toFixed(1);
+      }
+      beams[i].setAttribute('d', d);
+      panjang[i] = beams[i].getTotalLength();
+      beams[i].style.strokeDasharray = panjang[i] + ' ' + panjang[i];
+    });
+    terapkan(kini);
+  }
+
+  /* ---------- kemajuan ---------- */
+  var AWAL = 0.08, JEDA = 0.098, DURASI = 0.1;
+  var TAHAP = ['e5.s0', 'e5.s1', 'e5.s2', 'e5.s3', 'e5.s4'];
+  var tahapLalu = -1;
   function jepit(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
-  function melambung(t) { var c = 1.4; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); }
+  function halus(x) { return x * x * (3 - 2 * x); }
 
   function terapkan(p) {
     root.style.setProperty('--p', p.toFixed(4));
-    bubbles.forEach(function (b, i) {
-      var t = jepit((p - (BUBBLE_AWAL + i * BUBBLE_JEDA)) / BUBBLE_DURASI);
-      var e = t < 1 ? melambung(t) : 1;
-      b.style.setProperty('--t', Math.max(0, Math.min(1, t)).toFixed(3));
-      b.style.setProperty('--e', e.toFixed(3));
-      b.classList.toggle('on', t > .85);
+    var tersambung = 0;
+    nodes.forEach(function (n, i) {
+      var u = jepit((p - (AWAL + i * JEDA)) / DURASI);
+      var gambar = halus(jepit(u / 0.6));
+      var muncul = halus(jepit((u - 0.45) / 0.55));
+      var L = panjang[i] || 0;
+      beams[i].style.strokeDashoffset = (L * (1 - gambar)).toFixed(1);
+      n.style.setProperty('--t', muncul.toFixed(3));
+      var on = u >= 1;
+      n.classList.toggle('on', muncul > 0.9);
+      beams[i].classList.toggle('on', on);
+      pulses[i].classList.toggle('on', on);
+      if (on) tersambung++;
     });
-    flowers.forEach(function (f, i) {
-      var a = .06 + i * (.78 / flowers.length);
-      f.style.setProperty('--f', (function (t) { return t < 1 ? melambung(t) : 1; })(jepit((p - a) / .12)).toFixed(3));
-    });
-    var tm = jepit(p / .3);
-    trees.forEach(function (g) { g.style.setProperty('--tm', tm.toFixed(3)); });
+    meter.forEach(function (m, i) { m.classList.toggle('on', i < tersambung); });
+    var tahap = tersambung === 0 ? 0 : Math.min(4, Math.ceil(tersambung / 2));
+    pathSpans.forEach(function (s, i) { s.classList.toggle('on', i < tahap); });
+    if (elCount) elCount.textContent = tersambung + ' / ' + N;
+    if (tahap !== tahapLalu && elStage) {
+      var pertama = tahapLalu < 0;
+      tahapLalu = tahap;
+      if (pertama || reduce) { elStage.innerHTML = t(TAHAP[tahap]); }
+      else {
+        elStage.classList.add('ganti');
+        clearTimeout(terapkan.tm);
+        terapkan.tm = setTimeout(function () { elStage.innerHTML = t(TAHAP[tahapLalu]); elStage.classList.remove('ganti'); }, 180);
+      }
+    }
   }
 
   var tujuan = 0, kini = 0, jalan = false;
@@ -139,46 +166,36 @@
     tujuan = total > 0 ? jepit(-r.top / total) : 1;
   }
   function putar() {
-    kini += (tujuan - kini) * 0.14;
+    kini += (tujuan - kini) * 0.13;
     if (Math.abs(tujuan - kini) < 0.0004) kini = tujuan;
     terapkan(kini);
     if (kini !== tujuan) requestAnimationFrame(putar); else jalan = false;
   }
-  function picu() {
-    hitungTujuan();
-    if (!jalan) { jalan = true; requestAnimationFrame(putar); }
-  }
+  function picu() { hitungTujuan(); if (!jalan) { jalan = true; requestAnimationFrame(putar); } }
 
-  if (reduce) {
-    root.classList.add('diam');
-    terapkan(1);
-  } else {
+  if (reduce) { root.classList.add('diam'); kini = 1; }
+  else {
     var dekat = true;
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (e) { dekat = e[0].isIntersecting; if (dekat) picu(); }, { rootMargin: '200px 0px' }).observe(root);
     }
     window.addEventListener('scroll', function () { if (dekat) picu(); }, { passive: true });
-    window.addEventListener('resize', picu);
-    hitungTujuan(); kini = tujuan; terapkan(kini);
+    hitungTujuan(); kini = tujuan;
   }
+  tataLetak();
+  if ('ResizeObserver' in window) new ResizeObserver(tataLetak).observe(scene);
+  else window.addEventListener('resize', tataLetak);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(tataLetak);
+  document.addEventListener('bahasa-berubah', function () { tahapLalu = -1; terapkan(kini); tataLetak(); if (buka) isi(buka); });
 
   /* ---------- kartu detail ---------- */
-  var ITEM = {
-    mentors: 'eco.mentor', career: 'eco.career', community: 'eco.comm', business: 'eco.biz',
-    capital: 'eco.cap', networks: 'eco.net', partners: 'eco.par', opportunity: 'eco.opp'
-  };
-  var JUDUL = { mentors: 'Mentors', career: 'Career', community: 'Community', business: 'Business', capital: 'Capital', networks: 'Networks', partners: 'Partners', opportunity: 'Opportunity' };
-  function bahasa() { var l = (document.documentElement.lang || 'id').slice(0, 2); return l === 'zh' ? 'zh' : l === 'en' ? 'en' : 'id'; }
-  function t(k) {
-    var K = window.CATALYST_I18N; if (!K) return '';
-    var v = K[bahasa()] && K[bahasa()][k];
-    return v != null ? v : (K.id && K.id[k]) || '';
-  }
+  var ITEM = { mentors: 'eco.mentor', career: 'eco.career', community: 'eco.comm', business: 'eco.biz',
+    capital: 'eco.cap', networks: 'eco.net', partners: 'eco.par', opportunity: 'eco.opp' };
   var buka = null, pemicu = null;
   function isi(nama) {
-    var u = ITEM[nama], i = bubbles.findIndex(function (b) { return b.dataset.n === nama; });
-    det.querySelector('.ed-no').textContent = '0' + (i + 1) + ' / 0' + bubbles.length;
-    det.querySelector('.ed-judul').textContent = JUDUL[nama];
+    var u = ITEM[nama], i = nodes.findIndex(function (b) { return b.dataset.n === nama; });
+    det.querySelector('.ed-no').textContent = '0' + (i + 1) + ' / 0' + N;
+    det.querySelector('.ed-judul').textContent = nodes[i].querySelector('.e5-l').textContent;
     det.querySelector('.ed-lead').innerHTML = t(u + '.p');
     det.querySelector('.ed-list').innerHTML = [1, 2, 3].map(function (n) { return '<li>' + t(u + '.' + n) + '</li>'; }).join('');
   }
@@ -201,10 +218,9 @@
     setTimeout(function () { if (!buka) det.hidden = true; }, 450);
     if (pemicu && pemicu.focus) { try { pemicu.focus({ preventScroll: true }); } catch (e) {} }
   }
-  bubbles.forEach(function (b) {
+  nodes.forEach(function (b) {
     b.addEventListener('click', function () { if (b.classList.contains('on')) bukaDetail(b.dataset.n, b); });
   });
   if (det) det.querySelector('.ed-tutup').addEventListener('click', tutupDetail);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') tutupDetail(); });
-  document.addEventListener('bahasa-berubah', function () { if (buka) isi(buka); });
 })();

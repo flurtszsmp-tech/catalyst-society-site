@@ -1,0 +1,22 @@
+/* Penyempurnaan menyeluruh: tipografi, teks yang hilang, dan kartu About Us. */
+
+/* Judul memakai Geist; label kecil memakai Geist Mono supaya terasa produk teknologi */
+h1,h2,h3,.h-xl,.h-lg{font-family:var(--display)}
+.h-lg{letter-spacing:-.035em}
+.kicker,.rd-l,.ed-no,.dd-no,.chip-no,.vid-k,.e5-mono{font-family:var(--mono)!important;letter-spacing:.12em}
+
+/* Section yang dulu berlatar gelap kini putih: teks tebal di dalamnya
+   masih berwarna putih sehingga hilang. Ikuti warna teks sekitarnya. */
+.on-dark strong,.dark strong,.on-dark .lead strong,.dark .lead strong{color:var(--ink)!important;font-weight:500}
+
+/* About Us: tiga pilar singkat */
+.about-grid{gap:18px}
+.about-cell{display:flex;flex-direction:column;gap:14px;padding:clamp(24px,2.4vw,34px);min-height:220px}
+.ab-top{display:flex;align-items:center;justify-content:space-between}
+.ab-ic{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:var(--ink);transition:transform .45s cubic-bezier(.16,1,.3,1)}
+html .about-cell .ab-ic svg{width:20px;height:20px;fill:none;color:var(--bg)!important;stroke:var(--bg)!important;stroke-width:1.5}
+.about-cell .n{margin:0;font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--muted)}
+.about-cell b{margin-top:auto;font-family:var(--display);font-weight:500;font-size:clamp(20px,1.8vw,26px);letter-spacing:-.025em;margin-bottom:0}
+.about-cell p{font-size:14px;line-height:1.6;max-width:32ch}
+.about-cell:hover .ab-ic{transform:rotate(-8deg) scale(1.06)}
