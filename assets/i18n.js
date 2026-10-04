@@ -59,6 +59,7 @@ window.CATALYST_I18N = {
     /* hero */
     'hero.jelajahi':'Jelajahi Ekosistem',
     'hero.gabung':'Gabung Ekosistem',
+    'hero.akses':'Dapatkan Akses', 'hero.komunitas':'Jelajahi Komunitas',
     'hero.desc':'Catalyst Society adalah ekosistem generasi muda yang menghubungkan builders, innovators, investors, dan changemakers menjadi dampak nyata.',
 
     /* statistik */
@@ -232,6 +233,7 @@ window.CATALYST_I18N = {
 
     'hero.jelajahi':'Explore the Ecosystem',
     'hero.gabung':'Join the Ecosystem',
+    'hero.akses':'Get Access', 'hero.komunitas':'Explore Community',
     'hero.desc':'Catalyst Society is an ecosystem for the young generation, connecting builders, innovators, investors, and changemakers into real impact.',
 
     'stat.members':'Active Members', 'stat.projects':'Active Projects',
@@ -394,6 +396,7 @@ window.CATALYST_I18N = {
 
     'hero.jelajahi':'探索生态',
     'hero.gabung':'加入生态',
+    'hero.akses':'立即加入', 'hero.komunitas':'探索社群',
     'hero.desc':'Catalyst Society 是面向年轻一代的生态系统，连接创造者、创新者、投资人与变革者，把想法变成真实的影响力。',
 
     'stat.members':'活跃成员', 'stat.projects':'活跃项目',
