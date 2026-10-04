@@ -1330,6 +1330,7 @@
 <link rel="stylesheet" href="assets/community.css">
 <link rel="stylesheet" href="assets/problem.css">
 <link rel="stylesheet" href="assets/cursor.css">
+<link rel="stylesheet" href="assets/nav-dd.css">
 <link rel="stylesheet" href="assets/hero-ring.css">
 <link rel="stylesheet" href="assets/eco-ring.css">
 </head>
@@ -1406,7 +1407,17 @@
     <a href="#top" data-i18n="nav.home">Home</a>
     <a href="#about" data-i18n="nav.tentang">About Us</a>
     <a href="#community" data-i18n="nav.komunitas">Community</a>
-    <a href="#programs" data-i18n="nav.program">Program</a>
+    <div class="nav-dd">
+      <a href="#programs" class="nav-dd-t" aria-haspopup="true" aria-expanded="false"><span data-i18n="nav.program">Program</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
+      <div class="dd-panel" role="menu">
+        <a href="#prog-1" role="menuitem"><span class="dd-ic"><svg viewBox="0 0 24 24"><use href="#i-passport"/></svg></span><span class="dd-tx"><b translate="no">Catalyst Passport</b><span data-i18n="p1.d"></span></span><span class="dd-no">01</span></a>
+        <a href="#prog-2" role="menuitem"><span class="dd-ic"><svg viewBox="0 0 24 24"><use href="#i-search"/></svg></span><span class="dd-tx"><b translate="no">Catalyst Finder</b><span data-i18n="p2.d"></span></span><span class="dd-no">02</span></a>
+        <a href="#prog-3" role="menuitem"><span class="dd-ic"><svg viewBox="0 0 24 24"><use href="#i-cap"/></svg></span><span class="dd-tx"><b translate="no">Catalyst Academy</b><span data-i18n="p3.d"></span></span><span class="dd-no">03</span></a>
+        <a href="#prog-4" role="menuitem"><span class="dd-ic"><svg viewBox="0 0 24 24"><use href="#i-flask"/></svg></span><span class="dd-tx"><b translate="no">Catalyst Labs</b><span data-i18n="p4.d"></span></span><span class="dd-no">04</span></a>
+        <a href="#prog-5" role="menuitem"><span class="dd-ic"><svg viewBox="0 0 24 24"><use href="#i-rocket"/></svg></span><span class="dd-tx"><b translate="no">Catalyst Ventures</b><span data-i18n="p5.d"></span></span><span class="dd-no">05</span></a>
+        <a href="#summit" role="menuitem"><span class="dd-ic"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg></span><span class="dd-tx"><b translate="no">Catalyst Summit</b><span data-i18n="p6.d"></span></span><span class="dd-no">06</span></a>
+      </div>
+    </div>
     <a href="#summit" data-i18n="nav.summit">Summit</a>
   </div>
   <div class="nav-right">
@@ -1781,7 +1792,7 @@
     <div class="rule-spark rv"><svg viewBox="0 0 24 24"><use href="#i-spark4"/></svg></div>
 
     <div class="prog-grid stagger">
-      <div class="flip"><div class="flip-in">
+      <div class="flip" id="prog-1"><div class="flip-in">
         <div class="flip-face flip-front glass">
           <span class="pn">01</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-passport"/></svg></span>
           <h3 translate="no">Catalyst Passport</h3>
@@ -1795,7 +1806,7 @@
         </div>
       </div></div>
 
-      <div class="flip"><div class="flip-in">
+      <div class="flip" id="prog-2"><div class="flip-in">
         <div class="flip-face flip-front glass">
           <span class="pn">02</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-search"/></svg></span>
           <h3 translate="no">Catalyst Finder</h3>
@@ -1809,7 +1820,7 @@
         </div>
       </div></div>
 
-      <div class="flip"><div class="flip-in">
+      <div class="flip" id="prog-3"><div class="flip-in">
         <div class="flip-face flip-front glass">
           <span class="pn">03</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-cap"/></svg></span>
           <h3 translate="no">Catalyst Academy</h3>
@@ -1823,7 +1834,7 @@
         </div>
       </div></div>
 
-      <div class="flip"><div class="flip-in">
+      <div class="flip" id="prog-4"><div class="flip-in">
         <div class="flip-face flip-front glass">
           <span class="pn">04</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-flask"/></svg></span>
           <h3 translate="no">Catalyst Labs</h3>
@@ -1837,7 +1848,7 @@
         </div>
       </div></div>
 
-      <div class="flip"><div class="flip-in">
+      <div class="flip" id="prog-5"><div class="flip-in">
         <div class="flip-face flip-front glass">
           <span class="pn">05</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-rocket"/></svg></span>
           <h3 translate="no">Catalyst Ventures</h3>
@@ -1851,7 +1862,7 @@
         </div>
       </div></div>
 
-      <div class="flip"><div class="flip-in">
+      <div class="flip" id="prog-6"><div class="flip-in">
         <div class="flip-face flip-front glass">
           <span class="pn">06</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-spark"/></svg></span>
           <h3 translate="no">Catalyst Summit</h3>
@@ -2442,6 +2453,24 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="assets/hero-ring.js"></script>
 <script src="assets/eco-ring.js"></script>
+<script>
+(function(){
+  var dd=document.querySelector('.nav-dd');if(!dd)return;
+  var t=dd.querySelector('.nav-dd-t');
+  function set(b){dd.classList.toggle('buka',b);t.setAttribute('aria-expanded',b?'true':'false');}
+  dd.addEventListener('mouseenter',function(){set(true)});
+  dd.addEventListener('mouseleave',function(){set(false)});
+  dd.addEventListener('focusin',function(){set(true)});
+  dd.addEventListener('focusout',function(e){if(!dd.contains(e.relatedTarget))set(false)});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){set(false);}});
+  dd.querySelectorAll('.dd-panel a').forEach(function(a){a.addEventListener('click',function(){set(false);a.blur();});});
+  /* layar sentuh: ketuk Program membuka submenu dulu, ketukan kedua pergi ke bagian */
+  if(window.matchMedia('(hover:none)').matches){
+    t.addEventListener('click',function(e){if(!dd.classList.contains('buka')){e.preventDefault();set(true);}});
+    document.addEventListener('click',function(e){if(!dd.contains(e.target))set(false);});
+  }
+})();
+</script>
 <script src="assets/i18n.js"></script>
 </body>
 </html>
