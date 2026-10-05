@@ -73,26 +73,30 @@
       var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = gagal; document.head.appendChild(s);
     });
   }
-  /* studio untuk pantulan krom: latar gelap, beberapa kotak cahaya dan garis tipis */
+  /* studio untuk pantulan krom: latar gelap bergradasi, kotak cahaya bertepi lembut,
+     garis tegak tipis, dan cakrawala. Pantulan inilah yang membuat krom terlihat nyata. */
   function lukisStudio(renderer, gelap) {
-    var c = document.createElement('canvas'); c.width = 1024; c.height = 512;
+    var Wc = 2048, Hc = 1024;
+    var c = document.createElement('canvas'); c.width = Wc; c.height = Hc;
     var g = c.getContext('2d');
-    var lat = g.createLinearGradient(0, 0, 0, 512);
-    if (gelap) { lat.addColorStop(0, '#16171b'); lat.addColorStop(.55, '#060607'); lat.addColorStop(1, '#2a2b30'); }
-    else { lat.addColorStop(0, '#3a3c42'); lat.addColorStop(.55, '#121215'); lat.addColorStop(1, '#6b6e75'); }
-    g.fillStyle = lat; g.fillRect(0, 0, 1024, 512);
-    function kotak(x, y, w, h, a) {
+    var lat = g.createLinearGradient(0, 0, 0, Hc);
+    if (gelap) { lat.addColorStop(0, '#1c1d22'); lat.addColorStop(.5, '#050506'); lat.addColorStop(.62, '#0b0b0d'); lat.addColorStop(1, '#34363c'); }
+    else { lat.addColorStop(0, '#4a4d54'); lat.addColorStop(.5, '#101013'); lat.addColorStop(.62, '#1a1b1f'); lat.addColorStop(1, '#8a8e96'); }
+    g.fillStyle = lat; g.fillRect(0, 0, Wc, Hc);
+    function lampu(x, y, w, h, a, r) {
+      g.save(); g.filter = 'blur(' + (r || 6) + 'px)';
       var gr = g.createLinearGradient(x, y, x + w, y);
-      gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(.2, 'rgba(255,255,255,' + a + ')');
-      gr.addColorStop(.8, 'rgba(255,255,255,' + a + ')'); gr.addColorStop(1, 'rgba(255,255,255,0)');
-      g.fillStyle = gr; g.fillRect(x, y, w, h);
+      gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(.15, 'rgba(255,255,255,' + a + ')');
+      gr.addColorStop(.85, 'rgba(255,255,255,' + a + ')'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = gr; g.fillRect(x, y, w, h); g.restore();
     }
-    kotak(90, 40, 300, 110, 1);       /* kotak utama di atas kiri */
-    kotak(560, 60, 240, 80, 0.85);    /* kotak kedua di atas kanan */
-    kotak(230, 150, 26, 230, 0.95);   /* garis tegak kiri */
-    kotak(760, 160, 22, 210, 0.9);    /* garis tegak kanan */
-    kotak(480, 190, 14, 160, 0.55);   /* garis tengah tipis */
-    kotak(0, 300, 1024, 10, 0.35);    /* cakrawala */
+    lampu(160, 70, 620, 230, 1, 10);      /* kotak utama, atas kiri */
+    lampu(1120, 110, 480, 170, .9, 10);   /* kotak kedua, atas kanan */
+    lampu(470, 300, 44, 460, .95, 4);     /* garis tegak kiri */
+    lampu(1520, 320, 40, 420, .9, 4);     /* garis tegak kanan */
+    lampu(960, 380, 22, 300, .6, 3);      /* garis tengah tipis */
+    lampu(1840, 260, 120, 360, .55, 8);   /* pantulan belakang */
+    lampu(0, 610, 2048, 14, .4, 3);       /* cakrawala */
     var tx = new THREE.CanvasTexture(c);
     tx.mapping = THREE.EquirectangularReflectionMapping; tx.encoding = THREE.sRGBEncoding;
     var pm = new THREE.PMREMGenerator(renderer); var env = pm.fromEquirectangular(tx).texture;
@@ -124,6 +128,8 @@
     var kunci = new THREE.DirectionalLight(0xffffff, 1.1); kunci.position.set(-2, 3, 3); sc.add(kunci);
     var tepiL = new THREE.DirectionalLight(0xffffff, 1.4); tepiL.position.set(-3, 1.5, -2.5); sc.add(tepiL);
     var tepiR = new THREE.DirectionalLight(0xffffff, 1.4); tepiR.position.set(3, 1.8, -2.5); sc.add(tepiR);
+    /* cahaya yang menyapu permukaan krom pelan dari kiri ke kanan */
+    var sapu = new THREE.PointLight(0xffffff, 1.3, 5, 2); sc.add(sapu);
 
     var bahan = new THREE.MeshPhysicalMaterial({ color: 0x111114, metalness: 1, roughness: 0.16, clearcoat: 1, clearcoatRoughness: 0.05, skinning: true });
     var tulang = {}, dasar = {}, sosok = null, poros = new THREE.Group();
@@ -174,7 +180,7 @@
     var lebar = 1, tinggi = 1, jarak0 = 4;
     function ukur() {
       lebar = Math.max(1, host.clientWidth); tinggi = Math.max(1, host.clientHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
       renderer.setSize(lebar, tinggi, false);
       cam.aspect = lebar / tinggi;
       var tampakTinggi = lebar < 700 ? Math.max(1.12, 1.3 / cam.aspect) : 1.12;     /* meter yang terlihat setinggi panggung */
@@ -209,7 +215,7 @@
     }, { passive: true });
 
     /* ---------- gambar ---------- */
-    var tampil = true, jalan = false, lalu = 0, waktu = 0, toleh = 0, angguk = 0, hadap = 0.42;
+    var tampil = true, jalan = false, lalu = 0, waktu = 0, toleh = 0, angguk = 0, hadap = 0.42, mx = 0, my = 0;
     var sumbuY = new THREE.Vector3(0, 1, 0), sumbuX = new THREE.Vector3(1, 0, 0);
     function minta() { if (!jalan && tampil) { jalan = true; lalu = 0; requestAnimationFrame(bingkai); } }
     gl.minta = minta;
@@ -220,6 +226,12 @@
       if (Math.abs(tujuan - kini) < 0.0004) kini = tujuan;
       root.style.setProperty('--p', kini.toFixed(4));
       terapkanBubble(kini);
+
+      /* bubble ikut kursor: kemiringan dihaluskan */
+      mx += ((kursor.ada ? kursor.x : 0) - mx) * Math.min(1, dt * 4);
+      my += ((kursor.ada ? kursor.y : 0) - my) * Math.min(1, dt * 4);
+      root.style.setProperty('--mx', mx.toFixed(3)); root.style.setProperty('--my', my.toFixed(3));
+      sapu.position.set(Math.sin(waktu * 0.42) * 1.3, 1.62 + Math.sin(waktu * 0.3) * 0.15, 1.1);
 
       /* badan: dari tiga perempat ke depan saat digulir, lalu berayun pelan */
       var targetHadap = (1 - halus(jepit(kini / 0.35))) * 0.42 + (reduce ? 0 : Math.sin(waktu * 0.45) * 0.035);
