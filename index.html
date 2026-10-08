@@ -1582,33 +1582,47 @@
     </div>
 
     <div class="eco4" id="eco4">
-  <div class="eco4-pin">
-    <div class="eco4-scene">
-      <div class="e7-ruang" aria-hidden="true"><div class="e7-gerak"><canvas id="e7Ruang"></canvas></div><i class="e7-vin"></i><i class="e7-grain"></i></div>
-      <div class="e5-fig" id="e5Fig" aria-hidden="true"></div>
-      <div class="e5-anda" id="e5Anda" aria-hidden="true"><span class="e5-anda-pil"><i></i><span data-i18n="node.anda">Anda</span></span><span class="e5-anda-garis"></span></div>
-      <svg class="e7-garis" id="e7Garis" aria-hidden="true"></svg>
-      <button type="button" class="e7-l" data-n="mentors"><span class="e7-no">01</span><span class="e7-nm" translate="no">Mentors</span><span class="e7-ds" data-i18n="eco.mentor.s"></span></button>
-      <button type="button" class="e7-l" data-n="opportunity"><span class="e7-no">02</span><span class="e7-nm" translate="no">Opportunity</span><span class="e7-ds" data-i18n="eco.opp.s"></span></button>
-      <button type="button" class="e7-l" data-n="networks"><span class="e7-no">03</span><span class="e7-nm" translate="no">Networks</span><span class="e7-ds" data-i18n="eco.net.s"></span></button>
-      <button type="button" class="e7-l" data-n="partners"><span class="e7-no">04</span><span class="e7-nm" translate="no">Partners</span><span class="e7-ds" data-i18n="eco.par.s"></span></button>
-      <button type="button" class="e7-l" data-n="community"><span class="e7-no">05</span><span class="e7-nm" translate="no">Community</span><span class="e7-ds" data-i18n="eco.comm.s"></span></button>
-      <button type="button" class="e7-l" data-n="career"><span class="e7-no">06</span><span class="e7-nm" translate="no">Career</span><span class="e7-ds" data-i18n="eco.career.s"></span></button>
-      <button type="button" class="e7-l" data-n="business"><span class="e7-no">07</span><span class="e7-nm" translate="no">Business</span><span class="e7-ds" data-i18n="eco.biz.s"></span></button>
-      <button type="button" class="e7-l" data-n="capital"><span class="e7-no">08</span><span class="e7-nm" translate="no">Capital</span><span class="e7-ds" data-i18n="eco.cap.s"></span></button>
+      <div class="eco4-pin" id="e8Pin">
+        <div class="e8-efek" aria-hidden="true"><i class="e8-tirai"></i><i class="e8-tirai e8-t2"></i><i class="e8-berkas e8-k1"></i><i class="e8-berkas e8-k2"></i><i class="e8-berkas e8-k3"></i><canvas class="e8-debu" id="e8Debu"></canvas></div>
+        <div class="e8-ruang">
+          <div class="e8-lt" aria-hidden="true"><div class="e8-cahaya"></div><div class="e8-kaca"></div><i class="e8-sapuan"></i><div class="e8-kata" id="e8Kata"></div></div>
+          <div class="e8-panggung" id="e5Fig">
+            <div class="e8-anda" id="e5Anda" aria-hidden="true"><i></i><span data-i18n="node.anda">Anda</span></div>
+            <div class="e8-kol e8-ki">
+          <button type="button" class="e8-el e8-lg" data-n="mentors" data-i="0" data-sisi="-1"><span class="e8-no">01</span><b translate="no">Mentors</b><span class="e8-pn" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5"/></svg></span></button>
+          <button type="button" class="e8-el e8-lg" data-n="networks" data-i="2" data-sisi="-1"><span class="e8-no">03</span><b translate="no">Networks</b><span class="e8-pn" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5"/></svg></span></button>
+          <button type="button" class="e8-el e8-lg" data-n="community" data-i="4" data-sisi="-1"><span class="e8-no">05</span><b translate="no">Community</b><span class="e8-pn" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5"/></svg></span></button>
+          <button type="button" class="e8-el e8-lg" data-n="business" data-i="6" data-sisi="-1"><span class="e8-no">07</span><b translate="no">Business</b><span class="e8-pn" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5"/></svg></span></button>
+            </div>
+            <div class="e8-kol e8-ka">
+          <button type="button" class="e8-el e8-lg" data-n="opportunity" data-i="1" data-sisi="1"><span class="e8-no">02</span><b translate="no">Opportunity</b><span class="e8-pn" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5"/></svg></span></button>
+          <button type="button" class="e8-el e8-lg" data-n="partners" data-i="3" data-sisi="1"><span class="e8-no">04</span><b translate="no">Partners</b><span class="e8-pn" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5"/></svg></span></button>
+          <button type="button" class="e8-el e8-lg" data-n="career" data-i="5" data-sisi="1"><span class="e8-no">06</span><b translate="no">Career</b><span class="e8-pn" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5"/></svg></span></button>
+          <button type="button" class="e8-el e8-lg" data-n="capital" data-i="7" data-sisi="1"><span class="e8-no">08</span><b translate="no">Capital</b><span class="e8-pn" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5"/></svg></span></button>
+            </div>
+          </div>
+        </div>
+        <div class="e4-hint" aria-hidden="true"><i></i><span data-i18n="eco.scroll">Scroll</span></div>
+        <aside class="e8-papan" id="ecoDetail" role="dialog" aria-labelledby="edJudul" aria-hidden="true">
+          <div class="e8-inti e8-lg">
+            <div class="e8-atas"><span class="e8-alis"><i></i><span class="ed-no"></span></span>
+              <div class="e8-nav">
+                <button type="button" data-d="-1" aria-label="Previous"><svg viewBox="0 0 16 16"><path d="M10 3 5 8l5 5"/></svg></button>
+                <button type="button" data-d="1" aria-label="Next"><svg viewBox="0 0 16 16"><path d="m6 3 5 5-5 5"/></svg></button>
+                <button type="button" class="ed-tutup" aria-label="Tutup"><svg viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+              </div>
+            </div>
+            <div class="e8-isi">
+              <h3 class="ed-judul" id="edJudul" translate="no"></h3>
+              <p class="ed-lead"></p>
+              <h4 class="ed-sub" data-i18n="eco.dapat">Yang Anda dapatkan</h4>
+              <ol class="ed-list"></ol>
+              <a class="e8-cta" href="login.html"><span data-i18n="show.buka">Buka Platform</span><i aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5"/></svg></i></a>
+            </div>
+          </div>
+        </aside>
+      </div>
     </div>
-    <div class="e4-hint" aria-hidden="true"><span data-i18n="eco.scroll">Scroll</span><svg viewBox="0 0 16 22"><path d="M8 2v16M2 12l6 6 6-6"/></svg></div>
-    <aside class="eco4-detail e5-kaca" id="ecoDetail" role="dialog" aria-labelledby="edJudul" hidden>
-      <button type="button" class="ed-tutup" aria-label="Tutup"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-      <div class="ed-no"></div>
-      <h3 class="ed-judul" id="edJudul" translate="no"></h3>
-      <p class="ed-lead"></p>
-      <h4 class="ed-sub" data-i18n="eco.dapat">Yang Anda dapatkan</h4>
-      <ul class="ed-list"></ul>
-      <a class="ed-cta" href="login.html"><span data-i18n="show.buka">Buka Platform</span><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></a>
-    </aside>
-  </div>
-</div>
 
     <div class="eco-note glass rv">
       <svg class="mark" viewBox="0 0 24 24"><use href="#i-spark4"/></svg>
