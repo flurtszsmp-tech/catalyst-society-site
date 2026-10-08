@@ -220,105 +220,73 @@ html.dark-theme .e5-anda-pil i{background:#fff}
 html.dark-theme .e5-anda-garis{background:linear-gradient(rgba(255,255,255,.6),rgba(255,255,255,0))}
 @media (prefers-reduced-motion:reduce){.e5-anda-pil i{animation:none}}
 
-/* ===========================================================
-   Versi patung dada: krom, panggung halus, bubble kaca cair 3D.
-   =========================================================== */
-.eco4-scene{--sh:min(calc(100vh - 140px),680px);perspective:1400px;perspective-origin:50% 45%}
 
-/* panggung: cahaya lembut, sorot dari atas, bayangan lantai, butir halus */
-.e6-stage{position:absolute;inset:-6% -10%;pointer-events:none;z-index:0}
-.e6-stage i{position:absolute;display:block}
-.e6-glow{left:50%;top:44%;width:min(820px,82%);height:96%;transform:translate(-50%,-50%);
-  background:radial-gradient(ellipse 50% 50% at 50% 42%,rgba(10,10,14,.09),rgba(10,10,14,.035) 48%,transparent 72%)}
-.e6-beam{left:50%;top:-4%;width:min(560px,58%);height:78%;transform:translateX(-50%);
-  background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(10,10,14,.05),transparent 70%);
-  -webkit-mask-image:linear-gradient(to bottom,#000,transparent);mask-image:linear-gradient(to bottom,#000,transparent)}
-.e6-floor{left:50%;bottom:6%;width:min(620px,60%);height:90px;transform:translateX(-50%);border-radius:50%;
-  background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(10,10,14,.12),transparent 70%);filter:blur(6px)}
-.e6-grain{inset:0;opacity:.035;mix-blend-mode:multiply;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  -webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 45%,#000,transparent 75%);mask-image:radial-gradient(ellipse 50% 50% at 50% 45%,#000,transparent 75%)}
-html.dark-theme .e6-glow{background:radial-gradient(ellipse 50% 50% at 50% 42%,rgba(255,255,255,.13),rgba(255,255,255,.035) 48%,transparent 72%)}
-html.dark-theme .e6-beam{background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,255,255,.09),transparent 70%)}
-html.dark-theme .e6-floor{background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(255,255,255,.08),transparent 70%)}
-html.dark-theme .e6-grain{mix-blend-mode:screen;opacity:.05}
+/* ===========================================================
+   Versi lab: patung dada krom di dalam lab teknologi yang diburamkan,
+   label garis penunjuk dari titik di tubuh.
+   =========================================================== */
+.eco4-scene{--sh:min(calc(100vh - 140px),680px)}
+
+/* panel ruang: kanvas kecil yang diburamkan, bergeser pelan ikut kursor dan gulir */
+.e7-ruang{position:absolute;inset:0;z-index:0;border-radius:28px;overflow:hidden;pointer-events:none;
+  background:#e4e6ea;box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 0 0 1px rgba(10,10,14,.06),0 40px 90px -50px rgba(10,10,14,.45)}
+.e7-gerak{position:absolute;inset:-40px;will-change:transform;
+  transform:translate3d(calc(var(--mx,0) * -10px),calc(var(--my,0) * -6px),0) scale(calc(1.08 - var(--p,1) * .04))}
+.e7-gerak canvas{width:100%;height:100%;display:block;filter:blur(7px) saturate(1.1);opacity:0;transition:opacity .8s ease}
+.eco4.ada-ruang .e7-gerak canvas{opacity:1}
+/* bayangan di sekeliling supaya mata langsung ke manekin */
+.e7-vin{position:absolute;inset:0;
+  background:radial-gradient(ellipse 30% 46% at 50% 40%,rgba(255,255,255,.4),transparent 70%),
+             radial-gradient(ellipse 52% 68% at 50% 44%,transparent 45%,rgba(18,20,26,.16) 80%,rgba(18,20,26,.3) 100%)}
+.e7-grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+html.dark-theme .e7-ruang{background:#050608;box-shadow:0 0 0 1px rgba(255,255,255,.07),0 40px 90px -50px rgba(0,0,0,.9)}
+html.dark-theme .e7-vin{background:radial-gradient(ellipse 30% 46% at 50% 40%,rgba(255,255,255,.06),transparent 70%),
+  radial-gradient(ellipse 50% 66% at 50% 44%,transparent 40%,rgba(0,0,0,.5) 78%,rgba(0,0,0,.8) 100%)}
+html.dark-theme .e7-grain{mix-blend-mode:screen;opacity:.06}
 
 .e5-fig{z-index:1}
-.e5-fig canvas{-webkit-mask-image:linear-gradient(to bottom,#000 58%,transparent 92%);mask-image:linear-gradient(to bottom,#000 58%,transparent 92%)}
+.e5-fig canvas{-webkit-mask-image:linear-gradient(to bottom,#000 62%,transparent 96%);mask-image:linear-gradient(to bottom,#000 62%,transparent 96%)}
 
-/* ---------- bubble kaca cair 3D ----------
-   Kaca terang tembus pandang dengan kilau di atas, tepi bercahaya, dan
-   bayangan berlapis. Miring menghadap sosok, ikut kursor (--mx --my),
-   muncul dengan pegas dari arah sosok saat digulir. */
-.e6-b{position:absolute;z-index:3;padding:0;border:0;background:none;color:var(--ink);cursor:default;
-  opacity:var(--t,1);pointer-events:none;transform-style:preserve-3d;
-  --ry:calc(var(--sisi) * 16deg + var(--mx,0) * 9deg);--rx:calc(var(--my,0) * -7deg);
-  transform:translate3d(calc((1 - var(--t,1)) * var(--dx,0px)),calc((1 - var(--t,1)) * 14px),calc((1 - var(--t,1)) * -120px))
-            rotateY(var(--ry)) rotateX(var(--rx)) scale(calc(.62 + var(--e,1) * .38));
-  transition:filter .4s}
-.e6-in{position:relative;display:flex;align-items:center;gap:10px;padding:9px 18px 9px 9px;border-radius:100px;
-  background:linear-gradient(145deg,rgba(255,255,255,.86),rgba(255,255,255,.46) 55%,rgba(255,255,255,.62));
-  -webkit-backdrop-filter:blur(18px) saturate(1.8);backdrop-filter:blur(18px) saturate(1.8);
-  box-shadow:inset 0 1px 1px rgba(255,255,255,1),inset 0 -10px 18px -10px rgba(10,10,14,.12),
-             inset 0 0 0 1px rgba(255,255,255,.7),0 1px 2px rgba(10,10,14,.08),0 10px 22px -12px rgba(10,10,14,.3),
-             0 30px 60px -30px rgba(10,10,14,.35);
-  animation:e6Apung 6s ease-in-out infinite;transition:transform .45s cubic-bezier(.16,1,.3,1),box-shadow .45s}
-/* tepi bercahaya */
-.e6-in::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
-  background:linear-gradient(160deg,rgba(255,255,255,1),rgba(255,255,255,.1) 40%,rgba(10,10,14,.18) 100%);
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
-          mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
-/* kilau di separuh atas */
-.e6-in::after{content:"";position:absolute;left:10%;right:10%;top:2px;height:45%;border-radius:100px;pointer-events:none;
-  background:linear-gradient(to bottom,rgba(255,255,255,.75),rgba(255,255,255,0))}
-.e6-b.b2 .e6-in,.e6-b.b6 .e6-in{animation-delay:-1.5s}
-.e6-b.b3 .e6-in,.e6-b.b7 .e6-in{animation-delay:-3s}
-.e6-b.b4 .e6-in,.e6-b.b8 .e6-in{animation-delay:-4.5s}
-@keyframes e6Apung{0%,100%{translate:0 0}50%{translate:0 -4px}}
-.e6-ic{position:relative;z-index:1;flex:none;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(circle at 35% 30%,#3a3b42,#0a0a0e 70%);box-shadow:inset 0 1px 1px rgba(255,255,255,.25),0 4px 10px -4px rgba(10,10,14,.6)}
-.e6-ic svg{width:15px;height:15px;fill:none;color:#fff;stroke:#fff;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.e6-l{position:relative;z-index:1;font-family:var(--display);font-weight:600;font-size:clamp(13px,1.1vw,15.5px);letter-spacing:-.01em;white-space:nowrap}
-/* titik penanda di sisi yang menghadap sosok */
-.e6-pin{position:absolute;z-index:1;top:50%;width:7px;height:7px;margin-top:-3.5px;border-radius:50%;background:#0a0a0e;
-  box-shadow:0 0 0 4px rgba(10,10,14,.08)}
-.e6-b.l .e6-pin{right:-16px}
-.e6-b.r .e6-pin{left:-16px}
-.e6-b.on{pointer-events:auto;cursor:pointer}
-.e6-b.on:hover .e6-in,.e6-b.on:focus-visible .e6-in{transform:translateZ(30px) scale(1.04);
-  box-shadow:inset 0 1px 1px rgba(255,255,255,1),inset 0 -10px 18px -10px rgba(10,10,14,.12),inset 0 0 0 1px rgba(255,255,255,.8),
-             0 18px 36px -14px rgba(10,10,14,.4),0 40px 70px -30px rgba(10,10,14,.4)}
-.e6-b:focus-visible{outline:0}
-.e6-b:focus-visible .e6-in{outline:2px solid var(--ink);outline-offset:3px}
-.e6-b.l{--sisi:1;--dx:80px;right:calc(50% + var(--o))}
-.e6-b.r{--sisi:-1;--dx:-80px;left:calc(50% + var(--o))}
-.e6-b.b1,.e6-b.b5{top:19%;--o:clamp(125px,11.5vw,160px)}
-.e6-b.b2,.e6-b.b6{top:33%;--o:clamp(160px,14.5vw,205px)}
-.e6-b.b3,.e6-b.b7{top:48%;--o:clamp(175px,16vw,225px)}
-.e6-b.b4,.e6-b.b8{top:62%;--o:clamp(170px,15.5vw,220px)}
+/* garis penunjuk */
+.e7-garis{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;overflow:visible;opacity:0;transition:opacity .6s}
+.eco4.ada3d .e7-garis{opacity:1}
+.e7-garis polyline{fill:none;stroke:rgba(10,10,14,.5);stroke-width:1;transition:stroke .3s}
+.e7-garis .e7-t{fill:#0a0a0e}
+.e7-garis .e7-c{fill:rgba(255,255,255,.35);stroke:rgba(10,10,14,.45);stroke-width:1}
+.e7-garis g.hov polyline,.e7-garis g.aktif polyline{stroke:#0a0a0e}
+html.dark-theme .e7-garis polyline{stroke:rgba(255,255,255,.55)}
+html.dark-theme .e7-garis .e7-t{fill:#fff}
+html.dark-theme .e7-garis .e7-c{fill:rgba(255,255,255,.08);stroke:rgba(255,255,255,.5)}
+html.dark-theme .e7-garis g.hov polyline,html.dark-theme .e7-garis g.aktif polyline{stroke:#fff}
 
-html.dark-theme .e6-in{color:#fff;
-  background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.05) 55%,rgba(255,255,255,.1));
-  box-shadow:inset 0 1px 1px rgba(255,255,255,.35),inset 0 -10px 18px -10px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.12),
-             0 10px 22px -12px rgba(0,0,0,.8),0 30px 60px -30px rgba(0,0,0,.9)}
-html.dark-theme .e6-in::before{background:linear-gradient(160deg,rgba(255,255,255,.6),rgba(255,255,255,.05) 45%,rgba(255,255,255,.2))}
-html.dark-theme .e6-in::after{background:linear-gradient(to bottom,rgba(255,255,255,.22),rgba(255,255,255,0))}
-html.dark-theme .e6-ic{background:radial-gradient(circle at 35% 30%,#ffffff,#cfd2d8 70%)}
-html.dark-theme .e6-ic svg{color:#0a0a0e;stroke:#0a0a0e}
-html.dark-theme .e6-pin{background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.12)}
+/* label: nomor, nama huruf mono, keterangan singkat. Tersingkap dari sisi garis (--r) */
+.e7-l{position:absolute;left:0;top:0;z-index:4;display:grid;grid-template-columns:auto auto;column-gap:10px;row-gap:3px;align-items:baseline;
+  padding:6px 4px;border:0;background:none;color:var(--ink);font:inherit;text-align:left;cursor:default;pointer-events:none;
+  visibility:hidden;clip-path:inset(-4px calc((1 - var(--r,0)) * 100%) -4px -4px)}
+.eco4.ada3d .e7-l{visibility:visible}
+.e7-l.kiri{text-align:right;grid-template-columns:auto auto;clip-path:inset(-4px -4px -4px calc((1 - var(--r,0)) * 100%))}
+.e7-l.kiri .e7-no{order:2}
+.e7-no{font-family:"Geist Mono",ui-monospace,monospace;font-size:10.5px;letter-spacing:.14em;color:rgba(10,10,14,.45)}
+.e7-nm{font-family:"Geist Mono",ui-monospace,monospace;font-weight:500;font-size:clamp(12px,1vw,13.5px);letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+.e7-ds{grid-column:2;font-size:12.5px;line-height:1.35;color:rgba(10,10,14,.58);white-space:nowrap}
+.e7-l.kiri .e7-ds{grid-column:1}
+.e7-nm::after{content:"";display:block;height:1px;margin-top:3px;background:currentColor;transform:scaleX(0);transition:transform .45s cubic-bezier(.16,1,.3,1)}
+.e7-l.kanan .e7-nm::after{transform-origin:left}
+.e7-l.kiri .e7-nm::after{transform-origin:right}
+.e7-l.on{pointer-events:auto;cursor:pointer}
+.e7-l.on:hover .e7-nm::after,.e7-l.on:focus-visible .e7-nm::after,.e7-l.aktif .e7-nm::after{transform:scaleX(1)}
+.e7-l:focus-visible{outline:2px solid var(--ink);outline-offset:4px;border-radius:6px}
+html.dark-theme .e7-l{color:#fff}
+html.dark-theme .e7-no{color:rgba(255,255,255,.45)}
+html.dark-theme .e7-ds{color:rgba(255,255,255,.6)}
 
 @media (max-width:700px){
   .eco4-scene{--sh:min(calc(100vh - 120px),600px)}
-  .e6-in{gap:7px;padding:6px 12px 6px 6px}
-  .e6-ic{width:24px;height:24px}
-  .e6-ic svg{width:12px;height:12px}
-  .e6-l{font-size:11.5px}
-  .e6-pin{display:none}
-  .e6-b{--ry:calc(var(--sisi) * 10deg)}
-  .e6-b.l{--dx:30px}.e6-b.r{--dx:-30px}
-  .e6-b.b1,.e6-b.b5{top:30%;--o:44px}
-  .e6-b.b2,.e6-b.b6{top:42%;--o:70px}
-  .e6-b.b3,.e6-b.b7{top:54%;--o:78px}
-  .e6-b.b4,.e6-b.b8{top:66%;--o:76px}
+  .e7-ruang{border-radius:22px}
+  .e7-gerak canvas{filter:blur(5px) saturate(1.1)}
+  .e7-ds{display:none}
+  .e7-l{column-gap:6px}
+  .e7-no{font-size:8.5px;letter-spacing:.06em}
+  .e7-nm{font-size:9.5px;letter-spacing:.08em}
 }
-@media (prefers-reduced-motion:reduce){.e6-in{animation:none}}
