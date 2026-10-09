@@ -77,7 +77,6 @@
   var buka = false, aktif = 0, pemicu = null, isi = papan && papan.querySelector('.e8-isi');
   function isiPapan() {
     var u = ITEM[el[aktif].dataset.n];
-    papan.querySelector('.ed-no').textContent = '0' + (aktif + 1) + ' / 0' + N;
     papan.querySelector('.ed-judul').textContent = nama(aktif);
     papan.querySelector('.ed-lead').innerHTML = t(u + '.p');
     papan.querySelector('.ed-list').innerHTML = [1, 2, 3].map(function (n) { return '<li><span>' + t(u + '.' + n) + '</span></li>'; }).join('');
@@ -109,9 +108,6 @@
   }
   el.forEach(function (e) { e.addEventListener('click', function () { bukaPapan(+e.dataset.i, e); }); });
   if (papan) {
-    Array.prototype.forEach.call(papan.querySelectorAll('.e8-nav button[data-d]'), function (b) {
-      b.addEventListener('click', function () { bukaPapan(aktif + (+b.dataset.d)); });
-    });
     papan.querySelector('.ed-tutup').addEventListener('click', tutup);
   }
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') tutup(); });
