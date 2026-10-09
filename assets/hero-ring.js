@@ -506,3 +506,38 @@
     status: function () { return { aktif: aktif, rot: rot / DERAJAT, sasaran: sasaran === null ? null : sasaran / DERAJAT, wx: wx, wy: wy, R: jari, cx: pusat.x, cy: pusat.y }; }
   };
 })();
+
+/* ---------- dua tombol utama: blok hitam bergeser ke tombol yang didekati ---------- */
+(function () {
+  var duo = document.querySelector('.hero-duo');
+  if (!duo) return;
+  var tombol = [duo.querySelector('.hd-a'), duo.querySelector('.hd-b')];
+  if (!tombol[0] || !tombol[1]) return;
+  var ind = document.createElement('span');
+  ind.className = 'hd-ind'; ind.setAttribute('aria-hidden', 'true');
+  duo.insertBefore(ind, duo.firstChild);
+  var aktif = 0;
+  function tata() {
+    var sl = parseFloat(getComputedStyle(duo).getPropertyValue('--sl')) || 13;
+    var t = tombol[aktif], kiri = t.offsetLeft, lebar = t.offsetWidth;
+    if (aktif === 0) {
+      ind.style.transform = 'translateX(' + kiri + 'px)';
+      ind.style.width = (lebar + sl) + 'px';
+      ind.style.clipPath = 'polygon(0 0,100% 0,calc(100% - ' + (sl * 2) + 'px) 100%,0 100%)';
+    } else {
+      ind.style.transform = 'translateX(' + (kiri - sl) + 'px)';
+      ind.style.width = (lebar + sl) + 'px';
+      ind.style.clipPath = 'polygon(' + (sl * 2) + 'px 0,100% 0,100% 100%,0 100%)';
+    }
+    tombol.forEach(function (b, i) { b.classList.toggle('aktif', i === aktif); });
+  }
+  tombol.forEach(function (b, i) {
+    function pilih() { if (aktif !== i) { aktif = i; tata(); } }
+    b.addEventListener('pointerenter', pilih);
+    b.addEventListener('focus', pilih);
+  });
+  window.addEventListener('resize', tata);
+  document.addEventListener('bahasa-berubah', function () { requestAnimationFrame(tata); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(tata);
+  tata();
+})();
