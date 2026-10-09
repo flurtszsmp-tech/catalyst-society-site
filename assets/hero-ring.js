@@ -117,7 +117,7 @@
      Sisi segmen dibuat sejajar (celah selebar sama dari dalam ke luar),
      dan bevel dimulai dari garis luar bentuk (bevelOffset negatif), jadi
      siluet akhirnya persis bentuk yang digambar dan celahnya tidak tertutup. */
-  var R_LUAR = 1, R_DALAM = 0.6, CELAH = 0.05;
+  var R_LUAR = 1, R_DALAM = 0.74, CELAH = 0.05;     /* cincin tipis: lubang lebar untuk foto dan deskripsi */
   var DEPTH = 0.05, BEVEL_T = 0.085, BEVEL_S = 0.07;
   var MUKA_Z = DEPTH / 2 + BEVEL_T;
 
@@ -239,13 +239,13 @@
     lebarLayar = lebar >= 1000;
     var pusatLubangX, lebarLubang;
     if (lebarLayar) {
-      /* roda tepat separuh di layar: pusatnya di tepi kanan. Roda dibuat lebih tinggi dari
-         layar supaya separuh lubangnya cukup lebar untuk deskripsi */
+      /* roda lebih dari separuh terlihat: pusatnya sedikit di dalam tepi kanan layar.
+         Tepi kiri roda tidak boleh menabrak judul hero */
       pusat.y = tinggi * 0.55;
-      var ruang = lebar - (kananTeks() - r.left) - 28;
-      jari = Math.max(380, Math.min(tinggi * 0.74, lebar * 0.4, ruang));
-      pusat.x = lebar;
-      jariHalo = jari * 1.12;
+      var ruang = (lebar - (kananTeks() - r.left) - 28) / 1.3;
+      jari = Math.max(320, Math.min(tinggi * 0.62, lebar * 0.36, ruang));
+      pusat.x = lebar - jari * 0.3;
+      jariHalo = jari * 1.1;
       var kiriL = pusat.x - jari * R_DALAM, kananL = Math.min(pusat.x + jari * R_DALAM, lebar - 16);
       pusatLubangX = (kiriL + kananL) / 2;
       lebarLubang = kananL - kiriL;
@@ -494,12 +494,8 @@
   wadah.insertBefore(foto, kanvas);
   function tataFoto() {
     var r = jari * R_DALAM + 2;
-    if (lebarLayar) {
-      /* hanya separuh kiri lubang yang terlihat: bingkai setengah lingkaran */
-      foto.style.cssText = 'left:' + (pusat.x - r) + 'px;top:' + (pusat.y - r) + 'px;width:' + r + 'px;height:' + (r * 2) + 'px;border-radius:' + r + 'px 0 0 ' + r + 'px';
-    } else {
-      foto.style.cssText = 'left:' + (pusat.x - r) + 'px;top:' + (pusat.y - r) + 'px;width:' + (r * 2) + 'px;height:' + (r * 2) + 'px;border-radius:50%';
-    }
+    /* lingkaran penuh seukuran lubang; bagian yang lewat tepi layar terpotong sendiri */
+    foto.style.cssText = 'left:' + (pusat.x - r) + 'px;top:' + (pusat.y - r) + 'px;width:' + (r * 2) + 'px;height:' + (r * 2) + 'px;border-radius:50%';
   }
 
   /* baca selengkapnya: paragraf panjang disembunyikan, muncul saat tombol ditekan */
@@ -538,10 +534,10 @@
       angkat[i] += (target - angkat[i]) * Math.min(1, dt * 10);
       var a = theta(i), sk = 1 + 0.035 * angkat[i];
       m.scale.set(sk, sk, 1);
-      m.position.set(Math.cos(a) * 0.07 * angkat[i], Math.sin(a) * 0.07 * angkat[i], 0.16 * angkat[i]);
+      m.position.set(Math.cos(a) * 0.045 * angkat[i], Math.sin(a) * 0.045 * angkat[i], 0.12 * angkat[i]);
       bahan[i].envMapIntensity = (gelap() ? 0.85 : 1.5) + angkat[i] * (gelap() ? 0.6 : 2.4);
-      var rm2 = (R_LUAR + R_DALAM) / 2 * sk + 0.07 * angkat[i];
-      ikon[i].bidang.position.set(rm2 * Math.cos(a), rm2 * Math.sin(a), MUKA_Z + 0.006 + 0.16 * angkat[i]);
+      var rm2 = (R_LUAR + R_DALAM) / 2 * sk + 0.045 * angkat[i];
+      ikon[i].bidang.position.set(rm2 * Math.cos(a), rm2 * Math.sin(a), MUKA_Z + 0.006 + 0.12 * angkat[i]);
     });
 
     if (muat) {
