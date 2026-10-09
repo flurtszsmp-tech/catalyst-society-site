@@ -45,8 +45,8 @@ window.CATALYST_I18N = {
 
     /* about us */
     'ab.kicker':'Tentang Kami',
-    'ab.judul':'Semua yang dibutuhkan builder muda, di satu tempat.',
-    'ab.lead':'Catalyst Society menghubungkan komunitas, mentor, perusahaan, dan investor, supaya Anda bisa belajar, membangun, dan bertumbuh tanpa mulai dari nol.',
+    'ab.judul':'Memberdayakan Komunitas dengan Ide dan Inovasi',
+    'ab.lead':'Kami membangun program inklusif untuk memberdayakan generasi muda di seluruh Indonesia, dengan akses ke mentor, modal, jaringan yang luas, dan berbagai sumber daya untuk menyelesaikan masalah dan tantangan, demi mempercepat pertumbuhan sektor industri masa depan.',
     'ab1.j':'Produk &amp; Layanan',
     'ab1.d':'Enam program terintegrasi, dari Catalyst Passport sampai Catalyst Summit, dalam satu platform.',
     'ab2.j':'Investasi Strategis',
@@ -61,7 +61,7 @@ window.CATALYST_I18N = {
     'hero.gabung':'Gabung Ekosistem',
     'hero.akses':'Dapatkan Akses', 'hero.komunitas':'Jelajahi Komunitas',
     /* blok sesudah About Us: kalimat pembuka dan angka. Draf teks, perlu dicek Bagas */
-    'rd.teks':'Di Catalyst Society, kami mendefinisikan ulang cara generasi muda Indonesia bertumbuh. Kami menghubungkan komunitas, mentor, perusahaan, dan investor dalam satu ekosistem, supaya akses ke peluang ditentukan oleh kemampuan, bukan koneksi.',
+    'rd.teks':'Di Catalyst Society, kami mendefinisikan ulang inovasi dengan memberdayakan komunitas dan anak muda agar mencapai potensi terbaiknya. Dari awal sebuah ide hingga menjadi bisnis yang berkelanjutan, kami adalah mitra Anda untuk bertumbuh.',
     'rd.akses':'Orang Terjangkau',
     'rd.komunitas':'Komunitas Mitra',
     'rd.ekosistem':'Mitra Ekosistem &amp; Industri',
@@ -258,8 +258,8 @@ window.CATALYST_I18N = {
 
     /* about us */
     'ab.kicker':'About Us',
-    'ab.judul':'Everything a young builder needs, in one place.',
-    'ab.lead':'Catalyst Society connects communities, mentors, companies, and investors so you can learn, build, and grow without starting from zero.',
+    'ab.judul':'Empowering Communities with Ideas and Innovation',
+    'ab.lead':'We build inclusive programs that aim to empower young generations across Indonesia, offering access to mentors, capital, extensive networks, and resources to solve problems and challenges to accelerate the growth of future industrial sectors.',
     'ab1.j':'Product &amp; Service',
     'ab1.d':'Six integrated programs, from Catalyst Passport to Catalyst Summit, in one platform.',
     'ab2.j':'Strategic Investments',
@@ -273,7 +273,7 @@ window.CATALYST_I18N = {
     'hero.gabung':'Join the Ecosystem',
     'hero.akses':'Get Access', 'hero.komunitas':'Explore Community',
     /* blok sesudah About Us: kalimat pembuka dan angka. Draf teks, perlu dicek Bagas */
-    'rd.teks':'At Catalyst Society, we redefine how young builders in Indonesia grow. We connect communities, mentors, companies, and investors into one ecosystem, so access to opportunity depends on what you can do, not who you know.',
+    'rd.teks':'At Catalyst Society, we\'re redefining innovation by empowering communities and young people to reach their full potential. From the beginning of an idea to a sustainable business, we\'re your partner in growth.',
     'rd.akses':'Access People',
     'rd.komunitas':'Community Partners',
     'rd.ekosistem':'Ecosystem &amp; Industry Partners',
@@ -459,8 +459,8 @@ window.CATALYST_I18N = {
 
     /* about us */
     'ab.kicker':'关于我们',
-    'ab.judul':'年轻创造者所需的一切，尽在一处。',
-    'ab.lead':'Catalyst Society 连接社群、导师、企业和投资人，让你无需从零开始，就能学习、构建并成长。',
+    'ab.judul':'以创意与创新赋能社群',
+    'ab.lead':'我们打造包容性的项目，致力于赋能印尼各地的年轻一代，提供导师、资金、广泛的人脉和各类资源，帮助他们解决问题与挑战，加速未来产业的发展。',
     'ab1.j':'产品与服务',
     'ab1.d':'六大整合项目，从 Catalyst Passport 到 Catalyst Summit，尽在一个平台。',
     'ab2.j':'战略投资',
@@ -474,7 +474,7 @@ window.CATALYST_I18N = {
     'hero.gabung':'加入生态',
     'hero.akses':'立即加入', 'hero.komunitas':'探索社群',
     /* blok sesudah About Us: kalimat pembuka dan angka. Draf teks, perlu dicek Bagas */
-    'rd.teks':'在 Catalyst Society，我们重新定义印尼年轻创造者的成长方式。我们把社群、导师、企业和投资人连接成一个生态系统，让机会取决于能力，而不是人脉。',
+    'rd.teks':'在 Catalyst Society，我们通过赋能社群与年轻人发挥全部潜力，重新定义创新。从一个想法的萌芽到可持续的事业，我们都是你成长路上的伙伴。',
     'rd.akses':'触达人群',
     'rd.komunitas':'合作社群',
     'rd.ekosistem':'生态与行业合作伙伴',
