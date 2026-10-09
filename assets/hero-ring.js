@@ -242,8 +242,8 @@
       /* roda lebih dari separuh terlihat: pusatnya sedikit di dalam tepi kanan layar.
          Tepi kiri roda tidak boleh menabrak judul hero */
       pusat.y = tinggi * 0.55;
-      var ruang = (lebar - (kananTeks() - r.left) - 28) / 1.3;
-      jari = Math.max(320, Math.min(tinggi * 0.62, lebar * 0.36, ruang));
+      var ruang = (lebar - (kananTeks() - r.left) - 44) / 1.3;
+      jari = Math.max(320, Math.min(tinggi * 0.82, lebar * 0.46, ruang));
       pusat.x = lebar - jari * 0.3;
       jariHalo = jari * 1.1;
       var kiriL = pusat.x - jari * R_DALAM, kananL = Math.min(pusat.x + jari * R_DALAM, lebar - 16);
