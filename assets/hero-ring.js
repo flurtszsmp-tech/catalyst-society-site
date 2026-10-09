@@ -92,17 +92,17 @@
 
   /* ---------- data program ---------- */
   var PROGRAM = [
-    { nama: 'passport', judul: 'Catalyst Passport', akses: 'free',
+    { nama: 'passport', judul: 'Catalyst Passport', akses: 'free', foto: '',
       ikon: 'M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM15 10a3 3 0 1 1-6 0a3 3 0 0 1 6 0zM9 16h6' },
-    { nama: 'finder', judul: 'Catalyst Finder', akses: 'free',
+    { nama: 'finder', judul: 'Catalyst Finder', akses: 'free', foto: '',
       ikon: 'M17 11a6 6 0 1 1-12 0a6 6 0 0 1 12 0zM20 20l-4.5-4.5' },
-    { nama: 'academy', judul: 'Catalyst Academy', akses: 'premium',
+    { nama: 'academy', judul: 'Catalyst Academy', akses: 'premium', foto: '',
       ikon: 'M12 4 2 9l10 5 10-5-10-5zM6 11.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5M22 9v5' },
-    { nama: 'labs', judul: 'Catalyst Labs', akses: 'premium',
+    { nama: 'labs', judul: 'Catalyst Labs', akses: 'premium', foto: 'assets/img/program/labs.webp', fokus: '42% 50%',
       ikon: 'M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3M7 15h10' },
-    { nama: 'ventures', judul: 'Catalyst Ventures', akses: 'premium',
+    { nama: 'ventures', judul: 'Catalyst Ventures', akses: 'premium', foto: 'assets/img/program/ventures.webp', fokus: '50% 50%',
       ikon: 'M12 3c3.5 2 5 5.5 5 9l-3 3H10l-3-3c0-3.5 1.5-7 5-9zM10 18c-1 1-1.5 3-1.5 3s2-.5 3-1.5M14 18c1 1 1.5 3 1.5 3s-2-.5-3-1.5M13.6 10a1.6 1.6 0 1 1-3.2 0a1.6 1.6 0 0 1 3.2 0z' },
-    { nama: 'summit', judul: 'Catalyst Summit', akses: 'premium',
+    { nama: 'summit', judul: 'Catalyst Summit', akses: 'premium', foto: 'assets/img/program/summit.webp', fokus: '50% 40%',
       ikon: 'M12 3c.6 4.6 2.4 6.4 7 7-4.6.6-6.4 2.4-7 7-.6-4.6-2.4-6.4-7-7 4.6-.6 6.4-2.4 7-7z' }
   ];
   var N = PROGRAM.length;
@@ -267,6 +267,7 @@
     st.setProperty('--rh', jariHalo + 'px');
     st.setProperty('--rhx', pusatLubangX + 'px');
     st.setProperty('--rl', (jari * R_DALAM) + 'px');
+    if (typeof tataFoto === 'function' && foto) tataFoto();
     pusatLubang = pusatLubangX;
     st.setProperty('--riw', Math.min(lebarLubang * 0.78, 400) + 'px');
     var fs = Math.max(18, Math.min(54, jari * 0.17, (lebarLubang - 26) / (RGL_EM + 0.35 + emTerlebar())));
@@ -313,8 +314,9 @@
     a.className = 'ri-akses ' + p.akses;
     info.querySelector('.ri-judul').textContent = p.judul;
     info.querySelector('.ri-desc').innerHTML = t('p' + n + '.d');
-    info.querySelector('.ri-isi').innerHTML = t('p' + n + '.b');
+    info.querySelector('.ri-isi').innerHTML = '<span>' + t('p' + n + '.b') + '</span>';
     info.querySelector('.ri-buka span').innerHTML = t('show.buka') || 'Buka Platform';
+    bukaLengkap(false);
     if (tombolNext) {
       var lb = t('ring.next') || 'Next';
       tombolNext.setAttribute('aria-label', lb); tombolNext.setAttribute('title', lb);
@@ -460,7 +462,7 @@
         vRot += (galat * K - vRot * C) * dt;
         rot += vRot * dt;
         if (Math.abs(sasaran - rot) < 0.0015 && Math.abs(vRot) < 0.04) { rot = sasaran; vRot = 0; sasaran = null; }
-      } else if (!reduce && !dalam && performance.now() > jedaSampai) {
+      } else if (!reduce && !dalam && !lengkap && performance.now() > jedaSampai) {
         tunggu += dt;
         if (tunggu > JEDA_OTOMATIS) { tunggu = 0; menujuKe(aktif + 1, false); }
       }
@@ -475,6 +477,41 @@
      Segmen aktif (jam 9) maju dan berkilau; bulatan kecil di samping nomor
      menunjukkan sisa waktu ke program berikutnya. */
   var tampilK = -1, angkat = PROGRAM.map(function () { return 0; }), muat = null, KEL_MUAT = 2 * Math.PI * 5.5;
+
+  /* foto program di lubang roda: berganti mengikuti program aktif. Program tanpa foto
+     memakai bidang gelap supaya teks putih tetap terbaca. */
+  var foto = document.createElement('div'), bingkaiFoto = [];
+  foto.className = 'ring-foto'; foto.setAttribute('aria-hidden', 'true');
+  PROGRAM.forEach(function (p) {
+    var f = document.createElement('div'); f.className = 'rf-isi' + (p.foto ? '' : ' kosong');
+    if (p.foto) {
+      var im = new Image(); im.alt = ''; im.decoding = 'async'; im.src = p.foto;
+      if (p.fokus) im.style.objectPosition = p.fokus;
+      f.appendChild(im);
+    }
+    foto.appendChild(f); bingkaiFoto.push(f);
+  });
+  wadah.insertBefore(foto, kanvas);
+  function tataFoto() {
+    var r = jari * R_DALAM + 2;
+    if (lebarLayar) {
+      /* hanya separuh kiri lubang yang terlihat: bingkai setengah lingkaran */
+      foto.style.cssText = 'left:' + (pusat.x - r) + 'px;top:' + (pusat.y - r) + 'px;width:' + r + 'px;height:' + (r * 2) + 'px;border-radius:' + r + 'px 0 0 ' + r + 'px';
+    } else {
+      foto.style.cssText = 'left:' + (pusat.x - r) + 'px;top:' + (pusat.y - r) + 'px;width:' + (r * 2) + 'px;height:' + (r * 2) + 'px;border-radius:50%';
+    }
+  }
+
+  /* baca selengkapnya: paragraf panjang disembunyikan, muncul saat tombol ditekan */
+  var tombolLengkap = document.getElementById('ringLengkap'), lengkap = false;
+  function bukaLengkap(v) {
+    lengkap = !!v;
+    if (!info || !tombolLengkap) return;
+    info.classList.toggle('lengkap', lengkap);
+    tombolLengkap.setAttribute('aria-expanded', lengkap ? 'true' : 'false');
+    tombolLengkap.querySelector('span').textContent = lengkap ? (t('ring.tutup') || 'Tutup') : (t('ring.lengkap') || 'Selengkapnya');
+  }
+  if (tombolLengkap) tombolLengkap.addEventListener('click', function () { bukaLengkap(!lengkap); });
   /* bulatan loading kecil di samping nomor program: penanda kapan roda pindah */
   if (info) {
     var atas = info.querySelector('.ri-atas');
@@ -489,7 +526,10 @@
   function sinkron(dt) {
     var kDekat = indeksDari(rot), k = modN(kDekat);
     var fase = rot - rotStop(kDekat), f = Math.min(1, Math.abs(fase) / (SUDUT / 2));
-    if (k !== tampilK) { tampilK = k; aktif = k; isi(k); }
+    if (k !== tampilK) {
+      tampilK = k; aktif = k; isi(k);
+      bingkaiFoto.forEach(function (f, i) { f.classList.toggle('aktif', i === k); });
+    }
     var op = 1 - Math.pow(f, 1.6);
 
     /* segmen aktif maju keluar, sedikit membesar, dan lebih berkilau */

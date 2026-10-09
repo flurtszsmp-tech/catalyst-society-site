@@ -180,6 +180,7 @@ window.CATALYST_I18N = {
     'show.desc':'Setiap program punya ruang kerjanya sendiri, terhubung lewat satu akun Catalyst.',
     'show.ajakan':'Tiga modul ini sudah berjalan. Masuk untuk mencobanya langsung.',
     'show.buka':'Buka Platform', 'show.masuk':'Sudah punya akun',
+    'ring.lengkap':'Selengkapnya', 'ring.tutup':'Tutup',
     'ring.next':'Program berikutnya',
 
     /* summit */
@@ -386,6 +387,7 @@ window.CATALYST_I18N = {
     'show.desc':'Every program has its own workspace, connected through a single Catalyst account.',
     'show.ajakan':'These three modules are live. Sign in to try them yourself.',
     'show.buka':'Open the Platform', 'show.masuk':'I already have an account',
+    'ring.lengkap':'Read more', 'ring.tutup':'Show less',
     'ring.next':'Next program',
 
     'sum.judul':'The stage where ideas meet funding.',
@@ -587,6 +589,7 @@ window.CATALYST_I18N = {
     'show.desc':'每个项目都有自己的工作空间，通过同一个 Catalyst 账户相连。',
     'show.ajakan':'这三个模块已经上线，登录即可亲自体验。',
     'show.buka':'进入平台', 'show.masuk':'我已有账户',
+    'ring.lengkap':'阅读更多', 'ring.tutup':'收起',
     'ring.next':'下一个项目',
 
     'sum.judul':'让想法遇见资金的舞台。',
