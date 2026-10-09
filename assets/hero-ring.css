@@ -118,12 +118,16 @@ html.dark-theme .ri-buka svg{stroke:#000}
 /* ---------- layar lebar: deskripsi di bagian lubang roda yang terlihat ---------- */
 @media (min-width:1000px){
   .ring-center{display:none}
-  .ring-info{left:var(--rhx,50%);top:var(--rcy,50%);transform:translate(-50%,-50%);width:var(--riw,320px);text-align:center}
-  .ri-atas,.ri-aksi{justify-content:center}
+  /* posisi dan lebar diatur hero-ring.js; rata kiri mengikuti lengkung lubang */
+  .ring-info{text-align:left}
+  .ri-lekuk{float:left}
+  .ri-atas,.ri-aksi{display:block}
+  .ri-atas > *,.ri-aksi > *{display:inline-flex;vertical-align:middle;margin-right:8px}
+  .ri-muat{display:inline-block}
   .ri-atas{margin-bottom:16px}
   .ri-judul{font-size:clamp(22px,2vw,30px);letter-spacing:.03em;margin-bottom:12px}
   .ri-desc{font-size:clamp(14px,1.1vw,16.5px);line-height:1.5;margin-bottom:10px}
-  .ri-isi{font-size:clamp(13px,1vw,14.5px);margin-bottom:20px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+  .ri-isi{font-size:clamp(13px,1vw,14.5px)}
   .ri-buka{font-size:14px;padding:12px 22px}
   .ri-next{width:40px;height:40px}
 }
@@ -156,15 +160,15 @@ html.dark-theme .ri-muat .j{stroke:rgba(255,255,255,.18)}
 .ri-lengkap i::after{transform:rotate(90deg)}
 .ring-info.lengkap .ri-lengkap i::after{transform:rotate(0)}
 .ri-lengkap:focus-visible{outline:2px solid currentColor;outline-offset:3px;border-radius:6px}
-.ring-info .ri-isi{display:grid;grid-template-rows:0fr;opacity:0;margin-bottom:0;transition:grid-template-rows .5s cubic-bezier(.32,.72,0,1),opacity .4s,margin .5s}
-.ring-info .ri-isi > span{overflow:hidden}
-.ring-info.lengkap .ri-isi{grid-template-rows:1fr;opacity:1;margin-bottom:16px}
+/* paragraf panjang: blok biasa (bukan grid/overflow) supaya barisnya tetap mengikuti lengkung */
+.ring-info .ri-isi{display:none;margin-bottom:16px}
+.ring-info.lengkap .ri-isi{display:block;animation:riMuncul .45s cubic-bezier(.32,.72,0,1)}
+@keyframes riMuncul{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 /* layar lebar: teks putih di atas foto */
 @media (min-width:1000px){
   /* foto berkapsi: foto jelas di atas, deskripsi di bagian bawah lubang */
-  .hero.ada-roda .ring-info{color:#fff;top:calc(var(--rcy,50%) + var(--rl,240px) * .36);transition:top .5s cubic-bezier(.32,.72,0,1)}
-  .hero.ada-roda .ring-info.lengkap{top:calc(var(--rcy,50%) + var(--rl,240px) * .12)}
+  .hero.ada-roda .ring-info{color:#fff;transition:top .5s cubic-bezier(.32,.72,0,1)}
   .hero.ada-roda .ri-judul,.hero.ada-roda .ri-desc{color:#fff}
   .hero.ada-roda .ri-isi{color:rgba(255,255,255,.8)}
   .hero.ada-roda .ri-no,.hero.ada-roda .ri-akses:not(.free){border-color:rgba(255,255,255,.45);color:rgba(255,255,255,.85)}
@@ -175,7 +179,6 @@ html.dark-theme .ri-muat .j{stroke:rgba(255,255,255,.18)}
   .hero.ada-roda .ri-next:hover{background:#fff;border-color:#fff;color:#000}
   .hero.ada-roda .ri-muat .j{stroke:rgba(255,255,255,.25)}
   .hero.ada-roda .ri-muat .i{stroke:#fff}
-  .ring-info .ri-isi{-webkit-line-clamp:unset;display:grid}
 }
 
 /* tombol untuk papan ketik dan pembaca layar: muncul hanya saat difokuskan */

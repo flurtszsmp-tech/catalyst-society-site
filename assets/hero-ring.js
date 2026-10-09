@@ -268,6 +268,7 @@
     st.setProperty('--rhx', pusatLubangX + 'px');
     st.setProperty('--rl', (jari * R_DALAM) + 'px');
     if (typeof tataFoto === 'function' && foto) tataFoto();
+    if (typeof tataInfo === 'function' && lekuk) tataInfo();
     pusatLubang = pusatLubangX;
     st.setProperty('--riw', Math.min(lebarLubang * 0.78, 400) + 'px');
     var fs = Math.max(18, Math.min(54, jari * 0.17, (lebarLubang - 26) / (RGL_EM + 0.35 + emTerlebar())));
@@ -329,7 +330,7 @@
     if (!sudahTampil) { sudahTampil = true; isi(aktif); }
   }
   document.addEventListener('bahasa-berubah', function () { isi(aktif); ukur(); });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(ukur);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ukur(); });
 
   if (a11y) {
     a11y.innerHTML = PROGRAM.map(function (p, k) {
@@ -498,6 +499,31 @@
     foto.style.cssText = 'left:' + (pusat.x - r) + 'px;top:' + (pusat.y - r) + 'px;width:' + (r * 2) + 'px;height:' + (r * 2) + 'px;border-radius:50%';
   }
 
+  /* deskripsi rata kiri di bagian bawah lubang; tepi kiri tiap baris mengikuti lengkung
+     lingkaran lewat float ber-shape-outside yang titik-titiknya dihitung dari busur lubang */
+  var lekuk = null;
+  if (info) { lekuk = document.createElement('div'); lekuk.className = 'ri-lekuk'; lekuk.setAttribute('aria-hidden', 'true'); info.insertBefore(lekuk, info.firstChild); }
+  function tataInfo() {
+    if (!info || !lekuk) return;
+    if (!lebarLayar) { info.style.left = info.style.top = info.style.width = ''; lekuk.style.cssText = 'display:none'; return; }
+    var rl = jari * R_DALAM, kiri = pusat.x - rl + 26, kanan = Math.min(pusat.x + rl, lebar) - 30;
+    info.style.left = kiri + 'px'; info.style.width = Math.max(200, kanan - kiri) + 'px';
+    for (var ulang = 0; ulang < 3; ulang++) {
+      var h = info.offsetHeight, bawah = Math.min(pusat.y + rl * 0.9, tinggi - 22);
+      var atas = Math.max(pusat.y - rl * 0.8, Math.min(pusat.y + rl * 0.04, bawah - h));
+      info.style.top = atas + 'px';
+      var titik = [], lebarMaks = 0;
+      for (var i = 0; i <= 18; i++) {
+        var y = i / 18 * h, dy = atas + y - pusat.y, dalam2 = rl * rl - dy * dy;
+        var xBusur = dalam2 > 0 ? pusat.x - Math.sqrt(dalam2) : pusat.x;
+        var masuk = Math.max(0, xBusur - kiri + 30);
+        lebarMaks = Math.max(lebarMaks, masuk);
+        titik.push(masuk.toFixed(1) + 'px ' + y.toFixed(1) + 'px');
+      }
+      lekuk.style.cssText = 'width:' + lebarMaks.toFixed(1) + 'px;height:' + h + 'px;shape-outside:polygon(0 0,' + titik.join(',') + ',0 ' + h + 'px)';
+    }
+  }
+
   /* baca selengkapnya: paragraf panjang disembunyikan, muncul saat tombol ditekan */
   var tombolLengkap = document.getElementById('ringLengkap'), lengkap = false;
   function bukaLengkap(v) {
@@ -506,6 +532,8 @@
     info.classList.toggle('lengkap', lengkap);
     tombolLengkap.setAttribute('aria-expanded', lengkap ? 'true' : 'false');
     tombolLengkap.querySelector('span').textContent = lengkap ? (t('ring.tutup') || 'Tutup') : (t('ring.lengkap') || 'Selengkapnya');
+    clearTimeout(bukaLengkap.tm);
+    bukaLengkap.tm = setTimeout(function () { if (typeof tataInfo === 'function') tataInfo(); }, 30);
   }
   if (tombolLengkap) tombolLengkap.addEventListener('click', function () { bukaLengkap(!lengkap); });
   /* bulatan loading kecil di samping nomor program: penanda kapan roda pindah */
@@ -525,6 +553,7 @@
     if (k !== tampilK) {
       tampilK = k; aktif = k; isi(k);
       bingkaiFoto.forEach(function (f, i) { f.classList.toggle('aktif', i === k); });
+      tataInfo();
     }
     var op = 1 - Math.pow(f, 1.6);
 
@@ -551,7 +580,7 @@
       return;
     }
     /* teks bergulir searah putaran dan memudar */
-    info.style.transform = 'translate(-50%,-50%) translateY(' + (fase / (SUDUT / 2) * 40).toFixed(1) + 'px)';
+    info.style.transform = 'translateY(' + (fase / (SUDUT / 2) * 40).toFixed(1) + 'px)';
     info.style.opacity = op.toFixed(3);
   }
 
