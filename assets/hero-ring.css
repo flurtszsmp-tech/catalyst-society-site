@@ -128,16 +128,13 @@ html.dark-theme .ri-buka svg{stroke:#000}
   .ri-next{width:40px;height:40px}
 }
 
-/* ---------- sinkron: penunjuk ke segmen aktif dan garis loading ---------- */
+/* ---------- sinkron: bulatan loading kecil di samping nomor program ---------- */
 .hero.ada-roda .ring-info{transition:none}
-.ri-penunjuk{position:absolute;z-index:3;height:1.5px;margin-top:-.75px;background:#fff;mix-blend-mode:difference;pointer-events:none;opacity:0}
-.ri-penunjuk::before{content:"";position:absolute;left:-4px;top:50%;width:9px;height:9px;margin-top:-4.5px;border-radius:50%;background:#fff}
-.ring-progres{position:absolute;z-index:2;pointer-events:none;overflow:visible}
-.ring-progres path{fill:none;stroke-width:3}
-.ring-progres .rp-jalur{stroke:rgba(10,10,14,.1)}
-.ring-progres .rp-isi{stroke:var(--ink);stroke-linecap:round}
-html.dark-theme .ring-progres .rp-jalur{stroke:rgba(255,255,255,.14)}
-@media (max-width:999px){.ri-penunjuk{display:none}}
+.ri-muat{width:14px;height:14px;flex:none}
+.ri-muat circle{fill:none;stroke-width:2.2}
+.ri-muat .j{stroke:rgba(10,10,14,.12)}
+.ri-muat .i{stroke:var(--ink);stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%}
+html.dark-theme .ri-muat .j{stroke:rgba(255,255,255,.18)}
 
 /* tombol untuk papan ketik dan pembaca layar: muncul hanya saat difokuskan */
 .ring-a11y{position:absolute;z-index:5;left:-9999px;top:auto}

@@ -156,7 +156,7 @@
     tex.encoding = THREE.sRGBEncoding;
     tex.anisotropy = 8;
     var bidang = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.27, 0.27),
+      new THREE.PlaneGeometry(0.17, 0.17),
       new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, toneMapped: false })
     );
     var rm = (R_LUAR + R_DALAM) / 2;
@@ -472,16 +472,19 @@
   /* ---------- deskripsi sinkron dengan roda ----------
      fase = selisih sudut roda dari posisi berhenti program terdekat (-SUDUT/2 .. SUDUT/2).
      Isi berganti tepat saat fase melewati tengah, saat teks paling tidak terlihat.
-     Segmen aktif (jam 9) maju dan berkilau, garis penunjuk menghubungkan deskripsi
-     ke segmen itu, dan garis loading di lubang menunjukkan sisa waktu ke program berikutnya. */
-  var tampilK = -1, angkat = PROGRAM.map(function () { return 0; }), loading = null, penunjuk = null;
-  if (hero) {
-    loading = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    loading.setAttribute('class', 'ring-progres'); loading.setAttribute('aria-hidden', 'true');
-    loading.innerHTML = '<path class="rp-jalur"/><path class="rp-isi"/>';
-    wadah.appendChild(loading);
-    penunjuk = document.createElement('i'); penunjuk.className = 'ri-penunjuk'; penunjuk.setAttribute('aria-hidden', 'true');
-    hero.appendChild(penunjuk);
+     Segmen aktif (jam 9) maju dan berkilau; bulatan kecil di samping nomor
+     menunjukkan sisa waktu ke program berikutnya. */
+  var tampilK = -1, angkat = PROGRAM.map(function () { return 0; }), muat = null, KEL_MUAT = 2 * Math.PI * 5.5;
+  /* bulatan loading kecil di samping nomor program: penanda kapan roda pindah */
+  if (info) {
+    var atas = info.querySelector('.ri-atas');
+    if (atas) {
+      var sv = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      sv.setAttribute('class', 'ri-muat'); sv.setAttribute('viewBox', '0 0 14 14'); sv.setAttribute('aria-hidden', 'true');
+      sv.innerHTML = '<circle class="j" cx="7" cy="7" r="5.5"/><circle class="i" cx="7" cy="7" r="5.5" stroke-dasharray="' + KEL_MUAT.toFixed(2) + '"/>';
+      atas.insertBefore(sv, atas.firstChild);
+      muat = sv.lastChild;
+    }
   }
   function sinkron(dt) {
     var kDekat = indeksDari(rot), k = modN(kDekat);
@@ -501,35 +504,19 @@
       ikon[i].bidang.position.set(rm2 * Math.cos(a), rm2 * Math.sin(a), MUKA_Z + 0.006 + 0.16 * angkat[i]);
     });
 
-    /* garis loading: setengah lingkaran di sisi kiri lubang, dari atas ke bawah */
-    if (loading) {
-      var rr = jari * R_DALAM - 38, kel = Math.PI * rr, w = rr * 2 + 8;
-      loading.setAttribute('style', 'left:' + (pusat.x - rr - 4) + 'px;top:' + (pusat.y - rr - 4) + 'px;width:' + w + 'px;height:' + w + 'px');
-      loading.setAttribute('viewBox', '0 0 ' + w + ' ' + w);
-      var d = 'M' + (rr + 4) + ' 4A' + rr + ' ' + rr + ' 0 0 0 ' + (rr + 4) + ' ' + (rr * 2 + 4);
-      var jalur = loading.firstChild, isiL = loading.lastChild;
-      if (jalur.getAttribute('d') !== d) { jalur.setAttribute('d', d); isiL.setAttribute('d', d); isiL.setAttribute('stroke-dasharray', kel.toFixed(1)); }
-      var maju = sasaran !== null ? 1 - f : (reduce ? 0 : Math.min(1, tunggu / JEDA_OTOMATIS));
-      isiL.setAttribute('stroke-dashoffset', (kel * (1 - maju)).toFixed(1));
+    if (muat) {
+      var maju = sasaran !== null ? 1 : (reduce ? 0 : Math.min(1, tunggu / JEDA_OTOMATIS));
+      muat.setAttribute('stroke-dashoffset', (KEL_MUAT * (1 - maju)).toFixed(2));
     }
 
     if (!info) return;
     if (!lebarLayar) {
       info.style.transform = ''; info.style.opacity = '';
-      if (penunjuk) penunjuk.style.opacity = 0;
       return;
     }
     /* teks bergulir searah putaran dan memudar */
     info.style.transform = 'translate(-50%,-50%) translateY(' + (fase / (SUDUT / 2) * 40).toFixed(1) + 'px)';
     info.style.opacity = op.toFixed(3);
-    /* penunjuk dari tepi kiri deskripsi sampai tengah segmen aktif; warnanya membalik di atas hitam */
-    if (penunjuk) {
-      var kiriInfo = pusatLubang - info.offsetWidth / 2 - 10, ujung = pusat.x - jari * 0.7;
-      penunjuk.style.left = ujung.toFixed(1) + 'px';
-      penunjuk.style.top = pusat.y.toFixed(1) + 'px';
-      penunjuk.style.width = Math.max(0, kiriInfo - ujung).toFixed(1) + 'px';
-      penunjuk.style.opacity = op.toFixed(3);
-    }
   }
 
   function bingkai(tm) {
