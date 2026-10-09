@@ -115,15 +115,17 @@ html.dark-theme .ri-isi{color:rgba(255,255,255,.72)}
 html.dark-theme .ri-buka{background:#fff;color:#000}
 html.dark-theme .ri-buka svg{stroke:#000}
 
-/* ---------- layar lebar: deskripsi di tengah lubang roda ---------- */
+/* ---------- layar lebar: deskripsi di bagian lubang roda yang terlihat ---------- */
 @media (min-width:1000px){
   .ring-center{display:none}
-  .ring-info{left:var(--rcx,50%);top:var(--rcy,50%);transform:translate(-50%,-50%);
-    width:calc(var(--rl,200px) * 1.42);text-align:center}
+  .ring-info{left:var(--rhx,50%);top:var(--rcy,50%);transform:translate(-50%,-50%);width:var(--riw,320px);text-align:center}
   .ri-atas,.ri-aksi{justify-content:center}
-  .ri-judul{font-size:clamp(20px,1.9vw,28px);letter-spacing:.04em}
-  .ri-desc{font-size:14px}
-  .ri-isi{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+  .ri-atas{margin-bottom:16px}
+  .ri-judul{font-size:clamp(24px,2.4vw,36px);letter-spacing:.03em;margin-bottom:14px}
+  .ri-desc{font-size:clamp(15px,1.2vw,18px);line-height:1.5;margin-bottom:12px}
+  .ri-isi{font-size:clamp(13px,1vw,14.5px);margin-bottom:20px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+  .ri-buka{font-size:14px;padding:12px 22px}
+  .ri-next{width:40px;height:40px}
 }
 
 /* tombol untuk papan ketik dan pembaca layar: muncul hanya saat difokuskan */

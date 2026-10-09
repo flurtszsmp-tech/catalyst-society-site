@@ -24,7 +24,8 @@ html :is(.glass,.node-in,.origin-in) svg{color:var(--glass-ink);stroke:currentCo
 html .prob-q .mark{fill:var(--glass-ink)}
 html .nav :is(.lockup,.word b,.word span,.nav-links a,.nav-masuk,.lang-btn,.theme-toggle){color:var(--glass-ink)!important}
 html .nav .lockup .mark{fill:var(--glass-ink)!important}
-html .nav :is(.theme-toggle,.lang-btn,.burger){border:0!important;background:rgba(var(--surface-rgb),.08)!important;box-shadow:none!important}
+/* tombol tema dan bahasa diberi isian pekat supaya tetap terbaca di atas roda hitam */
+html .nav :is(.theme-toggle,.lang-btn,.burger){border:0!important;background:rgba(var(--surface-rgb),.08)!important;background:color-mix(in srgb,var(--bg) 84%,transparent)!important;box-shadow:0 1px 2px rgba(0,0,0,.06)!important}
 html .nav :is(.theme-toggle,.lang-btn) svg{stroke:var(--glass-ink)!important}
 html .nav .burger span,html .nav .nav-links a::after{background:var(--glass-ink)!important}
 html .nav .btn{background:var(--glass-ink)!important;color:var(--bg)!important}
