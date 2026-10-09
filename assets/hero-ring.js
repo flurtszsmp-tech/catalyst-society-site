@@ -27,7 +27,7 @@
 
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
   var DERAJAT = Math.PI / 180;
-  var JEDA_OTOMATIS = 1.28;     /* detik diam; ditambah ~0,72 detik berputar = satu program tiap 2 detik */
+  var JEDA_OTOMATIS = 4.3;      /* detik diam; ditambah ~0,72 detik berputar = satu program tiap ~5 detik */
 
   var renderer;
   try {
@@ -163,7 +163,7 @@
     bidang.position.set(rm * Math.cos(theta(k)), rm * Math.sin(theta(k)), MUKA_Z + 0.006);
     bidang.rotation.z = theta(k) - Math.PI;
     cincin.add(bidang);
-    ikon.push({ kanvas: c, tekstur: tex, path: new Path2D(p.ikon) });
+    ikon.push({ kanvas: c, tekstur: tex, path: new Path2D(p.ikon), bidang: bidang });
   });
   scene.add(cincin);
 
@@ -199,7 +199,7 @@
 
   /* ---------- tata letak ---------- */
   var lebar = 0, tinggi = 0, lebarLayar = true;
-  var pusat = { x: 0, y: 0 }, jari = 100, jariHalo = 0;
+  var pusat = { x: 0, y: 0 }, jari = 100, jariHalo = 0, pusatLubang = 0;
 
   function kananTeks() {
     var kanan = 0, rg = document.createRange();
@@ -239,12 +239,13 @@
     lebarLayar = lebar >= 1000;
     var pusatLubangX, lebarLubang;
     if (lebarLayar) {
-      /* roda besar, sebagian keluar di kanan layar; deskripsi di bagian lubang yang terlihat */
+      /* roda tepat separuh di layar: pusatnya di tepi kanan. Roda dibuat lebih tinggi dari
+         layar supaya separuh lubangnya cukup lebar untuk deskripsi */
       pusat.y = tinggi * 0.55;
-      var ruang = (lebar - (kananTeks() - r.left) - 28) / 1.3;
-      jari = Math.max(320, Math.min(tinggi * 0.64, lebar * 0.42, ruang));
-      pusat.x = lebar - jari * 0.3;
-      jariHalo = jari * 1.16;
+      var ruang = lebar - (kananTeks() - r.left) - 28;
+      jari = Math.max(380, Math.min(tinggi * 0.74, lebar * 0.4, ruang));
+      pusat.x = lebar;
+      jariHalo = jari * 1.12;
       var kiriL = pusat.x - jari * R_DALAM, kananL = Math.min(pusat.x + jari * R_DALAM, lebar - 16);
       pusatLubangX = (kiriL + kananL) / 2;
       lebarLubang = kananL - kiriL;
@@ -266,7 +267,8 @@
     st.setProperty('--rh', jariHalo + 'px');
     st.setProperty('--rhx', pusatLubangX + 'px');
     st.setProperty('--rl', (jari * R_DALAM) + 'px');
-    st.setProperty('--riw', Math.min(lebarLubang * 0.84, 440) + 'px');
+    pusatLubang = pusatLubangX;
+    st.setProperty('--riw', Math.min(lebarLubang * 0.78, 400) + 'px');
     var fs = Math.max(18, Math.min(54, jari * 0.17, (lebarLubang - 26) / (RGL_EM + 0.35 + emTerlebar())));
     st.setProperty('--rfs', fs + 'px');
     st.setProperty('--rgl', RGL_EM + 'em');
@@ -319,17 +321,10 @@
     }
   }
 
+  /* program aktif untuk navigasi; isi deskripsi diatur sinkron() mengikuti sudut roda */
   function setAktif(k) {
-    k = modN(k);
-    if (sudahTampil && k === aktif) return;
-    aktif = k;
-    if (!sudahTampil) { sudahTampil = true; isi(k); return; }
-    [pusatEl, info].forEach(function (el) { if (el) el.classList.add('ganti'); });
-    clearTimeout(setAktif.tm);
-    setAktif.tm = setTimeout(function () {
-      isi(aktif);
-      [pusatEl, info].forEach(function (el) { if (el) el.classList.remove('ganti'); });
-    }, reduce ? 0 : 150);
+    aktif = modN(k);
+    if (!sudahTampil) { sudahTampil = true; isi(aktif); }
   }
   document.addEventListener('bahasa-berubah', function () { isi(aktif); ukur(); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(ukur);
@@ -356,6 +351,7 @@
     var beda = modN(k - kc + 3) - 3;           /* jalur terpendek, -3 .. 2 */
     sasaran = rotStop(kc + beda);
     if (jeda) jedaSampai = performance.now() + 6000;
+    tunggu = 0;
     setAktif(k);
   }
   if (tombolNext) tombolNext.addEventListener('click', function () { menujuKe(aktif + 1, true); });
@@ -467,9 +463,73 @@
       } else if (!reduce && !dalam && performance.now() > jedaSampai) {
         tunggu += dt;
         if (tunggu > JEDA_OTOMATIS) { tunggu = 0; menujuKe(aktif + 1, false); }
-      } else tunggu = 0;
+      }
     }
     cincin.rotation.set(BASE_X + wx, BASE_Y + wy, rot);
+    sinkron(dt);
+  }
+
+  /* ---------- deskripsi sinkron dengan roda ----------
+     fase = selisih sudut roda dari posisi berhenti program terdekat (-SUDUT/2 .. SUDUT/2).
+     Isi berganti tepat saat fase melewati tengah, saat teks paling tidak terlihat.
+     Segmen aktif (jam 9) maju dan berkilau, garis penunjuk menghubungkan deskripsi
+     ke segmen itu, dan garis loading di lubang menunjukkan sisa waktu ke program berikutnya. */
+  var tampilK = -1, angkat = PROGRAM.map(function () { return 0; }), loading = null, penunjuk = null;
+  if (hero) {
+    loading = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    loading.setAttribute('class', 'ring-progres'); loading.setAttribute('aria-hidden', 'true');
+    loading.innerHTML = '<path class="rp-jalur"/><path class="rp-isi"/>';
+    wadah.appendChild(loading);
+    penunjuk = document.createElement('i'); penunjuk.className = 'ri-penunjuk'; penunjuk.setAttribute('aria-hidden', 'true');
+    hero.appendChild(penunjuk);
+  }
+  function sinkron(dt) {
+    var kDekat = indeksDari(rot), k = modN(kDekat);
+    var fase = rot - rotStop(kDekat), f = Math.min(1, Math.abs(fase) / (SUDUT / 2));
+    if (k !== tampilK) { tampilK = k; aktif = k; isi(k); }
+    var op = 1 - Math.pow(f, 1.6);
+
+    /* segmen aktif maju keluar, sedikit membesar, dan lebih berkilau */
+    meshes.forEach(function (m, i) {
+      var target = i === k ? 1 - f : 0;
+      angkat[i] += (target - angkat[i]) * Math.min(1, dt * 10);
+      var a = theta(i), sk = 1 + 0.035 * angkat[i];
+      m.scale.set(sk, sk, 1);
+      m.position.set(Math.cos(a) * 0.07 * angkat[i], Math.sin(a) * 0.07 * angkat[i], 0.16 * angkat[i]);
+      bahan[i].envMapIntensity = (gelap() ? 0.85 : 1.5) + angkat[i] * (gelap() ? 0.6 : 2.4);
+      var rm2 = (R_LUAR + R_DALAM) / 2 * sk + 0.07 * angkat[i];
+      ikon[i].bidang.position.set(rm2 * Math.cos(a), rm2 * Math.sin(a), MUKA_Z + 0.006 + 0.16 * angkat[i]);
+    });
+
+    /* garis loading: setengah lingkaran di sisi kiri lubang, dari atas ke bawah */
+    if (loading) {
+      var rr = jari * R_DALAM - 38, kel = Math.PI * rr, w = rr * 2 + 8;
+      loading.setAttribute('style', 'left:' + (pusat.x - rr - 4) + 'px;top:' + (pusat.y - rr - 4) + 'px;width:' + w + 'px;height:' + w + 'px');
+      loading.setAttribute('viewBox', '0 0 ' + w + ' ' + w);
+      var d = 'M' + (rr + 4) + ' 4A' + rr + ' ' + rr + ' 0 0 0 ' + (rr + 4) + ' ' + (rr * 2 + 4);
+      var jalur = loading.firstChild, isiL = loading.lastChild;
+      if (jalur.getAttribute('d') !== d) { jalur.setAttribute('d', d); isiL.setAttribute('d', d); isiL.setAttribute('stroke-dasharray', kel.toFixed(1)); }
+      var maju = sasaran !== null ? 1 - f : (reduce ? 0 : Math.min(1, tunggu / JEDA_OTOMATIS));
+      isiL.setAttribute('stroke-dashoffset', (kel * (1 - maju)).toFixed(1));
+    }
+
+    if (!info) return;
+    if (!lebarLayar) {
+      info.style.transform = ''; info.style.opacity = '';
+      if (penunjuk) penunjuk.style.opacity = 0;
+      return;
+    }
+    /* teks bergulir searah putaran dan memudar */
+    info.style.transform = 'translate(-50%,-50%) translateY(' + (fase / (SUDUT / 2) * 40).toFixed(1) + 'px)';
+    info.style.opacity = op.toFixed(3);
+    /* penunjuk dari tepi kiri deskripsi sampai tengah segmen aktif; warnanya membalik di atas hitam */
+    if (penunjuk) {
+      var kiriInfo = pusatLubang - info.offsetWidth / 2 - 10, ujung = pusat.x - jari * 0.7;
+      penunjuk.style.left = ujung.toFixed(1) + 'px';
+      penunjuk.style.top = pusat.y.toFixed(1) + 'px';
+      penunjuk.style.width = Math.max(0, kiriInfo - ujung).toFixed(1) + 'px';
+      penunjuk.style.opacity = op.toFixed(3);
+    }
   }
 
   function bingkai(tm) {
