@@ -2,6 +2,7 @@
 // Dijalankan Vercel lewat vercel.json (buildCommand). Sumber tidak diubah.
 import { readdirSync, statSync, mkdirSync, copyFileSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { join, extname, dirname } from 'node:path';
+import { createHash } from 'node:crypto';
 import { transformSync } from 'esbuild';
 import { minify } from 'html-minifier-terser';
 
@@ -27,7 +28,12 @@ async function proses(dir) {
     } else if (ext === '.css') {
       tulis(dst, transformSync(mentah.toString('utf8'), { loader: 'css', minify: true, legalComments: 'none' }).code);
     } else if (ext === '.html') {
-      tulis(dst, await minify(mentah.toString('utf8'), {
+      // penanda versi dari isi berkas: browser langsung mengambil CSS dan JS baru setiap deploy
+      const html = mentah.toString('utf8').replace(/(src|href)="(assets\/[^"?#]+\.(?:css|js))"/g, (m, attr, berkas) => {
+        try { return attr + '="' + berkas + '?v=' + createHash('md5').update(readFileSync(berkas)).digest('hex').slice(0, 8) + '"'; }
+        catch (e) { return m; }
+      });
+      tulis(dst, await minify(html, {
         collapseWhitespace: true, conservativeCollapse: true, removeComments: true,
         minifyCSS: true, minifyJS: { compress: { passes: 1 }, mangle: true }, keepClosingSlash: true
       }));
