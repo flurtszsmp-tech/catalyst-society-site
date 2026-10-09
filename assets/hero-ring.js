@@ -142,15 +142,42 @@
     return geo;
   }
 
+  /* busur utuh: lima segmen menyatu tanpa celah, menyisakan satu tempat untuk pecahan aktif.
+     Dibuat sekali untuk segmen 0, lalu diputar ke segmen aktif mana pun. */
+  function busurGeo() {
+    var b0 = theta(0) + SUDUT / 2, b1 = b0 + SUDUT * (N - 1), g = CELAH / 2;
+    var a0o = b0 + Math.asin(g / R_LUAR), a1o = b1 - Math.asin(g / R_LUAR);
+    var a0i = b0 + Math.asin(g / R_DALAM), a1i = b1 - Math.asin(g / R_DALAM);
+    var s = new THREE.Shape();
+    s.moveTo(R_LUAR * Math.cos(a0o), R_LUAR * Math.sin(a0o));
+    s.absarc(0, 0, R_LUAR, a0o, a1o, false);
+    s.lineTo(R_DALAM * Math.cos(a1i), R_DALAM * Math.sin(a1i));
+    s.absarc(0, 0, R_DALAM, a1i, a0i, true);
+    s.closePath();
+    var geo = new THREE.ExtrudeGeometry(s, {
+      depth: DEPTH, bevelEnabled: true, bevelThickness: BEVEL_T, bevelSize: BEVEL_S,
+      bevelOffset: -BEVEL_S, bevelSegments: 14, curveSegments: 180
+    });
+    geo.translate(0, 0, -DEPTH / 2);
+    return geo;
+  }
+
   var cincin = new THREE.Group();
-  var meshes = [], bahan = [], ikon = [];
+  var meshes = [], bahan = [], ikon = [], poros = [];
+  var bahanBusur = new THREE.MeshPhysicalMaterial({ metalness: 0, clearcoat: 1 });
+  var busur = new THREE.Mesh(busurGeo(), bahanBusur);
+  cincin.add(busur);
 
   PROGRAM.forEach(function (p, k) {
     var m = new THREE.MeshPhysicalMaterial({ metalness: 0, clearcoat: 1 });
     var mesh = new THREE.Mesh(segmen(k), m);
     mesh.userData.indeks = k;
-    cincin.add(mesh);
-    meshes.push(mesh); bahan.push(m);
+    /* poros di titik tengah segmen: pecahan bisa miring di tempatnya sendiri */
+    var rmP = (R_LUAR + R_DALAM) / 2, pc = new THREE.Vector3(rmP * Math.cos(theta(k)), rmP * Math.sin(theta(k)), 0);
+    var g = new THREE.Group(); g.position.copy(pc); g.userData.pusat = pc;
+    mesh.position.set(-pc.x, -pc.y, 0); mesh.visible = false;
+    g.add(mesh); cincin.add(g);
+    meshes.push(mesh); bahan.push(m); poros.push(g);
 
     /* ikon: tegak lurus layar saat segmen ada di jam 9, ikut berputar bersama roda */
     var c = document.createElement('canvas');
@@ -162,10 +189,9 @@
       new THREE.PlaneGeometry(0.17, 0.17),
       new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, toneMapped: false })
     );
-    var rm = (R_LUAR + R_DALAM) / 2;
-    bidang.position.set(rm * Math.cos(theta(k)), rm * Math.sin(theta(k)), MUKA_Z + 0.006);
+    bidang.position.set(0, 0, MUKA_Z + 0.006);
     bidang.rotation.z = theta(k) - Math.PI;
-    cincin.add(bidang);
+    g.add(bidang);
     ikon.push({ kanvas: c, tekstur: tex, path: new Path2D(p.ikon), bidang: bidang });
   });
   scene.add(cincin);
@@ -178,7 +204,7 @@
     scene.environment = g ? ENV.putih : ENV.hitam;
     ambien.intensity = g ? 0.35 : 0.0;
     cahaya.intensity = g ? 0.35 : 0.5;
-    bahan.forEach(function (m) {
+    bahan.concat([bahanBusur]).forEach(function (m) {
       if (g) {
         m.color.set(0xffffff); m.roughness = 0.12; m.clearcoatRoughness = 0.05; m.envMapIntensity = 0.85;
       } else {
@@ -288,7 +314,8 @@
     ndc.set(((clientX - r.left) / r.width) * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1);
     cincin.updateMatrixWorld(true);
     ray.setFromCamera(ndc, kamera);
-    var hit = ray.intersectObjects(meshes, false)[0];
+    var pecahan = meshes[tampilK >= 0 ? tampilK : aktif];
+    var hit = pecahan && pecahan.visible ? ray.intersectObjects([pecahan], false)[0] : null;
     return hit ? hit.object.userData.indeks : -1;
   }
 
@@ -349,6 +376,7 @@
   /* ---------- gerak: putar berpegas, goyang berpegas ---------- */
   var rot = rotStop(0), vRot = 0, sasaran = null;
   var wx = 0, wy = 0, vwx = 0, vwy = 0;        /* goyang (radian) */
+  var miring = { x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0 };   /* miring pecahan aktif */
   var BASE_X = 0.05, BASE_Y = -0.14;           /* miring diam supaya tebal kaca terbaca */
   var dorong = 0, seret = null, pLalu = null;
   var tunggu = 0, jedaSampai = 0, dalam = false;
@@ -392,19 +420,21 @@
     var h = segmenDi(e.clientX, e.clientY);
     wadah.style.cursor = h >= 0 ? 'grab' : '';
 
-    /* senggolan: dorongan goyang hanya kalau kursor benar-benar di atas roda */
+    /* hanya pecahan aktif yang bereaksi: miring ke arah kursor, ditambah goyang saat digesek */
     if (h >= 0 && !reduce) {
+      var aw = theta(h) + rot, rmL = (R_LUAR + R_DALAM) / 2 * jari;
+      var pcx = pusat.x + Math.cos(aw) * rmL, pcy = pusat.y - Math.sin(aw) * rmL;
+      var ux2 = Math.max(-1, Math.min(1, (e.clientX - (r.left + pcx)) / (jari * 0.2)));
+      var uy2 = Math.max(-1, Math.min(1, (e.clientY - (r.top + pcy)) / (jari * 0.45)));
+      miring.tx = uy2 * 0.32; miring.ty = ux2 * 0.32;
       if (pLalu) {
         var dtp = Math.max((e.timeStamp - pLalu.t) / 1000, 0.008);
-        var kecepatan = Math.sqrt(Math.pow(e.clientX - pLalu.x, 2) + Math.pow(e.clientY - pLalu.y, 2)) / dtp;
-        var kuat = Math.min(kecepatan / 1300, 1);
-        var ux = dx / jari, uy = -dy / jari;         /* -1..1, titik yang tersenggol */
-        /* dorongan kecil per peristiwa, dijumlah selama kursor menggesek roda */
-        vwx = Math.max(-2.4, Math.min(2.4, vwx + (-uy) * kuat * 0.58));
-        vwy = Math.max(-2.4, Math.min(2.4, vwy + ux * kuat * 0.58));
+        var kuat = Math.min(Math.sqrt(Math.pow(e.clientX - pLalu.x, 2) + Math.pow(e.clientY - pLalu.y, 2)) / dtp / 1300, 1);
+        miring.vx = Math.max(-3, Math.min(3, miring.vx + uy2 * kuat * 0.9));
+        miring.vy = Math.max(-3, Math.min(3, miring.vy + ux2 * kuat * 0.9));
       }
       pLalu = { x: e.clientX, y: e.clientY, t: e.timeStamp };
-    } else pLalu = null;
+    } else { pLalu = null; miring.tx = 0; miring.ty = 0; }
 
     if (tip) {
       if (h >= 0) {
@@ -443,7 +473,7 @@
   }
   wadah.addEventListener('pointerup', lepas);
   wadah.addEventListener('pointercancel', lepas);
-  window.addEventListener('pointerleave', function () { dalam = false; pLalu = null; if (tip) tip.classList.remove('tampil'); });
+  window.addEventListener('pointerleave', function () { dalam = false; pLalu = null; miring.tx = miring.ty = 0; if (tip) tip.classList.remove('tampil'); });
   if (info) {
     info.addEventListener('pointerenter', function () { dalam = true; });
     info.addEventListener('pointerleave', function () { dalam = false; });
@@ -458,6 +488,10 @@
     vwx += (-70 * wx - 5.6 * vwx) * dt; wx += vwx * dt;
     vwy += (-70 * wy - 5.6 * vwy) * dt; wy += vwy * dt;
     wx = Math.max(-0.32, Math.min(0.32, wx)); wy = Math.max(-0.32, Math.min(0.32, wy));
+    /* pecahan aktif: pegas ke arah miring yang diminta kursor */
+    miring.vx += (90 * (miring.tx - miring.x) - 8 * miring.vx) * dt; miring.x += miring.vx * dt;
+    miring.vy += (90 * (miring.ty - miring.y) - 8 * miring.vy) * dt; miring.y += miring.vy * dt;
+    miring.x = Math.max(-0.5, Math.min(0.5, miring.x)); miring.y = Math.max(-0.5, Math.min(0.5, miring.y));
 
     if (!seret) {
       if (sasaran !== null) {
@@ -542,6 +576,8 @@
     var fase = rot - rotStop(kDekat), f = Math.min(1, Math.abs(fase) / (SUDUT / 2));
     if (k !== tampilK) {
       tampilK = k; aktif = k; isi(k);
+      busur.rotation.z = -k * SUDUT;
+      meshes.forEach(function (m, i) { m.visible = i === k; });
       bingkaiFoto.forEach(function (f, i) { f.classList.toggle('aktif', i === k); });
       tataInfo();
     }
@@ -551,12 +587,11 @@
     meshes.forEach(function (m, i) {
       var target = i === k ? 1 - f : 0;
       angkat[i] += (target - angkat[i]) * Math.min(1, dt * 10);
-      var a = theta(i), sk = 1 + 0.022 * angkat[i];
-      m.scale.set(sk, sk, 1);
-      m.position.set(Math.cos(a) * 0.03 * angkat[i], Math.sin(a) * 0.03 * angkat[i], 0.09 * angkat[i]);
+      var a = theta(i), g = poros[i], pc = g.userData.pusat, sk = 1 + 0.03 * angkat[i];
+      g.position.set(pc.x + Math.cos(a) * 0.045 * angkat[i], pc.y + Math.sin(a) * 0.045 * angkat[i], 0.1 * angkat[i]);
+      g.scale.set(sk, sk, sk);
+      if (i === k) g.rotation.set(miring.x, miring.y, 0); else g.rotation.set(0, 0, 0);
       bahan[i].envMapIntensity = (gelap() ? 0.85 : 1.5) + angkat[i] * (gelap() ? 0.6 : 2.4);
-      var rm2 = (R_LUAR + R_DALAM) / 2 * sk + 0.03 * angkat[i];
-      ikon[i].bidang.position.set(rm2 * Math.cos(a), rm2 * Math.sin(a), MUKA_Z + 0.006 + 0.09 * angkat[i]);
     });
 
     if (muat) {
