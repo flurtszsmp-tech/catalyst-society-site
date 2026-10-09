@@ -27,6 +27,9 @@
 
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
   var DERAJAT = Math.PI / 180;
+  /* varian moodboard permintaan client: ?roda=a|b|c. Tanpa parameter, situs seperti biasa. */
+  var VAR_RODA = (function () { try { var v = new URLSearchParams(location.search).get('roda'); return /^[abc]$/.test(v) ? v : null; } catch (e) { return null; } })();
+  if (VAR_RODA && document.getElementById('hero')) document.getElementById('hero').classList.add('roda-var', 'roda-' + VAR_RODA);
   var JEDA_OTOMATIS = 4.3;      /* detik diam; ditambah ~0,72 detik berputar = satu program tiap ~5 detik */
 
   var renderer;
@@ -117,7 +120,7 @@
      Sisi segmen dibuat sejajar (celah selebar sama dari dalam ke luar),
      dan bevel dimulai dari garis luar bentuk (bevelOffset negatif), jadi
      siluet akhirnya persis bentuk yang digambar dan celahnya tidak tertutup. */
-  var R_LUAR = 1, R_DALAM = 0.74, CELAH = 0.05;     /* cincin tipis: lubang lebar untuk foto dan deskripsi */
+  var R_LUAR = 1, R_DALAM = 0.74, CELAH = 0.056;     /* cincin tipis: lubang lebar untuk foto dan deskripsi */
   var DEPTH = 0.05, BEVEL_T = 0.085, BEVEL_S = 0.07;
   var MUKA_Z = DEPTH / 2 + BEVEL_T;
 
@@ -244,6 +247,7 @@
       pusat.y = tinggi * 0.55;
       var ruang = (lebar - (kananTeks() - r.left) - 44) / 1.3;
       jari = Math.max(320, Math.min(tinggi * 0.82, lebar * 0.46, ruang));
+      jari *= 0.86;                     /* permintaan client: roda sedikit lebih kecil */
       pusat.x = lebar - jari * 0.3;
       jariHalo = jari * 1.1;
       var kiriL = pusat.x - jari * R_DALAM, kananL = Math.min(pusat.x + jari * R_DALAM, lebar - 16);
@@ -507,6 +511,15 @@
     if (!info || !lekuk) return;
     if (!lebarLayar) { info.style.left = info.style.top = info.style.width = ''; lekuk.style.cssText = 'display:none'; return; }
     var rl = jari * R_DALAM, kiri = pusat.x - rl + 26, kanan = Math.min(pusat.x + rl, lebar) - 30;
+    if (VAR_RODA) {
+      /* teks tepat di tengah bagian lubang yang terlihat, rata tengah, tidak mengikuti lengkung */
+      lekuk.style.cssText = 'display:none';
+      var kiriL = pusat.x - rl, kananL = Math.min(pusat.x + rl, lebar), lebarT = Math.min((kananL - kiriL) * 0.72, 400);
+      info.style.width = lebarT + 'px';
+      info.style.left = ((kiriL + kananL) / 2 - lebarT / 2) + 'px';
+      info.style.top = (pusat.y - info.offsetHeight / 2) + 'px';
+      return;
+    }
     info.style.left = kiri + 'px'; info.style.width = Math.max(200, kanan - kiri) + 'px';
     for (var ulang = 0; ulang < 3; ulang++) {
       var h = info.offsetHeight, bawah = Math.min(pusat.y + rl * 0.9, tinggi - 22);
@@ -561,12 +574,12 @@
     meshes.forEach(function (m, i) {
       var target = i === k ? 1 - f : 0;
       angkat[i] += (target - angkat[i]) * Math.min(1, dt * 10);
-      var a = theta(i), sk = 1 + 0.035 * angkat[i];
+      var a = theta(i), sk = 1 + 0.022 * angkat[i];
       m.scale.set(sk, sk, 1);
-      m.position.set(Math.cos(a) * 0.045 * angkat[i], Math.sin(a) * 0.045 * angkat[i], 0.12 * angkat[i]);
+      m.position.set(Math.cos(a) * 0.03 * angkat[i], Math.sin(a) * 0.03 * angkat[i], 0.09 * angkat[i]);
       bahan[i].envMapIntensity = (gelap() ? 0.85 : 1.5) + angkat[i] * (gelap() ? 0.6 : 2.4);
-      var rm2 = (R_LUAR + R_DALAM) / 2 * sk + 0.045 * angkat[i];
-      ikon[i].bidang.position.set(rm2 * Math.cos(a), rm2 * Math.sin(a), MUKA_Z + 0.006 + 0.12 * angkat[i]);
+      var rm2 = (R_LUAR + R_DALAM) / 2 * sk + 0.03 * angkat[i];
+      ikon[i].bidang.position.set(rm2 * Math.cos(a), rm2 * Math.sin(a), MUKA_Z + 0.006 + 0.09 * angkat[i]);
     });
 
     if (muat) {
@@ -602,7 +615,11 @@
 
   ukur();
   terapkanTema();
-  setAktif(0);
+  /* ?mulai=N (dipakai moodboard): roda langsung berhenti di program N */
+  var MULAI = (function () { try { var v = parseInt(new URLSearchParams(location.search).get('mulai'), 10); return v >= 0 && v < N ? v : 0; } catch (e) { return 0; } })();
+  rot = rotStop(MULAI);
+  if (MULAI) jedaSampai = Infinity;     /* moodboard: diam di program awal sampai diklik */
+  setAktif(MULAI);
   requestAnimationFrame(bingkai);
   wadah.classList.add('siap');
   if (hero) hero.classList.add('ada-roda');
