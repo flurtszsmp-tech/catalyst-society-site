@@ -239,14 +239,16 @@
     lebarLayar = lebar >= 1000;
     var pusatLubangX, lebarLubang;
     if (lebarLayar) {
-      pusat.x = lebar * 0.915; pusat.y = tinggi * 0.5;
-      var batas = (pusat.x - (kananTeks() - r.left) - 22) / 1.95;
-      jari = Math.max(130, Math.min(tinggi * 0.44, batas));
-      jariHalo = jari * 1.95;
-      var kiriLubang = pusat.x - jari * R_DALAM;
-      var kananLubang = Math.min(pusat.x + jari * R_DALAM, lebar - 12);
-      pusatLubangX = (kiriLubang + kananLubang) / 2;
-      lebarLubang = kananLubang - kiriLubang;
+      /* roda besar; lubangnya utuh di layar karena deskripsi tampil di dalamnya */
+      /* tepi kiri roda tidak boleh menabrak judul hero */
+      var ruang = (lebar - 28 - (kananTeks() - r.left) - 24) / 1.62;
+      /* pusat agak ke bawah dan tepi atas roda di bawah navbar (sekitar 84px) */
+      pusat.y = tinggi * 0.56;
+      jari = Math.max(300, Math.min(tinggi * 0.5, lebar * 0.33, ruang, pusat.y - 84));
+      pusat.x = lebar - jari * 0.62 - 28;
+      jariHalo = jari * 1.22;
+      pusatLubangX = pusat.x;
+      lebarLubang = 2 * jari * R_DALAM;
     } else {
       pusat.x = lebar * 0.5; pusat.y = tinggi * 0.5;
       jari = Math.min(lebar, tinggi) * 0.42;
@@ -264,6 +266,7 @@
     st.setProperty('--rr', jari + 'px');
     st.setProperty('--rh', jariHalo + 'px');
     st.setProperty('--rhx', pusatLubangX + 'px');
+    st.setProperty('--rl', (jari * R_DALAM) + 'px');
     var fs = Math.max(18, Math.min(54, jari * 0.17, (lebarLubang - 26) / (RGL_EM + 0.35 + emTerlebar())));
     st.setProperty('--rfs', fs + 'px');
     st.setProperty('--rgl', RGL_EM + 'em');
