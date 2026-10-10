@@ -29,6 +29,18 @@ html.dark-theme .eco4{--e8-fg:#fff;--e8-fg-r:255,255,255;--e8-bg:#0a0a0c;
 /* ---------- latar: lubang hitam dihitung GPU (shader di eco4.js) ---------- */
 .e8-lubang{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 
+/* HUD tipis (moodboard, ?hud=1) */
+.e8-hud{position:absolute;inset:0;pointer-events:none;z-index:1;color:rgba(var(--e8-fg-r),.5);font:500 10px var(--mono);letter-spacing:.2em}
+.e8-hud-silang{position:absolute;left:5%;right:5%;top:50%;display:flex;justify-content:space-between}
+.e8-hud-silang b{position:relative;width:14px;height:14px}
+.e8-hud-silang b::before,.e8-hud-silang b::after{content:"";position:absolute;background:currentColor;left:50%;top:0;width:1px;height:100%}
+.e8-hud-silang b::after{left:0;top:50%;width:100%;height:1px}
+.e8-hud-ukur{position:absolute;left:50%;top:110px;width:180px;height:8px;margin-left:-90px;
+  background:linear-gradient(currentColor,currentColor) left/1px 100% no-repeat,linear-gradient(currentColor,currentColor) right/1px 100% no-repeat,
+  repeating-linear-gradient(90deg,currentColor 0 1px,transparent 1px 18px) bottom/100% 4px no-repeat}
+.e8-hud-bawah{top:auto;bottom:60px}
+.e8-hud-no{position:absolute;left:5%;top:110px}
+
 /* ---------- showroom: bergeser ke kiri saat papan terbuka ---------- */
 .e8-ruang{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-top:60px;transition:transform 1.2s var(--e8-ez)}
 .eco4.buka .e8-ruang{transform:translateX(-22%) scale(.88)}

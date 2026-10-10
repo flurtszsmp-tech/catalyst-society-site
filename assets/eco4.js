@@ -10,6 +10,7 @@
    - kapsul kaca cair masuk satu per satu mengikuti gulir; kata raksasa di
      belakang mengikuti kapsul terakhir. Klik kapsul: papan penjelasan.
    - latar: kabut sutra dari fragment shader GLSL (dihitung GPU, bukan video).
+   - ?hud=1 (moodboard): tanda + dan garis ukur tipis ala HUD di atas showroom.
    Model dan GLTFLoader baru dimuat saat section mendekati layar, dan gambar
    berhenti saat section di luar layar.
    =========================================================== */
@@ -162,76 +163,44 @@
     setTimeout(function () { if (inti.offsetWidth) { biasPapan = true; pasangBias(inti, 28, 26, 40, 8); } }, 80);
   }
 
-  /* ---------- latar: digambar GPU lewat fragment shader (GLSL) ----------
-     Tiap piksel dihitung dari rumus, bukan video atau gambar. Kandidat latar untuk
-     moodboard lewat ?latar=a|b|c|d; yang dipakai: c (kabut sutra).
-       a  kaca bergaris cair: cahaya lembut bergerak di balik kaca rusuk vertikal
-       b  sorot studio: kerucut cahaya dari atas, berkas halus, debu melayang, pantulan lantai
-       c  kabut sutra: lipatan asap halus yang mengalir pelan
-       d  garis medan: kontur tipis yang melingkari manekin dan bergeser pelan
-     Tema terang: tinta tipis di atas putih. Tema gelap: cahaya putih. Resolusi 0,6. */
+  /* ---------- latar: kabut sutra, digambar GPU lewat fragment shader (GLSL) ----------
+     Tiap piksel dihitung dari rumus, bukan video atau gambar: fbm yang dilipat dua kali
+     (domain warping) jadi lipatan asap halus yang mengalir pelan. ?hujan=1 (moodboard)
+     menambah hujan data: kolom titik yang jatuh pelan. Tema terang: tinta tipis di atas
+     putih. Tema gelap: cahaya putih. Resolusi 0,6. */
   var lubangEl = document.getElementById('e8Lubang'), lubang = null;
-  var LATAR = (function () { try { var v = new URLSearchParams(location.search).get('latar'); return v && 'abcd'.indexOf(v) >= 0 ? 'abcd'.indexOf(v) : 2; } catch (e) { return 2; } })();
+  var HUJAN = /[?&]hujan=1/.test(location.search) ? 1 : 0;
   (function () {
     if (!lubangEl) return;
-    if (LATAR < 0) { lubangEl.style.display = 'none'; return; }
     var g = lubangEl.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false });
     if (!g) return;
-    var turunan = !!g.getExtension('OES_standard_derivatives');
     var VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
     var FS = [
-      turunan ? '#extension GL_OES_standard_derivatives : enable' : '',
       '#ifdef GL_FRAGMENT_PRECISION_HIGH', 'precision highp float;', '#else', 'precision mediump float;', '#endif',
-      'uniform vec2 uRes,uPusat;uniform float uT,uGelap,uVar,uSk;',
+      'uniform vec2 uRes,uPusat;uniform float uT,uGelap,uHujan,uSk;',
       'float h21(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}',
       'float ns(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);',
       ' return mix(mix(h21(i),h21(i+vec2(1.,0.)),f.x),mix(h21(i+vec2(0.,1.)),h21(i+1.),f.x),f.y);}',
       'float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*ns(p);p=p*2.03+17.1;a*=.5;}return v;}',
-      'float bulat(vec2 p,vec2 c,float r){vec2 d=p-c;return exp(-dot(d,d)/(r*r));}',
       'void main(){',
       /* p: koordinat berpusat di dada manekin, satuan tinggi layar */
       ' vec2 p=(gl_FragCoord.xy-uPusat*uRes)/uRes.y;',
-      ' float tepi=smoothstep(1.,.45,length(vec2(p.x/.95,p.y/.7)));',
-      ' float L=0.,kt=.3,kg=.5;',
-      ' if(uVar<.5){',
-      /* a: kaca rusuk vertikal membiaskan tiga cahaya lembut yang bergerak di belakangnya */
-      '  float f=fract(gl_FragCoord.x/(24.*uSk));',
-      '  vec2 s=p+vec2((f-.5)*.07,0.);',
-      '  float b=bulat(s,vec2(sin(uT*.21)*.42,cos(uT*.17)*.12+.05),.22)+bulat(s,vec2(cos(uT*.13)*.5,sin(uT*.19)*.2-.1),.18)*.8',
-      '   +bulat(s,vec2(sin(uT*.11+2.)*.3,.25),.15)*.6;',
-      '  float rusuk=1.-smoothstep(0.,.1,f)*smoothstep(1.,.88,f);',
-      '  L=(b*(.7+.3*cos((f-.5)*3.14))+rusuk*.18+.05)*tepi;kt=.34;kg=.36;',
-      ' }else if(uVar<1.5){',
-      /* b: kerucut sorot dari atas dengan berkas, debu melayang, dan genangan cahaya di lantai */
-      '  vec2 d=p-vec2(0.,.85);float sd=atan(d.x,-d.y);',
-      '  float kerucut=smoothstep(.36,0.,abs(sd))*smoothstep(1.9,.3,length(d));',
-      '  float berkas=.55+.45*fbm(vec2(sd*10.,uT*.12));',
-      '  vec2 gp=p*18.+vec2(0.,-uT*.35);vec2 sel=floor(gp);float acak=h21(sel);',
-      '  vec2 pos=(vec2(h21(sel+3.1),h21(sel+7.7))-.5)*.6;',
-      '  float debu=step(.78,acak)*smoothstep(.09,0.,length(fract(gp)-.5-pos))*(.5+.5*sin(uT*1.3+acak*40.));',
-      '  float lantai=bulat(vec2(p.x*.7,(p.y+.62)*3.2),vec2(0.),.55);',
-      '  L=kerucut*berkas*.75+debu*kerucut*1.4+lantai*.45;',
-      '  if(uGelap<.5){L=((1.-kerucut*berkas)*.28*tepi+debu*kerucut*.9+lantai*.35);}',
-      '  kt=.36;kg=.6;',
-      ' }else if(uVar<2.5){',
-      /* c: asap sutra, fbm yang dilipat dua kali (domain warping) */
-      '  vec2 q=p*1.5;float t=uT*.05;',
-      '  vec2 a1=vec2(fbm(q+vec2(0.,t)),fbm(q+vec2(5.2,1.3)-t));',
-      '  vec2 a2=vec2(fbm(q+3.*a1+vec2(1.7,9.2)+t*1.3),fbm(q+3.*a1+vec2(8.3,2.8)));',
-      '  float f=fbm(q+3.*a2);',
-      '  L=pow(smoothstep(.25,.8,f),1.2)*smoothstep(1.6,.2,length(vec2(p.x/1.3,p.y/.8)));kt=.4;kg=.6;',
-      ' }else{',
-      /* d: kontur medan, naik di sekitar manekin; garis tipis tiap 1/16, tebal tiap 1/4 */
-      '  float r=length(p*vec2(1.,1.25));',
-      '  float h=fbm(p*1.25+vec2(uT*.02,-uT*.015))*1.1+exp(-r*r*4.5)*.9;',
-      '  float k=h*16.,k4=h*4.;',
-      turunan ? '  float w=fwidth(k),w4=fwidth(k4);' : '  float w=.06,w4=.03;',
-      '  float tipis=1.-smoothstep(w*.4,w*1.4,abs(fract(k+.5)-.5));',
-      '  float tebal=1.-smoothstep(w4*.6,w4*1.8,abs(fract(k4+.5)-.5));',
-      '  L=(tipis*.45+tebal*.6)*tepi;kt=.3;kg=.5;',
+      ' vec2 q=p*1.5;float t=uT*.05;',
+      ' vec2 a1=vec2(fbm(q+vec2(0.,t)),fbm(q+vec2(5.2,1.3)-t));',
+      ' vec2 a2=vec2(fbm(q+3.*a1+vec2(1.7,9.2)+t*1.3),fbm(q+3.*a1+vec2(8.3,2.8)));',
+      ' float L=pow(smoothstep(.25,.8,fbm(q+3.*a2)),1.2)*smoothstep(1.6,.2,length(vec2(p.x/1.3,p.y/.8)));',
+      ' if(uHujan>.5){',
+      /* kolom titik: sebagian kolom aktif, tiap kolom punya laju sendiri, kepala terang ekor memudar */
+      '  vec2 gk=gl_FragCoord.xy/(9.*uSk);float kx=floor(gk.x);',
+      '  float ada=step(h21(vec2(kx,1.)),.3);',
+      '  float yy=gk.y+uT*(1.5+h21(vec2(kx,2.))*4.);float ky=floor(yy);',
+      '  float ekor=pow(fract(ky*.03+h21(vec2(kx,3.))),5.);',
+      '  float huruf=step(.35,h21(vec2(kx,ky)+floor(uT*3.+h21(vec2(kx,4.))*9.)*.37));',
+      '  float bentuk=smoothstep(.34,.16,length(vec2(fract(gk.x),fract(yy))-.5));',
+      '  L=max(L*.7,ada*ekor*huruf*bentuk*.9);',
       ' }',
       ' L=clamp(L,0.,1.);',
-      ' gl_FragColor=uGelap>.5?vec4(vec3(L*kg),L*kg):vec4(0.,0.,0.,L*kt);}'
+      ' gl_FragColor=uGelap>.5?vec4(vec3(L*.6),L*.6):vec4(0.,0.,0.,L*.4);}'
     ].join('\n');
     function sh(t, src) { var s = g.createShader(t); g.shaderSource(s, src); g.compileShader(s); return g.getShaderParameter(s, g.COMPILE_STATUS) ? s : null; }
     var vs = sh(g.VERTEX_SHADER, VS), fs = sh(g.FRAGMENT_SHADER, FS);
@@ -242,7 +211,7 @@
     g.bindBuffer(g.ARRAY_BUFFER, g.createBuffer());
     g.bufferData(g.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), g.STATIC_DRAW);
     var lp = g.getAttribLocation(pr, 'p'); g.enableVertexAttribArray(lp); g.vertexAttribPointer(lp, 2, g.FLOAT, false, 0, 0);
-    var U = {}; ['uRes', 'uPusat', 'uT', 'uGelap', 'uVar', 'uSk'].forEach(function (k) { U[k] = g.getUniformLocation(pr, k); });
+    var U = {}; ['uRes', 'uPusat', 'uT', 'uGelap', 'uHujan', 'uSk'].forEach(function (k) { U[k] = g.getUniformLocation(pr, k); });
     var tampilL = false, jalanL = false, lalu = 0, waktu = 0, cx = 0.5, cy = 0.5, skL = 0.6;
     function ukurL() {
       /* ukuran dari induk, bukan dari canvas sendiri, supaya tidak saling mengecil */
@@ -258,7 +227,7 @@
     }
     function gambarL() {
       g.uniform2f(U.uRes, lubangEl.width, lubangEl.height); g.uniform2f(U.uPusat, cx, cy);
-      g.uniform1f(U.uT, waktu); g.uniform1f(U.uGelap, gelap() ? 1 : 0); g.uniform1f(U.uVar, LATAR); g.uniform1f(U.uSk, skL);
+      g.uniform1f(U.uT, waktu); g.uniform1f(U.uGelap, gelap() ? 1 : 0); g.uniform1f(U.uHujan, HUJAN); g.uniform1f(U.uSk, skL);
       g.drawArrays(g.TRIANGLES, 0, 3);
     }
     function bingkaiL(tm) {
@@ -276,6 +245,14 @@
     ukurL();
     lubang = window.__lubang = { ukur: ukurL, gambar: gambarL, langkah: function (d) { waktu += d; gambarL(); } };
   })();
+
+  /* ---------- HUD tipis untuk moodboard (?hud=1): baris tanda +, garis ukur, penghitung ---------- */
+  if (/[?&]hud=1/.test(location.search) && pin) {
+    var hud = document.createElement('div');
+    hud.className = 'e8-hud'; hud.setAttribute('aria-hidden', 'true');
+    hud.innerHTML = '<i class="e8-hud-silang"><b></b><b></b><b></b><b></b><b></b></i><i class="e8-hud-ukur"></i><i class="e8-hud-ukur e8-hud-bawah"></i><span class="e8-hud-no">[[ 001 ]]</span>';
+    pin.appendChild(hud);
+  }
 
   /* ---------- 3D ---------- */
   var THREE = window.THREE, gl = { mulai: false, siap: false };
@@ -298,30 +275,18 @@
     host.insertBefore(R.domElement, host.firstChild);
 
     /* hologram seluruh badan; memudar di paha (di bawah 1.0 meter dunia).
-       Gaya untuk moodboard lewat ?holo=a|b|c|d, tanpa parameter: garis pindai biru.
-         a  kaca bening: tepi berkilau, isi hampir tembus
-         b  titik raster: badan tersusun dari titik yang membesar di tepi
-         c  irisan pindai: garis mendatar tipis yang naik pelan, seperti hasil pindai 3D
-         d  siluet tepi cahaya: badan pekat, hanya tepinya yang menyala
+       Gaya untuk moodboard lewat ?holo=e|f, tanpa parameter: garis pindai biru.
          e  titik dan kontur (referensi hologram tim Lusion): badan dari titik halus yang
-            diterangi dari samping, bahu ke bawah larut jadi garis kontur yang menyala */
-    var HOLO = (function () { try { var v = new URLSearchParams(location.search).get('holo'); return /^[abcde]$/.test(v) ? v : ''; } catch (e) { return ''; } })();
+            diterangi dari samping, bahu ke bawah larut jadi garis kontur yang menyala
+         f  kontur penuh: seluruh badan dari garis kontur rapat, terang di sisi yang kena cahaya */
+    var HOLO = (function () { try { var v = new URLSearchParams(location.search).get('holo'); return /^[ef]$/.test(v) ? v : ''; } catch (e) { return ''; } })();
     var PRE = 'uniform float uAtas;uniform float uBawah;varying float vYw;varying vec3 vPw;\n' +
       'float hh(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}\n' +
       'float nz(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(hh(i),hh(i+vec2(1.0,0.0)),f.x),mix(hh(i+vec2(0.0,1.0)),hh(i+1.0),f.x),f.y);}\n';
-    var uAtas = { value: 1.17 }, uBawah = { value: 1.0 }, uWarna = { value: new THREE.Color() }, uDasar = { value: new THREE.Color() }, uWaktu = { value: 0 };
+    var uAtas = { value: 1.17 }, uBawah = { value: 1.0 }, uWarna = { value: new THREE.Color() }, uWaktu = { value: 0 };
     var GAYA = {
       '': 'float sc=0.55+0.45*step(0.5,fract(gl_FragCoord.y/4.0+uWaktu*0.5));\n' +
           'float a=clamp(f*1.1+0.08+lam*0.16+sapu*0.4,0.0,1.0)*sc*m*kedip;\ngl_FragColor=vec4(uWarna*a,a);',
-      a: 'float a=clamp(0.07+f*0.95+pow(lam,10.0)*0.55+sapu*0.18,0.0,1.0)*m;\ngl_FragColor=vec4(uWarna*a,a);',
-      b: 'float k=clamp(f*1.15+lam*0.4+0.1+sapu*0.3,0.0,1.0);\n' +
-         'float d=length(fract(gl_FragCoord.xy/5.0)-0.5);\n' +
-         'float a=smoothstep(k*0.62,k*0.62-0.14,d)*m*kedip;\ngl_FragColor=vec4(uWarna*a,a);',
-      c: 'float g=abs(fract(vYw*60.0-uWaktu*0.25)-0.5);\n' +
-         'float garis=smoothstep(0.16,0.04,g);\n' +
-         'float a=clamp(garis*(0.3+f*0.9+lam*0.35)+f*0.22+sapu*0.25,0.0,1.0)*m;\ngl_FragColor=vec4(uWarna*a,a);',
-      d: 'float tepi=pow(f,2.4)+pow(lam,24.0)*0.5+sapu*0.12;\n' +
-         'vec3 c=mix(uDasar,uWarna,clamp(tepi,0.0,1.0));\ngl_FragColor=vec4(c*m,m);',
       e: 'float kunci=max(dot(nn,normalize(vec3(0.65,0.25,0.7))),0.0);\n' +
          'float k=clamp(pow(kunci,2.6)*0.85+pow(f,2.0)*0.25,0.0,1.0);\n' +
          'vec2 sel=floor(gl_FragCoord.xy/2.6),lok=fract(gl_FragCoord.xy/2.6)-0.5;\n' +
@@ -333,16 +298,23 @@
          'float garis=(1.0-smoothstep(w*0.4,w*1.2,jr))+(1.0-smoothstep(w*0.5,w*4.0,jr))*0.3;\n' +
          'float petak=smoothstep(0.42,0.72,nz(vPw.xy*4.0+vec2(uWaktu*0.05,0.0)));\n' +
          'float kilat=0.45+0.55*nz(vec2(h*0.6,uWaktu*0.9));\n' +
-         'float a=clamp(titik*(0.35+k*0.65)+k*0.03+garis*petak*(1.0-atas)*kilat,0.0,1.0)*m;\ngl_FragColor=vec4(uWarna*a,a);'
+         'float a=clamp(titik*(0.35+k*0.65)+k*0.03+garis*petak*(1.0-atas)*kilat,0.0,1.0)*m;\ngl_FragColor=vec4(uWarna*a,a);',
+      f: 'float kunci=max(dot(nn,normalize(vec3(0.65,0.25,0.7))),0.0);\n' +
+         'float k=clamp(pow(kunci,2.0)*0.9+pow(f,2.0)*0.35,0.0,1.0);\n' +
+         'float h=vPw.y*42.0+nz(vPw.xz*6.0+vec2(0.0,uWaktu*0.12))*4.0+nz(vPw.xy*10.0)*2.5;\n' +
+         'float w=fwidth(h),jr=abs(fract(h)-0.5);\n' +
+         'float garis=(1.0-smoothstep(w*0.4,w*1.2,jr))+(1.0-smoothstep(w*0.5,w*3.5,jr))*0.25;\n' +
+         'float kilat=0.6+0.4*nz(vec2(h*0.5,uWaktu*0.7));\n' +
+         'float a=clamp(garis*(0.12+k*0.95)*kilat+k*0.04,0.0,1.0)*m;\ngl_FragColor=vec4(uWarna*a,a);'
     };
     function sisipVertex(sh) {
       sh.vertexShader = 'varying float vYw;varying vec3 vPw;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\nvPw=(modelMatrix*vec4(transformed,1.0)).xyz;vYw=vPw.y;');
     }
-    var holo = new THREE.MeshPhongMaterial({ skinning: true, transparent: true, depthWrite: HOLO === 'd', premultipliedAlpha: true });
+    var holo = new THREE.MeshPhongMaterial({ skinning: true, transparent: true, depthWrite: false, premultipliedAlpha: true });
     holo.extensions = { derivatives: true };
     holo.onBeforeCompile = function (sh) {
-      sh.uniforms.uAtas = uAtas; sh.uniforms.uBawah = uBawah; sh.uniforms.uWarna = uWarna; sh.uniforms.uDasar = uDasar; sh.uniforms.uWaktu = uWaktu; sisipVertex(sh);
-      sh.fragmentShader = PRE + 'uniform vec3 uWarna,uDasar;uniform float uWaktu;\n' + sh.fragmentShader.replace('#include <dithering_fragment>',
+      sh.uniforms.uAtas = uAtas; sh.uniforms.uBawah = uBawah; sh.uniforms.uWarna = uWarna; sh.uniforms.uWaktu = uWaktu; sisipVertex(sh);
+      sh.fragmentShader = PRE + 'uniform vec3 uWarna;uniform float uWaktu;\n' + sh.fragmentShader.replace('#include <dithering_fragment>',
         'vec3 nn=normalize(vNormal);vec3 vv=normalize(vViewPosition);\n' +
         'float f=pow(1.0-abs(dot(nn,vv)),1.5);\n' +
         'float sapu=smoothstep(0.04,0.0,abs(fract(uWaktu*0.22)-fract((uAtas-vYw)*2.0)));\n' +
@@ -425,10 +397,8 @@
     function terapkanTema() {
       var g = gelap();
       if (!HOLO) uWarna.value.set(g ? 0xa9dcff : 0x2e4a7a);
-      else if (HOLO === 'd') { uWarna.value.set(g ? 0xffffff : 0xf2f4f7); uDasar.value.set(g ? 0x060607 : 0x0d0e11); }
-      else if (HOLO === 'e') uWarna.value.set(g ? 0xd3e3e6 : 0x0f1115);
-      else uWarna.value.set(g ? 0xf2f6ff : 0x16181d);
-      uWarna.value.convertSRGBToLinear(); uDasar.value.convertSRGBToLinear();
+      else uWarna.value.set(g ? 0xd3e3e6 : 0x0f1115);
+      uWarna.value.convertSRGBToLinear();
       minta();
     }
     new MutationObserver(terapkanTema).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
