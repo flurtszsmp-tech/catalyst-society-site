@@ -302,9 +302,13 @@
          a  kaca bening: tepi berkilau, isi hampir tembus
          b  titik raster: badan tersusun dari titik yang membesar di tepi
          c  irisan pindai: garis mendatar tipis yang naik pelan, seperti hasil pindai 3D
-         d  siluet tepi cahaya: badan pekat, hanya tepinya yang menyala */
-    var HOLO = (function () { try { var v = new URLSearchParams(location.search).get('holo'); return /^[abcd]$/.test(v) ? v : ''; } catch (e) { return ''; } })();
-    var PRE = 'uniform float uAtas;uniform float uBawah;varying float vYw;\n';
+         d  siluet tepi cahaya: badan pekat, hanya tepinya yang menyala
+         e  titik dan kontur (referensi hologram tim Lusion): badan dari titik halus yang
+            diterangi dari samping, bahu ke bawah larut jadi garis kontur yang menyala */
+    var HOLO = (function () { try { var v = new URLSearchParams(location.search).get('holo'); return /^[abcde]$/.test(v) ? v : ''; } catch (e) { return ''; } })();
+    var PRE = 'uniform float uAtas;uniform float uBawah;varying float vYw;varying vec3 vPw;\n' +
+      'float hh(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}\n' +
+      'float nz(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(hh(i),hh(i+vec2(1.0,0.0)),f.x),mix(hh(i+vec2(0.0,1.0)),hh(i+1.0),f.x),f.y);}\n';
     var uAtas = { value: 1.17 }, uBawah = { value: 1.0 }, uWarna = { value: new THREE.Color() }, uDasar = { value: new THREE.Color() }, uWaktu = { value: 0 };
     var GAYA = {
       '': 'float sc=0.55+0.45*step(0.5,fract(gl_FragCoord.y/4.0+uWaktu*0.5));\n' +
@@ -317,12 +321,25 @@
          'float garis=smoothstep(0.16,0.04,g);\n' +
          'float a=clamp(garis*(0.3+f*0.9+lam*0.35)+f*0.22+sapu*0.25,0.0,1.0)*m;\ngl_FragColor=vec4(uWarna*a,a);',
       d: 'float tepi=pow(f,2.4)+pow(lam,24.0)*0.5+sapu*0.12;\n' +
-         'vec3 c=mix(uDasar,uWarna,clamp(tepi,0.0,1.0));\ngl_FragColor=vec4(c*m,m);'
+         'vec3 c=mix(uDasar,uWarna,clamp(tepi,0.0,1.0));\ngl_FragColor=vec4(c*m,m);',
+      e: 'float kunci=max(dot(nn,normalize(vec3(0.65,0.25,0.7))),0.0);\n' +
+         'float k=clamp(pow(kunci,2.6)*0.85+pow(f,2.0)*0.25,0.0,1.0);\n' +
+         'vec2 sel=floor(gl_FragCoord.xy/2.6),lok=fract(gl_FragCoord.xy/2.6)-0.5;\n' +
+         'vec2 geser=vec2(hh(sel),hh(sel+7.3))-0.5;\n' +
+         'float titik=step(hh(sel+3.1),k*1.15)*smoothstep(0.42,0.18,length(lok-geser*0.4));\n' +
+         'float atas=smoothstep(1.34,1.5,vPw.y);\n' +
+         'float h=vPw.y*26.0+nz(vPw.xz*7.0+vec2(0.0,uWaktu*0.12))*5.0+nz(vPw.xz*17.0-uWaktu*0.08)*2.0+nz(vPw.xy*9.0)*3.0;\n' +
+         'float w=fwidth(h),jr=abs(fract(h)-0.5);\n' +
+         'float garis=(1.0-smoothstep(w*0.4,w*1.2,jr))+(1.0-smoothstep(w*0.5,w*4.0,jr))*0.3;\n' +
+         'float petak=smoothstep(0.42,0.72,nz(vPw.xy*4.0+vec2(uWaktu*0.05,0.0)));\n' +
+         'float kilat=0.45+0.55*nz(vec2(h*0.6,uWaktu*0.9));\n' +
+         'float a=clamp(titik*(0.35+k*0.65)+k*0.03+garis*petak*(1.0-atas)*kilat,0.0,1.0)*m;\ngl_FragColor=vec4(uWarna*a,a);'
     };
     function sisipVertex(sh) {
-      sh.vertexShader = 'varying float vYw;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\nvYw=(modelMatrix*vec4(transformed,1.0)).y;');
+      sh.vertexShader = 'varying float vYw;varying vec3 vPw;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\nvPw=(modelMatrix*vec4(transformed,1.0)).xyz;vYw=vPw.y;');
     }
     var holo = new THREE.MeshPhongMaterial({ skinning: true, transparent: true, depthWrite: HOLO === 'd', premultipliedAlpha: true });
+    holo.extensions = { derivatives: true };
     holo.onBeforeCompile = function (sh) {
       sh.uniforms.uAtas = uAtas; sh.uniforms.uBawah = uBawah; sh.uniforms.uWarna = uWarna; sh.uniforms.uDasar = uDasar; sh.uniforms.uWaktu = uWaktu; sisipVertex(sh);
       sh.fragmentShader = PRE + 'uniform vec3 uWarna,uDasar;uniform float uWaktu;\n' + sh.fragmentShader.replace('#include <dithering_fragment>',
@@ -409,6 +426,7 @@
       var g = gelap();
       if (!HOLO) uWarna.value.set(g ? 0xa9dcff : 0x2e4a7a);
       else if (HOLO === 'd') { uWarna.value.set(g ? 0xffffff : 0xf2f4f7); uDasar.value.set(g ? 0x060607 : 0x0d0e11); }
+      else if (HOLO === 'e') uWarna.value.set(g ? 0xd3e3e6 : 0x0f1115);
       else uWarna.value.set(g ? 0xf2f6ff : 0x16181d);
       uWarna.value.convertSRGBToLinear(); uDasar.value.convertSRGBToLinear();
       minta();
