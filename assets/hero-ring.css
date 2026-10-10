@@ -182,7 +182,7 @@ html.dark-theme .ri-muat .j{stroke:rgba(255,255,255,.18)}
   .hero.ada-roda .ri-muat .i{stroke:#fff}
 }
 
-/* ---------- varian moodboard tata letak teks (?roda=b|c|d) ---------- */
+/* ---------- tata letak teks: C dipakai (pilihan founder); b dan d untuk moodboard lewat ?roda= ---------- */
 @media (min-width:1000px){
   .hero.roda-var .ring-info{text-align:center}
   .hero.roda-b .ri-desc,.hero.roda-b .ri-lengkap,.hero.roda-b .ri-isi{display:none!important}

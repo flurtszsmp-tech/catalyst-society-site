@@ -27,8 +27,8 @@
 
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
   var DERAJAT = Math.PI / 180;
-  /* varian moodboard permintaan client: ?roda=a|b|c. Tanpa parameter, situs seperti biasa. */
-  var VAR_RODA = (function () { try { var v = new URLSearchParams(location.search).get('roda'); return /^[bcd]$/.test(v) ? v : null; } catch (e) { return null; } })();
+  /* tata letak teks di lubang: C (rata kiri bergaris) pilihan founder; ?roda=b|d untuk moodboard */
+  var VAR_RODA = (function () { try { var v = new URLSearchParams(location.search).get('roda'); return /^[bcd]$/.test(v) ? v : 'c'; } catch (e) { return 'c'; } })();
   if (VAR_RODA && document.getElementById('hero')) document.getElementById('hero').classList.add('roda-var', 'roda-' + VAR_RODA);
   var JEDA_OTOMATIS = 4.3;      /* detik diam; ditambah ~0,72 detik berputar = satu program tiap ~5 detik */
 

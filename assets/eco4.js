@@ -4,11 +4,12 @@
    - manekin: assets/model/manekin.glb (Universal Base Characters, Quaternius, CC0),
      sudah dibagi halus. Saat dimuat, lengan diturunkan lalu permukaan dihaluskan
      dalam pose itu (Taubin) dan pose itu dijadikan pose ikat baru, supaya bahu
-     dan ketiak tidak terlihat patah. Krom padat memudar jadi hologram di paha.
+     dan ketiak tidak terlihat patah. Seluruh badan hologram (shader GLSL: tepi
+     berpendar, garis pindai, sapuan cahaya), memudar di paha.
    - mata menyala menempel di tulang kepala; kepala selalu mengikuti kursor.
    - kapsul kaca cair masuk satu per satu mengikuti gulir; kata raksasa di
      belakang mengikuti kapsul terakhir. Klik kapsul: papan penjelasan.
-   - latar: fragment shader GLSL (dihitung GPU, bukan video), kandidat lewat ?latar=a|b|c|d.
+   - latar: kabut sutra dari fragment shader GLSL (dihitung GPU, bukan video).
    Model dan GLTFLoader baru dimuat saat section mendekati layar, dan gambar
    berhenti saat section di luar layar.
    =========================================================== */
@@ -163,14 +164,14 @@
 
   /* ---------- latar: digambar GPU lewat fragment shader (GLSL) ----------
      Tiap piksel dihitung dari rumus, bukan video atau gambar. Kandidat latar untuk
-     moodboard, dipilih lewat ?latar=a|b|c|d. Tanpa parameter: latar polos.
+     moodboard lewat ?latar=a|b|c|d; yang dipakai: c (kabut sutra).
        a  kaca bergaris cair: cahaya lembut bergerak di balik kaca rusuk vertikal
        b  sorot studio: kerucut cahaya dari atas, berkas halus, debu melayang, pantulan lantai
        c  kabut sutra: lipatan asap halus yang mengalir pelan
        d  garis medan: kontur tipis yang melingkari manekin dan bergeser pelan
      Tema terang: tinta tipis di atas putih. Tema gelap: cahaya putih. Resolusi 0,6. */
   var lubangEl = document.getElementById('e8Lubang'), lubang = null;
-  var LATAR = (function () { try { var v = new URLSearchParams(location.search).get('latar'); return 'abcd'.indexOf(v) >= 0 && v ? 'abcd'.indexOf(v) : -1; } catch (e) { return -1; } })();
+  var LATAR = (function () { try { var v = new URLSearchParams(location.search).get('latar'); return v && 'abcd'.indexOf(v) >= 0 ? 'abcd'.indexOf(v) : 2; } catch (e) { return 2; } })();
   (function () {
     if (!lubangEl) return;
     if (LATAR < 0) { lubangEl.style.display = 'none'; return; }
@@ -288,27 +289,6 @@
     siapLoader.then(bangun3D).catch(function () {});
   }
 
-  /* studio pantulan krom: latar bergradasi dengan kotak cahaya bertepi lembut */
-  function lukisStudio(renderer, gl2) {
-    var c = document.createElement('canvas'); c.width = 2048; c.height = 1024;
-    var g = c.getContext('2d'), lat = g.createLinearGradient(0, 0, 0, 1024);
-    if (gl2) { lat.addColorStop(0, '#1c1d22'); lat.addColorStop(0.5, '#050506'); lat.addColorStop(0.62, '#0b0b0d'); lat.addColorStop(1, '#34363c'); }
-    else { lat.addColorStop(0, '#4a4d54'); lat.addColorStop(0.5, '#101013'); lat.addColorStop(0.62, '#1a1b1f'); lat.addColorStop(1, '#8a8e96'); }
-    g.fillStyle = lat; g.fillRect(0, 0, 2048, 1024);
-    function l(x, y, w, h, a, r) {
-      g.save(); g.filter = 'blur(' + r + 'px)';
-      var gr = g.createLinearGradient(x, y, x + w, y);
-      gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.15, 'rgba(255,255,255,' + a + ')');
-      gr.addColorStop(0.85, 'rgba(255,255,255,' + a + ')'); gr.addColorStop(1, 'rgba(255,255,255,0)');
-      g.fillStyle = gr; g.fillRect(x, y, w, h); g.restore();
-    }
-    l(160, 70, 620, 230, 1, 10); l(1120, 110, 480, 170, 0.9, 10); l(470, 300, 44, 460, 0.95, 4); l(1520, 320, 40, 420, 0.9, 4);
-    l(960, 380, 22, 300, 0.6, 3); l(1840, 260, 120, 360, 0.55, 8); l(0, 610, 2048, 14, 0.4, 3);
-    var tx = new THREE.CanvasTexture(c); tx.mapping = THREE.EquirectangularReflectionMapping; tx.encoding = THREE.sRGBEncoding;
-    var pm = new THREE.PMREMGenerator(renderer), env = pm.fromEquirectangular(tx).texture;
-    tx.dispose(); pm.dispose(); return env;
-  }
-
   function bangun3D() {
     var R;
     try { R = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' }); }
@@ -317,18 +297,12 @@
     R.domElement.setAttribute('aria-hidden', 'true');
     host.insertBefore(R.domElement, host.firstChild);
 
-    var ENV = { terang: lukisStudio(R, false), gelap: lukisStudio(R, true) };
-    /* batas hologram dalam meter dunia: padat di atas 1.17, hologram 1.0 sampai 1.17 */
+    /* hologram seluruh badan; memudar di paha (di bawah 1.0 meter dunia) */
     var PRE = 'uniform float uAtas;uniform float uBawah;varying float vYw;\n';
     var uAtas = { value: 1.17 }, uBawah = { value: 1.0 }, uWarna = { value: new THREE.Color() }, uWaktu = { value: 0 };
     function sisipVertex(sh) {
       sh.vertexShader = 'varying float vYw;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\nvYw=(modelMatrix*vec4(transformed,1.0)).y;');
     }
-    var bahan = new THREE.MeshPhysicalMaterial({ metalness: 1, roughness: 0.16, clearcoat: 1, clearcoatRoughness: 0.05, skinning: true, transparent: true, premultipliedAlpha: true });
-    bahan.onBeforeCompile = function (sh) {
-      sh.uniforms.uAtas = uAtas; sh.uniforms.uBawah = uBawah; sisipVertex(sh);
-      sh.fragmentShader = PRE + sh.fragmentShader.replace('#include <premultiplied_alpha_fragment>', 'gl_FragColor.a*=smoothstep(uBawah,uAtas,vYw);\n#include <premultiplied_alpha_fragment>');
-    };
     var holo = new THREE.MeshPhongMaterial({ skinning: true, transparent: true, depthWrite: false, premultipliedAlpha: true });
     holo.onBeforeCompile = function (sh) {
       sh.uniforms.uAtas = uAtas; sh.uniforms.uBawah = uBawah; sh.uniforms.uWarna = uWarna; sh.uniforms.uWaktu = uWaktu; sisipVertex(sh);
@@ -337,14 +311,15 @@
         'float f=pow(1.0-abs(dot(nn,vv)),1.5);\n' +
         'float sc=0.55+0.45*step(0.5,fract(gl_FragCoord.y/4.0+uWaktu*0.5));\n' +
         'float sapu=smoothstep(0.04,0.0,abs(fract(uWaktu*0.22)-fract((uAtas-vYw)*2.0)));\n' +
-        'float m=(1.0-smoothstep(uBawah,uAtas,vYw))*smoothstep(uBawah-0.2,uBawah+0.02,vYw);\n' +
-        'float a=clamp(f*1.1+0.07+sapu*0.4,0.0,1.0)*sc*m;\n' +
+        'float m=smoothstep(uBawah-0.2,uBawah+0.02,vYw);\n' +
+        'float lam=max(dot(nn,normalize(vec3(-0.35,0.55,0.75))),0.0);\n' +
+        'float kedip=0.94+0.06*sin(uWaktu*21.0)*sin(uWaktu*3.7);\n' +
+        'float a=clamp(f*1.1+0.08+lam*0.16+sapu*0.4,0.0,1.0)*sc*m*kedip;\n' +
         'gl_FragColor=vec4(uWarna*a,a);');
     };
 
     var sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(22, 1, 0.1, 50);
     [[-2, 3, 3, 1.1], [-3, 1.5, -2.5, 1.4], [3, 1.8, -2.5, 1.4]].forEach(function (d) { var l = new THREE.DirectionalLight(0xffffff, d[3]); l.position.set(d[0], d[1], d[2]); sc.add(l); });
-    var sapu = new THREE.PointLight(0xffffff, 1.3, 5, 2); sc.add(sapu);
     var T = {}, dasar = {}, mesh = [], fig = null, mata = [];
     var a3 = new THREE.Vector3(), b3 = new THREE.Vector3(), wq = new THREE.Quaternion(), pq = new THREE.Quaternion(), dq = new THREE.Quaternion();
     function arahkan(b, anak, arah) {
@@ -415,8 +390,6 @@
 
     function terapkanTema() {
       var g = gelap();
-      sc.environment = g ? ENV.gelap : ENV.terang;
-      bahan.color.set(g ? 0xd5d8de : 0x111114); bahan.roughness = g ? 0.12 : 0.16; bahan.envMapIntensity = g ? 1.15 : 1.5;
       uWarna.value.set(g ? 0xa9dcff : 0x2e4a7a).convertSRGBToLinear();
       minta();
     }
@@ -427,7 +400,7 @@
       fig.traverse(function (o) {
         if (o.isBone) T[o.name] = o;
         if (o.isMesh) {
-          mesh.push(o); o.frustumCulled = false;
+          mesh.push(o); o.frustumCulled = false; o.material = holo;
           /* bobot tulang 8 bit di berkas: r128 tidak menormalkan saat dibaca di JS, jadi ubah ke float */
           var w = o.geometry.attributes.skinWeight;
           if (w && w.normalized && !(w.array instanceof Float32Array)) {
@@ -489,7 +462,6 @@
       if (gl.siap) {
         uWaktu.value = waktu;
         bahanPendar.opacity = 0.8 + 0.2 * Math.sin(waktu * 2.2);
-        sapu.position.set(Math.sin(waktu * 0.42) * 1.3, 1.62 + Math.sin(waktu * 0.3) * 0.15, 1.1);
         toleh += (kx * 0.75 - toleh) * Math.min(1, dt * 4); angguk += (ky * 0.32 - angguk) * Math.min(1, dt * 4);
         putarDunia(T.spine_03, sumbuX, reduce ? 0 : -Math.sin(waktu * 1.4) * 0.014);
         putarDunia(T.neck_01, sumbuY, toleh * 0.4);
@@ -501,12 +473,7 @@
           T.Head.getWorldPosition(tmp); tmp.y += 0.2; tmp.project(cam);
           anda.style.transform = 'translate(' + ((tmp.x * 0.5 + 0.5) * lebar).toFixed(1) + 'px,' + ((-tmp.y * 0.5 + 0.5) * tinggi).toFixed(1) + 'px) translate(-50%,-100%)';
         }
-        R.clear();
-        mesh.forEach(function (m) { m.material = bahan; }); R.render(sc, cam);
-        R.clearDepth();
-        mata.forEach(function (g) { g.visible = false; });
-        mesh.forEach(function (m) { m.material = holo; }); R.render(sc, cam);
-        mata.forEach(function (g) { g.visible = true; });
+        R.clear(); R.render(sc, cam);
       }
       if (sekali) return;
       requestAnimationFrame(bingkai);
