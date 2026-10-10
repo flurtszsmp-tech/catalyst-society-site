@@ -199,7 +199,7 @@
       '  float b=bulat(s,vec2(sin(uT*.21)*.42,cos(uT*.17)*.12+.05),.22)+bulat(s,vec2(cos(uT*.13)*.5,sin(uT*.19)*.2-.1),.18)*.8',
       '   +bulat(s,vec2(sin(uT*.11+2.)*.3,.25),.15)*.6;',
       '  float rusuk=1.-smoothstep(0.,.1,f)*smoothstep(1.,.88,f);',
-      '  L=(b*(.7+.3*cos((f-.5)*3.14))+rusuk*.18+.05)*tepi;kt=.34;kg=.55;',
+      '  L=(b*(.7+.3*cos((f-.5)*3.14))+rusuk*.18+.05)*tepi;kt=.34;kg=.36;',
       ' }else if(uVar<1.5){',
       /* b: kerucut sorot dari atas dengan berkas, debu melayang, dan genangan cahaya di lantai */
       '  vec2 d=p-vec2(0.,.85);float sd=atan(d.x,-d.y);',
@@ -210,7 +210,7 @@
       '  float debu=step(.78,acak)*smoothstep(.09,0.,length(fract(gp)-.5-pos))*(.5+.5*sin(uT*1.3+acak*40.));',
       '  float lantai=bulat(vec2(p.x*.7,(p.y+.62)*3.2),vec2(0.),.55);',
       '  L=kerucut*berkas*.75+debu*kerucut*1.4+lantai*.45;',
-      '  if(uGelap<.5){L=((1.-kerucut*berkas)*.42*tepi+debu*kerucut*.9+lantai*.35);}',
+      '  if(uGelap<.5){L=((1.-kerucut*berkas)*.28*tepi+debu*kerucut*.9+lantai*.35);}',
       '  kt=.36;kg=.6;',
       ' }else if(uVar<2.5){',
       /* c: asap sutra, fbm yang dilipat dua kali (domain warping) */
@@ -218,7 +218,7 @@
       '  vec2 a1=vec2(fbm(q+vec2(0.,t)),fbm(q+vec2(5.2,1.3)-t));',
       '  vec2 a2=vec2(fbm(q+3.*a1+vec2(1.7,9.2)+t*1.3),fbm(q+3.*a1+vec2(8.3,2.8)));',
       '  float f=fbm(q+3.*a2);',
-      '  L=pow(smoothstep(.3,.95,f),1.4)*smoothstep(1.2,.3,length(vec2(p.x/1.2,p.y/.75)));kt=.32;kg=.55;',
+      '  L=pow(smoothstep(.25,.8,f),1.2)*smoothstep(1.6,.2,length(vec2(p.x/1.3,p.y/.8)));kt=.4;kg=.6;',
       ' }else{',
       /* d: kontur medan, naik di sekitar manekin; garis tipis tiap 1/16, tebal tiap 1/4 */
       '  float r=length(p*vec2(1.,1.25));',
@@ -227,7 +227,7 @@
       turunan ? '  float w=fwidth(k),w4=fwidth(k4);' : '  float w=.06,w4=.03;',
       '  float tipis=1.-smoothstep(w*.4,w*1.4,abs(fract(k+.5)-.5));',
       '  float tebal=1.-smoothstep(w4*.6,w4*1.8,abs(fract(k4+.5)-.5));',
-      '  L=(tipis*.45+tebal*.6)*tepi;kt=.38;kg=.5;',
+      '  L=(tipis*.45+tebal*.6)*tepi;kt=.3;kg=.5;',
       ' }',
       ' L=clamp(L,0.,1.);',
       ' gl_FragColor=uGelap>.5?vec4(vec3(L*kg),L*kg):vec4(0.,0.,0.,L*kt);}'
