@@ -10,7 +10,6 @@
    - kapsul kaca cair masuk satu per satu mengikuti gulir; kata raksasa di
      belakang mengikuti kapsul terakhir. Klik kapsul: papan penjelasan.
    - latar: kabut sutra dari fragment shader GLSL (dihitung GPU, bukan video).
-   - ?hud=1 (moodboard): tanda + dan garis ukur tipis ala HUD di atas showroom.
    Model dan GLTFLoader baru dimuat saat section mendekati layar, dan gambar
    berhenti saat section di luar layar.
    =========================================================== */
@@ -165,11 +164,9 @@
 
   /* ---------- latar: kabut sutra, digambar GPU lewat fragment shader (GLSL) ----------
      Tiap piksel dihitung dari rumus, bukan video atau gambar: fbm yang dilipat dua kali
-     (domain warping) jadi lipatan asap halus yang mengalir pelan. ?hujan=1 (moodboard)
-     menambah hujan data: kolom titik yang jatuh pelan. Tema terang: tinta tipis di atas
-     putih. Tema gelap: cahaya putih. Resolusi 0,6. */
+     (domain warping) jadi lipatan asap halus yang mengalir pelan. Tema terang: tinta
+     tipis di atas putih. Tema gelap: cahaya putih. Resolusi 0,6. */
   var lubangEl = document.getElementById('e8Lubang'), lubang = null;
-  var HUJAN = /[?&]hujan=1/.test(location.search) ? 1 : 0;
   (function () {
     if (!lubangEl) return;
     var g = lubangEl.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false });
@@ -177,7 +174,7 @@
     var VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
     var FS = [
       '#ifdef GL_FRAGMENT_PRECISION_HIGH', 'precision highp float;', '#else', 'precision mediump float;', '#endif',
-      'uniform vec2 uRes,uPusat;uniform float uT,uGelap,uHujan,uSk;',
+      'uniform vec2 uRes,uPusat;uniform float uT,uGelap;',
       'float h21(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}',
       'float ns(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);',
       ' return mix(mix(h21(i),h21(i+vec2(1.,0.)),f.x),mix(h21(i+vec2(0.,1.)),h21(i+1.),f.x),f.y);}',
@@ -189,16 +186,6 @@
       ' vec2 a1=vec2(fbm(q+vec2(0.,t)),fbm(q+vec2(5.2,1.3)-t));',
       ' vec2 a2=vec2(fbm(q+3.*a1+vec2(1.7,9.2)+t*1.3),fbm(q+3.*a1+vec2(8.3,2.8)));',
       ' float L=pow(smoothstep(.25,.8,fbm(q+3.*a2)),1.2)*smoothstep(1.6,.2,length(vec2(p.x/1.3,p.y/.8)));',
-      ' if(uHujan>.5){',
-      /* kolom titik: sebagian kolom aktif, tiap kolom punya laju sendiri, kepala terang ekor memudar */
-      '  vec2 gk=gl_FragCoord.xy/(9.*uSk);float kx=floor(gk.x);',
-      '  float ada=step(h21(vec2(kx,1.)),.3);',
-      '  float yy=gk.y+uT*(1.5+h21(vec2(kx,2.))*4.);float ky=floor(yy);',
-      '  float ekor=pow(fract(ky*.03+h21(vec2(kx,3.))),5.);',
-      '  float huruf=step(.35,h21(vec2(kx,ky)+floor(uT*3.+h21(vec2(kx,4.))*9.)*.37));',
-      '  float bentuk=smoothstep(.34,.16,length(vec2(fract(gk.x),fract(yy))-.5));',
-      '  L=max(L*.7,ada*ekor*huruf*bentuk*.9);',
-      ' }',
       ' L=clamp(L,0.,1.);',
       ' gl_FragColor=uGelap>.5?vec4(vec3(L*.6),L*.6):vec4(0.,0.,0.,L*.4);}'
     ].join('\n');
@@ -211,7 +198,7 @@
     g.bindBuffer(g.ARRAY_BUFFER, g.createBuffer());
     g.bufferData(g.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), g.STATIC_DRAW);
     var lp = g.getAttribLocation(pr, 'p'); g.enableVertexAttribArray(lp); g.vertexAttribPointer(lp, 2, g.FLOAT, false, 0, 0);
-    var U = {}; ['uRes', 'uPusat', 'uT', 'uGelap', 'uHujan', 'uSk'].forEach(function (k) { U[k] = g.getUniformLocation(pr, k); });
+    var U = {}; ['uRes', 'uPusat', 'uT', 'uGelap'].forEach(function (k) { U[k] = g.getUniformLocation(pr, k); });
     var tampilL = false, jalanL = false, lalu = 0, waktu = 0, cx = 0.5, cy = 0.5, skL = 0.6;
     function ukurL() {
       /* ukuran dari induk, bukan dari canvas sendiri, supaya tidak saling mengecil */
@@ -227,7 +214,7 @@
     }
     function gambarL() {
       g.uniform2f(U.uRes, lubangEl.width, lubangEl.height); g.uniform2f(U.uPusat, cx, cy);
-      g.uniform1f(U.uT, waktu); g.uniform1f(U.uGelap, gelap() ? 1 : 0); g.uniform1f(U.uHujan, HUJAN); g.uniform1f(U.uSk, skL);
+      g.uniform1f(U.uT, waktu); g.uniform1f(U.uGelap, gelap() ? 1 : 0);
       g.drawArrays(g.TRIANGLES, 0, 3);
     }
     function bingkaiL(tm) {
@@ -245,14 +232,6 @@
     ukurL();
     lubang = window.__lubang = { ukur: ukurL, gambar: gambarL, langkah: function (d) { waktu += d; gambarL(); } };
   })();
-
-  /* ---------- HUD tipis untuk moodboard (?hud=1): baris tanda +, garis ukur, penghitung ---------- */
-  if (/[?&]hud=1/.test(location.search) && pin) {
-    var hud = document.createElement('div');
-    hud.className = 'e8-hud'; hud.setAttribute('aria-hidden', 'true');
-    hud.innerHTML = '<i class="e8-hud-silang"><b></b><b></b><b></b><b></b><b></b></i><i class="e8-hud-ukur"></i><i class="e8-hud-ukur e8-hud-bawah"></i><span class="e8-hud-no">[[ 001 ]]</span>';
-    pin.appendChild(hud);
-  }
 
   /* ---------- 3D ---------- */
   var THREE = window.THREE, gl = { mulai: false, siap: false };
