@@ -275,11 +275,14 @@
     host.insertBefore(R.domElement, host.firstChild);
 
     /* hologram seluruh badan; memudar di paha (di bawah 1.0 meter dunia).
-       Gaya untuk moodboard lewat ?holo=e|f, tanpa parameter: garis pindai biru.
-         e  titik dan kontur (referensi hologram tim Lusion): badan dari titik halus yang
-            diterangi dari samping, bahu ke bawah larut jadi garis kontur yang menyala
-         f  kontur penuh: seluruh badan dari garis kontur rapat, terang di sisi yang kena cahaya */
-    var HOLO = (function () { try { var v = new URLSearchParams(location.search).get('holo'); return /^[ef]$/.test(v) ? v : ''; } catch (e) { return ''; } })();
+       Gaya untuk moodboard lewat ?holo=a|b|c|d (referensi: hologram tim Lusion),
+       tanpa parameter: garis pindai biru. Cahaya utama dari kiri, isi tipis dari kanan,
+       kilap tajam di leher dan wajah.
+         a  titik halus: badan murni dari titik, rapat di bagian terang, kosong di bagian gelap
+         b  titik dan filamen: titik halus, bahu ke bawah larut jadi filamen kontur yang menyala
+         c  titik dan filamen bercahaya: seperti b, filamen dan kilap lebih berpendar
+         d  filamen penuh: seluruh badan dari filamen kontur tipis yang rapat */
+    var HOLO = (function () { try { var v = new URLSearchParams(location.search).get('holo'); return /^[abcd]$/.test(v) ? v : ''; } catch (e) { return ''; } })();
     var PRE = 'uniform float uAtas;uniform float uBawah;varying float vYw;varying vec3 vPw;\n' +
       'float hh(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}\n' +
       'float nz(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(hh(i),hh(i+vec2(1.0,0.0)),f.x),mix(hh(i+vec2(0.0,1.0)),hh(i+1.0),f.x),f.y);}\n';
@@ -287,25 +290,50 @@
     var GAYA = {
       '': 'float sc=0.55+0.45*step(0.5,fract(gl_FragCoord.y/4.0+uWaktu*0.5));\n' +
           'float a=clamp(f*1.1+0.08+lam*0.16+sapu*0.4,0.0,1.0)*sc*m*kedip;\ngl_FragColor=vec4(uWarna*a,a);',
-      e: 'float kunci=max(dot(nn,normalize(vec3(0.65,0.25,0.7))),0.0);\n' +
-         'float k=clamp(pow(kunci,2.6)*0.85+pow(f,2.0)*0.25,0.0,1.0);\n' +
-         'vec2 sel=floor(gl_FragCoord.xy/2.6),lok=fract(gl_FragCoord.xy/2.6)-0.5;\n' +
-         'vec2 geser=vec2(hh(sel),hh(sel+7.3))-0.5;\n' +
-         'float titik=step(hh(sel+3.1),k*1.15)*smoothstep(0.42,0.18,length(lok-geser*0.4));\n' +
-         'float atas=smoothstep(1.34,1.5,vPw.y);\n' +
-         'float h=vPw.y*26.0+nz(vPw.xz*7.0+vec2(0.0,uWaktu*0.12))*5.0+nz(vPw.xz*17.0-uWaktu*0.08)*2.0+nz(vPw.xy*9.0)*3.0;\n' +
+      a: 'float kunci=max(dot(nn,normalize(vec3(-0.7,0.25,0.65))),0.0);\n' +
+         'float isi=max(dot(nn,normalize(vec3(0.8,0.1,0.6))),0.0);\n' +
+         'float spek=pow(max(dot(nn,normalize(vec3(-0.7,0.25,1.65))),0.0),90.0);\n' +
+         'float lum=clamp(pow(kunci,2.6)*0.95+isi*0.06+spek*0.8+pow(f,3.0)*0.3,0.0,1.0);\n' +
+         'vec2 sel=floor(gl_FragCoord.xy/2.0),lok=fract(gl_FragCoord.xy/2.0)-0.5;\n' +
+         'float titik=step(hh(sel+3.1),lum*1.1)*smoothstep(0.5,0.2,length(lok-(vec2(hh(sel),hh(sel+7.3))-0.5)*0.3));\n' +
+         'float a=clamp(titik*(0.3+0.7*lum)+lum*0.03,0.0,1.0)*m;\ngl_FragColor=vec4(uWarna*a,a);',
+      b: 'float kunci=max(dot(nn,normalize(vec3(-0.7,0.25,0.65))),0.0);\n' +
+         'float isi=max(dot(nn,normalize(vec3(0.8,0.1,0.6))),0.0);\n' +
+         'float spek=pow(max(dot(nn,normalize(vec3(-0.7,0.25,1.65))),0.0),90.0);\n' +
+         'float lum=clamp(pow(kunci,2.6)*0.95+isi*0.06+spek*0.8+pow(f,3.0)*0.3,0.0,1.0);\n' +
+         'vec2 sel=floor(gl_FragCoord.xy/2.0),lok=fract(gl_FragCoord.xy/2.0)-0.5;\n' +
+         'float titik=step(hh(sel+3.1),lum*1.1)*smoothstep(0.5,0.2,length(lok-(vec2(hh(sel),hh(sel+7.3))-0.5)*0.3));\n' +
+         'float h=vPw.y*34.0+nz(vPw.xz*9.0+vec2(0.0,uWaktu*0.12))*6.0+nz(vPw.xy*14.0-uWaktu*0.08)*2.5+nz(vPw.zy*7.0)*3.0;\n' +
          'float w=fwidth(h),jr=abs(fract(h)-0.5);\n' +
-         'float garis=(1.0-smoothstep(w*0.4,w*1.2,jr))+(1.0-smoothstep(w*0.5,w*4.0,jr))*0.3;\n' +
-         'float petak=smoothstep(0.42,0.72,nz(vPw.xy*4.0+vec2(uWaktu*0.05,0.0)));\n' +
-         'float kilat=0.45+0.55*nz(vec2(h*0.6,uWaktu*0.9));\n' +
-         'float a=clamp(titik*(0.35+k*0.65)+k*0.03+garis*petak*(1.0-atas)*kilat,0.0,1.0)*m;\ngl_FragColor=vec4(uWarna*a,a);',
-      f: 'float kunci=max(dot(nn,normalize(vec3(0.65,0.25,0.7))),0.0);\n' +
-         'float k=clamp(pow(kunci,2.0)*0.9+pow(f,2.0)*0.35,0.0,1.0);\n' +
-         'float h=vPw.y*42.0+nz(vPw.xz*6.0+vec2(0.0,uWaktu*0.12))*4.0+nz(vPw.xy*10.0)*2.5;\n' +
+         'float inti=1.0-smoothstep(w*0.25,w*0.9,jr),pendar=exp(-jr/(w*2.5));\n' +
+         'float kilat=0.4+0.6*nz(vec2(h*0.8,uWaktu*0.9));\n' +
+         'float bahu=smoothstep(1.47,1.3,vPw.y)*smoothstep(0.22,0.5,nz(vPw.xy*3.5+vec2(uWaktu*0.05,0.0)));\n' +
+         'float larut=0.3+0.7*smoothstep(1.05,1.42,vPw.y);\n' +
+         'float a=clamp(titik*(0.3+0.7*lum)*larut+(inti+pendar*0.3)*bahu*kilat*(0.55+0.6*kunci),0.0,1.0)*m;\ngl_FragColor=vec4(uWarna*a,a);',
+      c: 'float kunci=max(dot(nn,normalize(vec3(-0.7,0.25,0.65))),0.0);\n' +
+         'float isi=max(dot(nn,normalize(vec3(0.8,0.1,0.6))),0.0);\n' +
+         'float spek=pow(max(dot(nn,normalize(vec3(-0.7,0.25,1.65))),0.0),90.0);\n' +
+         'float lum=clamp(pow(kunci,2.6)*0.95+isi*0.06+spek*0.8+pow(f,3.0)*0.3,0.0,1.0);\n' +
+         'vec2 sel=floor(gl_FragCoord.xy/2.0),lok=fract(gl_FragCoord.xy/2.0)-0.5;\n' +
+         'float titik=step(hh(sel+3.1),lum*1.1)*smoothstep(0.5,0.2,length(lok-(vec2(hh(sel),hh(sel+7.3))-0.5)*0.3));\n' +
+         'float h=vPw.y*34.0+nz(vPw.xz*9.0+vec2(0.0,uWaktu*0.12))*6.0+nz(vPw.xy*14.0-uWaktu*0.08)*2.5+nz(vPw.zy*7.0)*3.0;\n' +
          'float w=fwidth(h),jr=abs(fract(h)-0.5);\n' +
-         'float garis=(1.0-smoothstep(w*0.4,w*1.2,jr))+(1.0-smoothstep(w*0.5,w*3.5,jr))*0.25;\n' +
-         'float kilat=0.6+0.4*nz(vec2(h*0.5,uWaktu*0.7));\n' +
-         'float a=clamp(garis*(0.12+k*0.95)*kilat+k*0.04,0.0,1.0)*m;\ngl_FragColor=vec4(uWarna*a,a);'
+         'float inti=1.0-smoothstep(w*0.25,w*0.9,jr),pendar=exp(-jr/(w*2.5));\n' +
+         'float kilat=0.4+0.6*nz(vec2(h*0.8,uWaktu*0.9));\n' +
+         'float bahu=smoothstep(1.47,1.3,vPw.y)*smoothstep(0.22,0.5,nz(vPw.xy*3.5+vec2(uWaktu*0.05,0.0)));\n' +
+         'float larut=0.3+0.7*smoothstep(1.05,1.42,vPw.y);\n' +
+         'float a=clamp((titik*(0.3+0.7*lum)*larut+pow(f,2.0)*0.22+(inti+pendar*0.75)*bahu*kilat)*1.15,0.0,1.0)*m;\ngl_FragColor=vec4(uWarna*a,a);',
+      d: 'float kunci=max(dot(nn,normalize(vec3(-0.7,0.25,0.65))),0.0);\n' +
+         'float isi=max(dot(nn,normalize(vec3(0.8,0.1,0.6))),0.0);\n' +
+         'float spek=pow(max(dot(nn,normalize(vec3(-0.7,0.25,1.65))),0.0),90.0);\n' +
+         'float lum=clamp(pow(kunci,2.6)*0.95+isi*0.06+spek*0.8+pow(f,3.0)*0.3,0.0,1.0);\n' +
+         'vec2 sel=floor(gl_FragCoord.xy/2.0),lok=fract(gl_FragCoord.xy/2.0)-0.5;\n' +
+         'float titik=step(hh(sel+3.1),lum*1.1)*smoothstep(0.5,0.2,length(lok-(vec2(hh(sel),hh(sel+7.3))-0.5)*0.3));\n' +
+         'float h=vPw.y*48.0+nz(vPw.xz*9.0+vec2(0.0,uWaktu*0.12))*6.0+nz(vPw.xy*14.0-uWaktu*0.08)*2.5+nz(vPw.zy*7.0)*3.0;\n' +
+         'float w=fwidth(h),jr=abs(fract(h)-0.5);\n' +
+         'float inti=1.0-smoothstep(w*0.25,w*0.9,jr),pendar=exp(-jr/(w*2.5));\n' +
+         'float kilat=0.4+0.6*nz(vec2(h*0.8,uWaktu*0.9));\n' +
+         'float a=clamp((inti*(0.15+lum)+pendar*0.4*lum)*kilat,0.0,1.0)*m;\ngl_FragColor=vec4(uWarna*a,a);'
     };
     function sisipVertex(sh) {
       sh.vertexShader = 'varying float vYw;varying vec3 vPw;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\nvPw=(modelMatrix*vec4(transformed,1.0)).xyz;vYw=vPw.y;');
