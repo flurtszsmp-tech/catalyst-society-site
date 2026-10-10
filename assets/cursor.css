@@ -1,0 +1,1 @@
+.cur-jejak{position:fixed;left:0;top:0;height:7px;width:0;pointer-events:none;z-index:998;border-radius:7px;background:linear-gradient(to right,transparent,var(--ink));opacity:0;filter:blur(1.5px);transform-origin:0 0;will-change:transform,width,opacity}@media (hover:none),(pointer:coarse){.cur-jejak{display:none}}@media (prefers-reduced-motion:reduce){.cur-jejak{display:none}}
