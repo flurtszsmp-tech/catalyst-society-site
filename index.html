@@ -225,7 +225,7 @@
   .cur,.cur-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:999;border-radius:50%;
     will-change:transform}
   /* halo bg supaya kursor tetap terlihat di section terang maupun gelap */
-  .cur{width:7px;height:7px;background:var(--ink);transform:translate(-50%,-50%);
+  .cur{width:7px;height:7px;background:var(--ink);transform:translate(-50%,-50%);transform-origin:0 0;
     box-shadow:0 0 0 1.5px var(--bg),0 0 6px rgba(0,0,0,.25)}
   .cur-ring{width:34px;height:34px;border:1px solid var(--ink);opacity:.45;
     box-shadow:0 0 0 1px rgba(128,128,128,.28);
@@ -2387,38 +2387,23 @@
 
     /* ---------- kursor kustom ---------- */
     var dot = document.querySelector('.cur'), ring = document.querySelector('.cur-ring');
-    /* Aura kursor: bayangan lembut di tema terang, cahaya di tema gelap.
-       Di atas section gelap pada tema terang, bayangan tak terlihat, jadi
-       otomatis berganti jadi cahaya. Hanya transform yang digerakkan. */
-    var aura = document.createElement('div');
-    aura.className = 'cur-aura';
-    aura.innerHTML = '<i class="a-bayang"></i><i class="a-cahaya"></i>';
-    document.body.appendChild(aura);
-    var ultimo = null;
-    /* gelap kalau tema gelap, foto, atau latar terdekat yang berwarna pekat */
-    function latarGelap(t){
-      if(document.documentElement.classList.contains('dark-theme')) return true;
-      if(!t || !t.closest) return false;
-      if(/^(IMG|VIDEO|CANVAS)$/.test(t.tagName) || t.closest('.prob-media,.hero-ring')) return true;
-      for(var el=t; el && el.nodeType===1; el=el.parentElement){
-        var m = getComputedStyle(el).backgroundColor.match(/[\d.]+/g);
-        if(m && (m.length<4 || +m[3]>.5)){ return (.299*m[0]+.587*m[1]+.114*m[2]) < 110; }
-      }
-      return false;
-    }
-    var mx=innerWidth/2, my=innerHeight/2, rx=mx, ry=my, ax=mx, ay=my, tampil=false;
-    addEventListener('mousemove', function(e){ mx=e.clientX; my=e.clientY;
-      dot.style.transform='translate('+mx+'px,'+my+'px) translate(-50%,-50%)';
-      if(!tampil){ tampil=true; ax=mx; ay=my; aura.classList.add('on'); }
-      var t = e.target;
-      if(t !== ultimo){ ultimo = t; aura.classList.toggle('cahaya', latarGelap(t)); }
-    });
-    document.addEventListener('mouseleave', function(){ tampil=false; aura.classList.remove('on'); });
+    /* Motion blur: titik memanjang searah gerak, jejak buram tipis di belakangnya.
+       Panjang dan kepekatan mengikuti kecepatan; diam berarti tidak ada efek. */
+    var jejak = document.createElement('div');
+    jejak.className = 'cur-jejak';
+    document.body.appendChild(jejak);
+    var mx=innerWidth/2, my=innerHeight/2, rx=mx, ry=my, lx=mx, ly=my, vx=0, vy=0;
+    addEventListener('mousemove', function(e){ mx=e.clientX; my=e.clientY; });
     (function loop(){
       rx += (mx-rx)*.16; ry += (my-ry)*.16;
-      ax += (mx-ax)*.1; ay += (my-ay)*.1;
+      vx += (mx-lx-vx)*.35; vy += (my-ly-vy)*.35; lx=mx; ly=my;
+      var laju = Math.sqrt(vx*vx+vy*vy), sudut = Math.atan2(vy, vx)*57.2958;
+      var regang = Math.min(laju/40, 1.2);
+      dot.style.transform='translate('+mx.toFixed(1)+'px,'+my.toFixed(1)+'px) rotate('+sudut.toFixed(1)+'deg) scale('+(1+regang).toFixed(3)+','+(1-regang*.25).toFixed(3)+') translate(-50%,-50%)';
+      jejak.style.width = Math.min(laju*3, 120).toFixed(1)+'px';
+      jejak.style.opacity = Math.min(laju/18, 1)*.55;
+      jejak.style.transform='translate('+mx.toFixed(1)+'px,'+my.toFixed(1)+'px) rotate('+sudut.toFixed(1)+'deg) translate(-100%,-50%)';
       ring.style.transform='translate('+rx+'px,'+ry+'px) translate(-50%,-50%)';
-      aura.style.transform='translate('+ax.toFixed(1)+'px,'+ay.toFixed(1)+'px)';
       requestAnimationFrame(loop);
     })();
     document.querySelectorAll('a,button,.node,.flip,.ind-card,.glass,.val-cell').forEach(function(el){

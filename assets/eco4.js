@@ -297,25 +297,42 @@
     R.domElement.setAttribute('aria-hidden', 'true');
     host.insertBefore(R.domElement, host.firstChild);
 
-    /* hologram seluruh badan; memudar di paha (di bawah 1.0 meter dunia) */
+    /* hologram seluruh badan; memudar di paha (di bawah 1.0 meter dunia).
+       Gaya untuk moodboard lewat ?holo=a|b|c|d, tanpa parameter: garis pindai biru.
+         a  kaca bening: tepi berkilau, isi hampir tembus
+         b  titik raster: badan tersusun dari titik yang membesar di tepi
+         c  irisan pindai: garis mendatar tipis yang naik pelan, seperti hasil pindai 3D
+         d  siluet tepi cahaya: badan pekat, hanya tepinya yang menyala */
+    var HOLO = (function () { try { var v = new URLSearchParams(location.search).get('holo'); return /^[abcd]$/.test(v) ? v : ''; } catch (e) { return ''; } })();
     var PRE = 'uniform float uAtas;uniform float uBawah;varying float vYw;\n';
-    var uAtas = { value: 1.17 }, uBawah = { value: 1.0 }, uWarna = { value: new THREE.Color() }, uWaktu = { value: 0 };
+    var uAtas = { value: 1.17 }, uBawah = { value: 1.0 }, uWarna = { value: new THREE.Color() }, uDasar = { value: new THREE.Color() }, uWaktu = { value: 0 };
+    var GAYA = {
+      '': 'float sc=0.55+0.45*step(0.5,fract(gl_FragCoord.y/4.0+uWaktu*0.5));\n' +
+          'float a=clamp(f*1.1+0.08+lam*0.16+sapu*0.4,0.0,1.0)*sc*m*kedip;\ngl_FragColor=vec4(uWarna*a,a);',
+      a: 'float a=clamp(0.07+f*0.95+pow(lam,10.0)*0.55+sapu*0.18,0.0,1.0)*m;\ngl_FragColor=vec4(uWarna*a,a);',
+      b: 'float k=clamp(f*1.15+lam*0.4+0.1+sapu*0.3,0.0,1.0);\n' +
+         'float d=length(fract(gl_FragCoord.xy/5.0)-0.5);\n' +
+         'float a=smoothstep(k*0.62,k*0.62-0.14,d)*m*kedip;\ngl_FragColor=vec4(uWarna*a,a);',
+      c: 'float g=abs(fract(vYw*60.0-uWaktu*0.25)-0.5);\n' +
+         'float garis=smoothstep(0.16,0.04,g);\n' +
+         'float a=clamp(garis*(0.3+f*0.9+lam*0.35)+f*0.22+sapu*0.25,0.0,1.0)*m;\ngl_FragColor=vec4(uWarna*a,a);',
+      d: 'float tepi=pow(f,2.4)+pow(lam,24.0)*0.5+sapu*0.12;\n' +
+         'vec3 c=mix(uDasar,uWarna,clamp(tepi,0.0,1.0));\ngl_FragColor=vec4(c*m,m);'
+    };
     function sisipVertex(sh) {
       sh.vertexShader = 'varying float vYw;\n' + sh.vertexShader.replace('#include <project_vertex>', '#include <project_vertex>\nvYw=(modelMatrix*vec4(transformed,1.0)).y;');
     }
-    var holo = new THREE.MeshPhongMaterial({ skinning: true, transparent: true, depthWrite: false, premultipliedAlpha: true });
+    var holo = new THREE.MeshPhongMaterial({ skinning: true, transparent: true, depthWrite: HOLO === 'd', premultipliedAlpha: true });
     holo.onBeforeCompile = function (sh) {
-      sh.uniforms.uAtas = uAtas; sh.uniforms.uBawah = uBawah; sh.uniforms.uWarna = uWarna; sh.uniforms.uWaktu = uWaktu; sisipVertex(sh);
-      sh.fragmentShader = PRE + 'uniform vec3 uWarna;uniform float uWaktu;\n' + sh.fragmentShader.replace('#include <dithering_fragment>',
+      sh.uniforms.uAtas = uAtas; sh.uniforms.uBawah = uBawah; sh.uniforms.uWarna = uWarna; sh.uniforms.uDasar = uDasar; sh.uniforms.uWaktu = uWaktu; sisipVertex(sh);
+      sh.fragmentShader = PRE + 'uniform vec3 uWarna,uDasar;uniform float uWaktu;\n' + sh.fragmentShader.replace('#include <dithering_fragment>',
         'vec3 nn=normalize(vNormal);vec3 vv=normalize(vViewPosition);\n' +
         'float f=pow(1.0-abs(dot(nn,vv)),1.5);\n' +
-        'float sc=0.55+0.45*step(0.5,fract(gl_FragCoord.y/4.0+uWaktu*0.5));\n' +
         'float sapu=smoothstep(0.04,0.0,abs(fract(uWaktu*0.22)-fract((uAtas-vYw)*2.0)));\n' +
         'float m=smoothstep(uBawah-0.2,uBawah+0.02,vYw);\n' +
         'float lam=max(dot(nn,normalize(vec3(-0.35,0.55,0.75))),0.0);\n' +
         'float kedip=0.94+0.06*sin(uWaktu*21.0)*sin(uWaktu*3.7);\n' +
-        'float a=clamp(f*1.1+0.08+lam*0.16+sapu*0.4,0.0,1.0)*sc*m*kedip;\n' +
-        'gl_FragColor=vec4(uWarna*a,a);');
+        GAYA[HOLO]);
     };
 
     var sc = new THREE.Scene(), cam = new THREE.PerspectiveCamera(22, 1, 0.1, 50);
@@ -390,7 +407,10 @@
 
     function terapkanTema() {
       var g = gelap();
-      uWarna.value.set(g ? 0xa9dcff : 0x2e4a7a).convertSRGBToLinear();
+      if (!HOLO) uWarna.value.set(g ? 0xa9dcff : 0x2e4a7a);
+      else if (HOLO === 'd') { uWarna.value.set(g ? 0xffffff : 0xf2f4f7); uDasar.value.set(g ? 0x060607 : 0x0d0e11); }
+      else uWarna.value.set(g ? 0xf2f6ff : 0x16181d);
+      uWarna.value.convertSRGBToLinear(); uDasar.value.convertSRGBToLinear();
       minta();
     }
     new MutationObserver(terapkanTema).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
