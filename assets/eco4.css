@@ -26,49 +26,14 @@ html.dark-theme .eco4{--e8-fg:#fff;--e8-fg-r:255,255,255;--e8-bg:#0a0a0c;
 .eco4{position:relative;height:320vh;width:100vw;margin-left:calc(50% - 50vw);color:var(--e8-fg)}
 .eco4-pin{position:sticky;top:0;height:100vh;min-height:620px;overflow:hidden}
 
-/* ---------- permainan cahaya dan bayangan ---------- */
-.e8-efek{position:absolute;inset:0;pointer-events:none;overflow:hidden;
-  -webkit-mask-image:linear-gradient(to bottom,transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(to bottom,transparent,#000 14%,#000 86%,transparent)}
-/* terang: bayangan kisi jendela miring, seperti sinar matahari lewat tirai */
-.e8-tirai{position:absolute;inset:-30% -20%;filter:blur(16px);mix-blend-mode:multiply;
-  background:repeating-linear-gradient(118deg,transparent 0 60px,rgba(38,44,60,.16) 100px,rgba(38,44,60,.22) 140px,transparent 190px 250px);
-  animation:e8Tirai 24s linear infinite}
-.e8-tirai.e8-t2{filter:blur(34px);background:repeating-linear-gradient(104deg,transparent 0 150px,rgba(38,44,60,.13) 230px,transparent 320px 410px);animation-duration:36s;animation-direction:reverse}
-@keyframes e8Tirai{to{transform:translateX(250px)}}
-/* berkas cahaya dari atas: bayangan halus di terang, sinar di gelap */
-.e8-berkas{position:absolute;top:-20%;width:20vw;height:140%;filter:blur(26px);transform-origin:50% 0;mix-blend-mode:multiply;
-  background:linear-gradient(to bottom,rgba(60,70,95,.16),rgba(60,70,95,.04) 60%,transparent);animation:e8Goyang 14s ease-in-out infinite}
-.e8-berkas.e8-k1{left:12%;--r:14deg}
-.e8-berkas.e8-k2{left:41%;--r:-6deg;animation-delay:-5s;width:15vw}
-.e8-berkas.e8-k3{left:67%;--r:-16deg;animation-delay:-9s}
-@keyframes e8Goyang{0%,100%{transform:rotate(var(--r))}50%{transform:rotate(calc(var(--r) + 7deg))}}
-html.dark-theme .e8-tirai{display:none}
-html.dark-theme .e8-berkas{mix-blend-mode:screen;background:linear-gradient(to bottom,rgba(220,232,255,.22),rgba(220,232,255,.05) 60%,transparent)}
-.e8-debu{position:absolute;inset:0;width:100%;height:100%}
+/* ---------- latar: lubang hitam dihitung GPU (shader di eco4.js) ---------- */
+.e8-lubang{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 
 /* ---------- showroom: bergeser ke kiri saat papan terbuka ---------- */
 .e8-ruang{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-top:60px;transition:transform 1.2s var(--e8-ez)}
 .eco4.buka .e8-ruang{transform:translateX(-22%) scale(.88)}
 .e8-lt{position:absolute;inset:0;pointer-events:none;
   -webkit-mask-image:radial-gradient(ellipse 44% 58% at 50% 52%,#000 38%,transparent 100%);mask-image:radial-gradient(ellipse 44% 58% at 50% 52%,#000 38%,transparent 100%)}
-.e8-cahaya{position:absolute;inset:0;
-  background:radial-gradient(ellipse 16% 42% at 50% 46%,rgba(10,10,14,.42),transparent 70%),
-             radial-gradient(ellipse 5% 60% at 31% 50%,rgba(10,10,14,.28),transparent 70%),
-             radial-gradient(ellipse 5% 60% at 69% 50%,rgba(10,10,14,.28),transparent 70%),
-             radial-gradient(ellipse 36% 50% at 50% 50%,rgba(150,165,190,.24),transparent 75%)}
-html.dark-theme .e8-cahaya{background:radial-gradient(ellipse 18% 44% at 50% 46%,rgba(200,214,235,.14),transparent 70%),
-             radial-gradient(ellipse 5% 60% at 31% 50%,rgba(255,255,255,.07),transparent 70%),
-             radial-gradient(ellipse 5% 60% at 69% 50%,rgba(255,255,255,.07),transparent 70%)}
-.e8-kaca{position:absolute;inset:0;
-  background:repeating-linear-gradient(90deg,rgba(255,255,255,.55) 0,rgba(255,255,255,.08) 9px,rgba(10,10,14,.07) 20px,rgba(255,255,255,.35) 22px);
-  -webkit-backdrop-filter:blur(1.2px);backdrop-filter:blur(1.2px)}
-html.dark-theme .e8-kaca{background:repeating-linear-gradient(90deg,rgba(255,255,255,.1) 0,rgba(255,255,255,0) 3px,rgba(255,255,255,0) 10px,rgba(0,0,0,.5) 19px,rgba(255,255,255,.06) 22px)}
-/* kilau yang menyapu kaca bergaris */
-.e8-sapuan{position:absolute;top:0;bottom:0;width:16%;left:-20%;filter:blur(6px);
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.95) 45%,rgba(255,255,255,.95) 55%,transparent);mix-blend-mode:overlay;
-  animation:e8Sapuan 6.5s cubic-bezier(.45,0,.55,1) infinite}
-html.dark-theme .e8-sapuan{background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);mix-blend-mode:screen}
-@keyframes e8Sapuan{0%{left:-20%}60%,100%{left:105%}}
 .e8-kata{position:absolute;left:0;right:0;top:80%;height:240px;margin-top:-120px;display:flex;align-items:center;justify-content:center}
 .e8-kata span{position:absolute;white-space:nowrap;font-family:var(--display);font-weight:500;font-size:clamp(110px,13vw,200px);letter-spacing:-.065em;line-height:1;
   color:transparent;-webkit-text-stroke:1.2px rgba(10,10,14,.45);transition:transform 1s var(--e8-ez),opacity .7s var(--e8-ez),filter 1s var(--e8-ez)}
@@ -175,6 +140,5 @@ html.dark-theme .e8-cta i{box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
 .eco4.diam{height:auto}
 .eco4.diam .eco4-pin{position:relative}
 @media (prefers-reduced-motion:reduce){
-  .e8-tirai,.e8-berkas,.e8-sapuan{animation:none}
   .e8-ruang,.e8-papan,.e8-isi,.e8-kata span{transition-duration:.01s!important}
 }

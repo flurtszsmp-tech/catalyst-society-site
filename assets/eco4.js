@@ -8,8 +8,7 @@
    - mata menyala menempel di tulang kepala; kepala selalu mengikuti kursor.
    - kapsul kaca cair masuk satu per satu mengikuti gulir; kata raksasa di
      belakang mengikuti kapsul terakhir. Klik kapsul: papan penjelasan.
-   - latar: kaca bergaris, bayangan tirai (terang) atau berkas cahaya (gelap),
-     kilau yang menyapu, debu cahaya.
+   - latar: lubang hitam dari fragment shader GLSL (dihitung GPU, bukan video).
    Model dan GLTFLoader baru dimuat saat section mendekati layar, dan gambar
    berhenti saat section di luar layar.
    =========================================================== */
@@ -162,30 +161,104 @@
     setTimeout(function () { if (inti.offsetWidth) { biasPapan = true; pasangBias(inti, 28, 26, 40, 8); } }, 80);
   }
 
-  /* ---------- debu cahaya ---------- */
-  var debu = document.getElementById('e8Debu'), dctx = debu && debu.getContext('2d'), butir = [];
-  for (var bi = 0; bi < 70; bi++) butir.push({ x: Math.random(), y: Math.random(), r: 0.6 + Math.random() * 1.8, v: 0.006 + Math.random() * 0.018, f: Math.random() * 6.28, a: 0.25 + Math.random() * 0.6 });
-  function ukurDebu() {
-    if (!dctx) return;
-    var r = Math.min(window.devicePixelRatio || 1, 2);
-    debu.width = Math.max(1, debu.clientWidth * r); debu.height = Math.max(1, debu.clientHeight * r);
-    dctx.setTransform(r, 0, 0, r, 0, 0);
-  }
-  function gambarDebu(dt, w) {
-    if (!dctx) return;
-    var W = debu.clientWidth, H = debu.clientHeight, g = gelap();
-    dctx.clearRect(0, 0, W, H);
-    dctx.shadowBlur = g ? 6 : 0; dctx.shadowColor = 'rgba(170,215,255,.9)';
-    butir.forEach(function (b) {
-      if (!reduce) { b.y -= b.v * dt; b.x += Math.sin(w * 0.3 + b.f) * 0.0004; }
-      if (b.y < -0.02) { b.y = 1.02; b.x = Math.random(); }
-      var a = b.a * (0.55 + 0.45 * Math.sin(w * 1.6 + b.f * 3));
-      a *= 0.35 + 0.65 * (1 - Math.min(1, Math.abs(b.x - 0.5) * 1.8));
-      dctx.beginPath(); dctx.arc(b.x * W, b.y * H, b.r, 0, 6.283);
-      dctx.fillStyle = g ? 'rgba(220,235,255,' + a.toFixed(3) + ')' : 'rgba(40,50,70,' + (a * 0.6).toFixed(3) + ')';
-      dctx.fill();
-    });
-  }
+  /* ---------- latar: lubang hitam, dihitung GPU lewat fragment shader ----------
+     Tiap piksel dihitung dari rumus: cakram akresi miring yang berputar (lebih cepat di
+     dalam), bayangan cakram belakang yang dibelokkan gravitasi melingkari horizon,
+     cincin foton tipis, dan horizon hitam. Tema gelap: cahaya putih di ruang gelap.
+     Tema terang: dibalik jadi tinta di atas putih. Resolusi 0,6 dari layar supaya ringan. */
+  var lubangEl = document.getElementById('e8Lubang'), lubang = null;
+  (function () {
+    if (!lubangEl) return;
+    var g = lubangEl.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false });
+    if (!g) return;
+    var VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+    var FS = [
+      '#ifdef GL_FRAGMENT_PRECISION_HIGH', 'precision highp float;', '#else', 'precision mediump float;', '#endif',
+      'uniform vec2 uRes,uPusat;uniform float uT,uRh,uGelap;',
+      'float h21(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}',
+      'float ns(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);',
+      ' return mix(mix(h21(i),h21(i+vec2(1.,0.)),f.x),mix(h21(i+vec2(0.,1.)),h21(i+1.),f.x),f.y);}',
+      'float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*ns(p);p=p*2.03+17.1;a*=.5;}return v;}',
+      'mat2 rot(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}',
+      /* cakram akresi di bidangnya sendiri: pita, putaran diferensial, serat gas */
+      'float cakram(vec2 q,float rin,float rout){',
+      ' float d=length(q);',
+      ' float pita=smoothstep(rin*.9,rin*1.1,d)*(1.-smoothstep(rin*1.45,rout,d));',
+      ' vec2 qr=rot(uT*.55*pow(rin/max(d,rin*.5),1.5))*q;',
+      ' float n=fbm(qr/rin*2.4);',
+      ' float serat=.78+.22*sin(d/rin*20.+n*9.);',
+      ' return pita*(.1+n*n*1.7)*serat*pow(rin/max(d,1e-3),1.7);}',
+      'void main(){',
+      ' vec2 p=(gl_FragCoord.xy-uPusat*uRes)/uRes.y;',
+      ' float rh=uRh,r=length(p),rin=rh*1.6,rout=rh*4.8;',
+      ' vec2 q=vec2(p.x,p.y/.17);',
+      /* sisi cakram yang mendekat lebih terang */
+      ' float c=cakram(q,rin,rout)*(1.-.5*q.x/(length(q)+1e-3));',
+      ' float depan=smoothstep(0.,-rh*.08,p.y);',
+      ' float hor=1.-smoothstep(rh*.96,rh,r);',
+      ' float a=atan(p.y,p.x);',
+      ' float lensa=cakram(vec2(cos(a),sin(a))*(rin+(r-rh*1.06)*3.4),rin,rout)',
+      '  *smoothstep(rh*1.02,rh*1.1,r)*(1.-smoothstep(rh*1.28,rh*1.9,r))*(.45+.55*abs(sin(a)));',
+      ' float cincin=exp(-pow((r-rh*1.035)/(rh*.016),2.))*.8;',
+      ' float L=c*mix(1.-hor,1.,depan)+(lensa+cincin)*(1.-hor)+exp(-r/(rh*1.5))*.06*(1.-hor);',
+      ' float v=1.-exp(-L*1.7);',
+      ' vec4 o;',
+      ' if(uGelap>.5){',
+      /* bintang ikut dibelokkan gravitasi */
+      '  vec2 ps=p-p/max(r,1e-3)*rh*rh*1.4/max(r,rh);',
+      '  vec2 id=floor(ps*95.);float s=h21(id);',
+      '  float b=step(.986,s)*smoothstep(.45,0.,length(fract(ps*95.)-.5))*(.55+.45*sin(uT*1.7+s*60.))*(1.-hor)*.7;',
+      '  o=vec4(vec3(1.,.97,.92)*v+b,clamp(max(max(v,b),hor),0.,1.));',
+      ' }else{',
+      /* tinta di atas putih, horizon hitam, cakram depan terang di atas horizon */
+      '  o=vec4(vec3(hor*v*.9),mix(v*.92,1.,hor));',
+      ' }',
+      ' gl_FragColor=o;}'
+    ].join('\n');
+    function sh(t, src) { var s = g.createShader(t); g.shaderSource(s, src); g.compileShader(s); return g.getShaderParameter(s, g.COMPILE_STATUS) ? s : null; }
+    var vs = sh(g.VERTEX_SHADER, VS), fs = sh(g.FRAGMENT_SHADER, FS);
+    if (!vs || !fs) return;
+    var pr = g.createProgram(); g.attachShader(pr, vs); g.attachShader(pr, fs); g.linkProgram(pr);
+    if (!g.getProgramParameter(pr, g.LINK_STATUS)) return;
+    g.useProgram(pr);
+    g.bindBuffer(g.ARRAY_BUFFER, g.createBuffer());
+    g.bufferData(g.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), g.STATIC_DRAW);
+    var lp = g.getAttribLocation(pr, 'p'); g.enableVertexAttribArray(lp); g.vertexAttribPointer(lp, 2, g.FLOAT, false, 0, 0);
+    var U = {}; ['uRes', 'uPusat', 'uT', 'uRh', 'uGelap'].forEach(function (k) { U[k] = g.getUniformLocation(pr, k); });
+    var tampilL = false, jalanL = false, lalu = 0, waktu = 0, cx = 0.5, cy = 0.5, rhL = 0.13;
+    function ukurL() {
+      /* ukuran dari induk, bukan dari canvas sendiri, supaya tidak saling mengecil */
+      var w = lubangEl.parentNode.clientWidth, h = lubangEl.parentNode.clientHeight; if (!w || !h) return;
+      var sk = Math.min(0.6, 1100 / w);
+      lubangEl.width = Math.round(w * sk); lubangEl.height = Math.round(h * sk);
+      g.viewport(0, 0, lubangEl.width, lubangEl.height);
+      /* pusat lubang di belakang dada manekin */
+      var rc = lubangEl.getBoundingClientRect(), rp = host.getBoundingClientRect();
+      cx = (rp.left + rp.width / 2 - rc.left) / rc.width;
+      cy = 1 - (rp.top + rp.height * (w < 820 ? 0.3 : 0.27) - rc.top) / rc.height;
+      rhL = w < 820 ? Math.min(0.12, w / h * 0.09) : 0.17;
+      gambarL();
+    }
+    function gambarL() {
+      g.uniform2f(U.uRes, lubangEl.width, lubangEl.height); g.uniform2f(U.uPusat, cx, cy);
+      g.uniform1f(U.uT, waktu); g.uniform1f(U.uRh, rhL); g.uniform1f(U.uGelap, gelap() ? 1 : 0);
+      g.drawArrays(g.TRIANGLES, 0, 3);
+    }
+    function bingkaiL(tm) {
+      if (!tampilL || document.hidden) { jalanL = false; return; }
+      var dt = lalu ? Math.min((tm - lalu) / 1000, 0.05) : 0.016; lalu = tm;
+      waktu += dt * (reduce ? 0.25 : 1);   /* kurangi gerak: tetap hidup, hanya pelan */
+      gambarL();
+      requestAnimationFrame(bingkaiL);
+    }
+    function mintaL() { if (!jalanL && tampilL && !document.hidden) { jalanL = true; lalu = 0; requestAnimationFrame(bingkaiL); } }
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { tampilL = e[0].isIntersecting; mintaL(); }, { threshold: 0 }).observe(root);
+    else { tampilL = true; mintaL(); }
+    document.addEventListener('visibilitychange', mintaL);
+    if ('ResizeObserver' in window) new ResizeObserver(ukurL).observe(lubangEl.parentNode); else window.addEventListener('resize', ukurL);
+    ukurL();
+    lubang = window.__lubang = { ukur: ukurL, gambar: gambarL, langkah: function (d) { waktu += d; gambarL(); } };
+  })();
 
   /* ---------- 3D ---------- */
   var THREE = window.THREE, gl = { mulai: false, siap: false };
@@ -371,13 +444,13 @@
     var lebar = 1, tinggi = 1;
     function ukur() {
       lebar = Math.max(1, host.clientWidth); tinggi = Math.max(1, host.clientHeight);
-      R.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); R.setSize(lebar, tinggi, false);
+      R.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5)); R.setSize(lebar, tinggi, false);
       cam.aspect = lebar / tinggi;
       var tampak = lebar < 820 ? Math.max(1.3, 1.25 / cam.aspect) : 1.12;
       var jarak = tampak / (2 * Math.tan(cam.fov * Math.PI / 360));
       var naik = lebar < 820 ? 0.12 : 0;
       cam.position.set(0, 1.42 - naik, jarak); cam.lookAt(0, 1.4 - naik, 0); cam.updateProjectionMatrix();
-      ukurDebu(); minta();
+      if (lubang) lubang.ukur(); minta();
     }
 
     /* kursor di mana saja: kepala menoleh */
@@ -397,7 +470,6 @@
       var dt = lalu ? Math.min((tm - lalu) / 1000, 0.05) : 0.016; lalu = tm; waktu += dt;
       kini += (tujuan - kini) * Math.min(1, dt * 6); if (Math.abs(tujuan - kini) < 0.0004) kini = tujuan;
       terapkan(kini);
-      gambarDebu(dt, waktu);
       if (gl.siap) {
         uWaktu.value = waktu;
         bahanPendar.opacity = 0.8 + 0.2 * Math.sin(waktu * 2.2);
@@ -447,7 +519,6 @@
   if (reduce) { root.classList.add('diam'); tujuan = kini = 1; }
   else { window.addEventListener('scroll', picu, { passive: true }); hitung(); kini = tujuan; }
   terapkan(kini);
-  ukurDebu();
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (e) { if (e[0].isIntersecting) { mulai3D(); pasangBiasKapsul(); } }, { rootMargin: '800px 0px' }).observe(root);
   } else mulai3D();

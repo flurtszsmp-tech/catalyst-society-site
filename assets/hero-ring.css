@@ -182,11 +182,19 @@ html.dark-theme .ri-muat .j{stroke:rgba(255,255,255,.18)}
   .hero.ada-roda .ri-muat .i{stroke:#fff}
 }
 
-/* ---------- varian moodboard tata letak teks (?roda=a|b) ---------- */
+/* ---------- varian moodboard tata letak teks (?roda=b|c|d) ---------- */
 @media (min-width:1000px){
   .hero.roda-var .ring-info{text-align:center}
   .hero.roda-b .ri-desc,.hero.roda-b .ri-lengkap,.hero.roda-b .ri-isi{display:none!important}
   .hero.roda-b .ri-judul{font-size:clamp(28px,2.8vw,42px);letter-spacing:-.01em;text-transform:none;line-height:1.05;margin-bottom:18px}
+  /* C: blok tetap di tengah lubang, isinya rata kiri dengan garis tipis di kiri */
+  .hero.roda-c .ring-info{text-align:left;padding-left:22px;border-left:1px solid rgba(255,255,255,.35)}
+  .hero.roda-c .ri-judul{text-transform:none;letter-spacing:-.01em;font-size:clamp(26px,2.4vw,36px);line-height:1.08}
+  /* D: nomor raksasa tipis di atas judul, akses kecil di bawahnya */
+  .hero.roda-d .ri-atas{margin-bottom:6px}
+  .hero.roda-d .ri-no{border:0!important;padding:0;font-size:clamp(64px,6vw,96px);font-weight:200;letter-spacing:-.04em;line-height:1;color:rgba(255,255,255,.9)!important}
+  .hero.roda-d .ri-muat{display:none}
+  .hero.roda-d .ri-desc{opacity:.8}
 }
 
 /* tombol untuk papan ketik dan pembaca layar: muncul hanya saat difokuskan */
