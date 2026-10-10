@@ -8,7 +8,7 @@
    - mata menyala menempel di tulang kepala; kepala selalu mengikuti kursor.
    - kapsul kaca cair masuk satu per satu mengikuti gulir; kata raksasa di
      belakang mengikuti kapsul terakhir. Klik kapsul: papan penjelasan.
-   - latar: lubang hitam dari fragment shader GLSL (dihitung GPU, bukan video).
+   - latar: fragment shader GLSL (dihitung GPU, bukan video), kandidat lewat ?latar=a|b|c|d.
    Model dan GLTFLoader baru dimuat saat section mendekati layar, dan gambar
    berhenti saat section di luar layar.
    =========================================================== */
@@ -161,59 +161,76 @@
     setTimeout(function () { if (inti.offsetWidth) { biasPapan = true; pasangBias(inti, 28, 26, 40, 8); } }, 80);
   }
 
-  /* ---------- latar: lubang hitam, dihitung GPU lewat fragment shader ----------
-     Tiap piksel dihitung dari rumus: cakram akresi miring yang berputar (lebih cepat di
-     dalam), bayangan cakram belakang yang dibelokkan gravitasi melingkari horizon,
-     cincin foton tipis, dan horizon hitam. Tema gelap: cahaya putih di ruang gelap.
-     Tema terang: dibalik jadi tinta di atas putih. Resolusi 0,6 dari layar supaya ringan. */
+  /* ---------- latar: digambar GPU lewat fragment shader (GLSL) ----------
+     Tiap piksel dihitung dari rumus, bukan video atau gambar. Kandidat latar untuk
+     moodboard, dipilih lewat ?latar=a|b|c|d. Tanpa parameter: latar polos.
+       a  kaca bergaris cair: cahaya lembut bergerak di balik kaca rusuk vertikal
+       b  sorot studio: kerucut cahaya dari atas, berkas halus, debu melayang, pantulan lantai
+       c  kabut sutra: lipatan asap halus yang mengalir pelan
+       d  garis medan: kontur tipis yang melingkari manekin dan bergeser pelan
+     Tema terang: tinta tipis di atas putih. Tema gelap: cahaya putih. Resolusi 0,6. */
   var lubangEl = document.getElementById('e8Lubang'), lubang = null;
+  var LATAR = (function () { try { var v = new URLSearchParams(location.search).get('latar'); return 'abcd'.indexOf(v) >= 0 && v ? 'abcd'.indexOf(v) : -1; } catch (e) { return -1; } })();
   (function () {
     if (!lubangEl) return;
+    if (LATAR < 0) { lubangEl.style.display = 'none'; return; }
     var g = lubangEl.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false });
     if (!g) return;
+    var turunan = !!g.getExtension('OES_standard_derivatives');
     var VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
     var FS = [
+      turunan ? '#extension GL_OES_standard_derivatives : enable' : '',
       '#ifdef GL_FRAGMENT_PRECISION_HIGH', 'precision highp float;', '#else', 'precision mediump float;', '#endif',
-      'uniform vec2 uRes,uPusat;uniform float uT,uRh,uGelap;',
+      'uniform vec2 uRes,uPusat;uniform float uT,uGelap,uVar,uSk;',
       'float h21(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}',
       'float ns(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);',
       ' return mix(mix(h21(i),h21(i+vec2(1.,0.)),f.x),mix(h21(i+vec2(0.,1.)),h21(i+1.),f.x),f.y);}',
       'float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*ns(p);p=p*2.03+17.1;a*=.5;}return v;}',
-      'mat2 rot(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}',
-      /* cakram akresi di bidangnya sendiri: pita, putaran diferensial, serat gas */
-      'float cakram(vec2 q,float rin,float rout){',
-      ' float d=length(q);',
-      ' float pita=smoothstep(rin*.9,rin*1.1,d)*(1.-smoothstep(rin*1.45,rout,d));',
-      ' vec2 qr=rot(uT*.55*pow(rin/max(d,rin*.5),1.5))*q;',
-      ' float n=fbm(qr/rin*2.4);',
-      ' float serat=.78+.22*sin(d/rin*20.+n*9.);',
-      ' return pita*(.1+n*n*1.7)*serat*pow(rin/max(d,1e-3),1.7);}',
+      'float bulat(vec2 p,vec2 c,float r){vec2 d=p-c;return exp(-dot(d,d)/(r*r));}',
       'void main(){',
+      /* p: koordinat berpusat di dada manekin, satuan tinggi layar */
       ' vec2 p=(gl_FragCoord.xy-uPusat*uRes)/uRes.y;',
-      ' float rh=uRh,r=length(p),rin=rh*1.6,rout=rh*4.8;',
-      ' vec2 q=vec2(p.x,p.y/.17);',
-      /* sisi cakram yang mendekat lebih terang */
-      ' float c=cakram(q,rin,rout)*(1.-.5*q.x/(length(q)+1e-3));',
-      ' float depan=smoothstep(0.,-rh*.08,p.y);',
-      ' float hor=1.-smoothstep(rh*.96,rh,r);',
-      ' float a=atan(p.y,p.x);',
-      ' float lensa=cakram(vec2(cos(a),sin(a))*(rin+(r-rh*1.06)*3.4),rin,rout)',
-      '  *smoothstep(rh*1.02,rh*1.1,r)*(1.-smoothstep(rh*1.28,rh*1.9,r))*(.45+.55*abs(sin(a)));',
-      ' float cincin=exp(-pow((r-rh*1.035)/(rh*.016),2.))*.8;',
-      ' float L=c*mix(1.-hor,1.,depan)+(lensa+cincin)*(1.-hor)+exp(-r/(rh*1.5))*.06*(1.-hor);',
-      ' float v=1.-exp(-L*1.7);',
-      ' vec4 o;',
-      ' if(uGelap>.5){',
-      /* bintang ikut dibelokkan gravitasi */
-      '  vec2 ps=p-p/max(r,1e-3)*rh*rh*1.4/max(r,rh);',
-      '  vec2 id=floor(ps*95.);float s=h21(id);',
-      '  float b=step(.986,s)*smoothstep(.45,0.,length(fract(ps*95.)-.5))*(.55+.45*sin(uT*1.7+s*60.))*(1.-hor)*.7;',
-      '  o=vec4(vec3(1.,.97,.92)*v+b,clamp(max(max(v,b),hor),0.,1.));',
+      ' float tepi=smoothstep(1.,.45,length(vec2(p.x/.95,p.y/.7)));',
+      ' float L=0.,kt=.3,kg=.5;',
+      ' if(uVar<.5){',
+      /* a: kaca rusuk vertikal membiaskan tiga cahaya lembut yang bergerak di belakangnya */
+      '  float f=fract(gl_FragCoord.x/(24.*uSk));',
+      '  vec2 s=p+vec2((f-.5)*.07,0.);',
+      '  float b=bulat(s,vec2(sin(uT*.21)*.42,cos(uT*.17)*.12+.05),.22)+bulat(s,vec2(cos(uT*.13)*.5,sin(uT*.19)*.2-.1),.18)*.8',
+      '   +bulat(s,vec2(sin(uT*.11+2.)*.3,.25),.15)*.6;',
+      '  float rusuk=1.-smoothstep(0.,.1,f)*smoothstep(1.,.88,f);',
+      '  L=(b*(.7+.3*cos((f-.5)*3.14))+rusuk*.18+.05)*tepi;kt=.34;kg=.55;',
+      ' }else if(uVar<1.5){',
+      /* b: kerucut sorot dari atas dengan berkas, debu melayang, dan genangan cahaya di lantai */
+      '  vec2 d=p-vec2(0.,.85);float sd=atan(d.x,-d.y);',
+      '  float kerucut=smoothstep(.36,0.,abs(sd))*smoothstep(1.9,.3,length(d));',
+      '  float berkas=.55+.45*fbm(vec2(sd*10.,uT*.12));',
+      '  vec2 gp=p*18.+vec2(0.,-uT*.35);vec2 sel=floor(gp);float acak=h21(sel);',
+      '  vec2 pos=(vec2(h21(sel+3.1),h21(sel+7.7))-.5)*.6;',
+      '  float debu=step(.78,acak)*smoothstep(.09,0.,length(fract(gp)-.5-pos))*(.5+.5*sin(uT*1.3+acak*40.));',
+      '  float lantai=bulat(vec2(p.x*.7,(p.y+.62)*3.2),vec2(0.),.55);',
+      '  L=kerucut*berkas*.75+debu*kerucut*1.4+lantai*.45;',
+      '  if(uGelap<.5){L=((1.-kerucut*berkas)*.42*tepi+debu*kerucut*.9+lantai*.35);}',
+      '  kt=.36;kg=.6;',
+      ' }else if(uVar<2.5){',
+      /* c: asap sutra, fbm yang dilipat dua kali (domain warping) */
+      '  vec2 q=p*1.5;float t=uT*.05;',
+      '  vec2 a1=vec2(fbm(q+vec2(0.,t)),fbm(q+vec2(5.2,1.3)-t));',
+      '  vec2 a2=vec2(fbm(q+3.*a1+vec2(1.7,9.2)+t*1.3),fbm(q+3.*a1+vec2(8.3,2.8)));',
+      '  float f=fbm(q+3.*a2);',
+      '  L=pow(smoothstep(.3,.95,f),1.4)*smoothstep(1.2,.3,length(vec2(p.x/1.2,p.y/.75)));kt=.32;kg=.55;',
       ' }else{',
-      /* tinta di atas putih, horizon hitam, cakram depan terang di atas horizon */
-      '  o=vec4(vec3(hor*v*.9),mix(v*.92,1.,hor));',
+      /* d: kontur medan, naik di sekitar manekin; garis tipis tiap 1/16, tebal tiap 1/4 */
+      '  float r=length(p*vec2(1.,1.25));',
+      '  float h=fbm(p*1.25+vec2(uT*.02,-uT*.015))*1.1+exp(-r*r*4.5)*.9;',
+      '  float k=h*16.,k4=h*4.;',
+      turunan ? '  float w=fwidth(k),w4=fwidth(k4);' : '  float w=.06,w4=.03;',
+      '  float tipis=1.-smoothstep(w*.4,w*1.4,abs(fract(k+.5)-.5));',
+      '  float tebal=1.-smoothstep(w4*.6,w4*1.8,abs(fract(k4+.5)-.5));',
+      '  L=(tipis*.45+tebal*.6)*tepi;kt=.38;kg=.5;',
       ' }',
-      ' gl_FragColor=o;}'
+      ' L=clamp(L,0.,1.);',
+      ' gl_FragColor=uGelap>.5?vec4(vec3(L*kg),L*kg):vec4(0.,0.,0.,L*kt);}'
     ].join('\n');
     function sh(t, src) { var s = g.createShader(t); g.shaderSource(s, src); g.compileShader(s); return g.getShaderParameter(s, g.COMPILE_STATUS) ? s : null; }
     var vs = sh(g.VERTEX_SHADER, VS), fs = sh(g.FRAGMENT_SHADER, FS);
@@ -224,24 +241,23 @@
     g.bindBuffer(g.ARRAY_BUFFER, g.createBuffer());
     g.bufferData(g.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), g.STATIC_DRAW);
     var lp = g.getAttribLocation(pr, 'p'); g.enableVertexAttribArray(lp); g.vertexAttribPointer(lp, 2, g.FLOAT, false, 0, 0);
-    var U = {}; ['uRes', 'uPusat', 'uT', 'uRh', 'uGelap'].forEach(function (k) { U[k] = g.getUniformLocation(pr, k); });
-    var tampilL = false, jalanL = false, lalu = 0, waktu = 0, cx = 0.5, cy = 0.5, rhL = 0.13;
+    var U = {}; ['uRes', 'uPusat', 'uT', 'uGelap', 'uVar', 'uSk'].forEach(function (k) { U[k] = g.getUniformLocation(pr, k); });
+    var tampilL = false, jalanL = false, lalu = 0, waktu = 0, cx = 0.5, cy = 0.5, skL = 0.6;
     function ukurL() {
       /* ukuran dari induk, bukan dari canvas sendiri, supaya tidak saling mengecil */
       var w = lubangEl.parentNode.clientWidth, h = lubangEl.parentNode.clientHeight; if (!w || !h) return;
-      var sk = Math.min(0.6, 1100 / w);
-      lubangEl.width = Math.round(w * sk); lubangEl.height = Math.round(h * sk);
+      skL = Math.min(0.6, 1100 / w);
+      lubangEl.width = Math.round(w * skL); lubangEl.height = Math.round(h * skL);
       g.viewport(0, 0, lubangEl.width, lubangEl.height);
-      /* pusat lubang di belakang dada manekin */
+      /* pusat di dada manekin */
       var rc = lubangEl.getBoundingClientRect(), rp = host.getBoundingClientRect();
       cx = (rp.left + rp.width / 2 - rc.left) / rc.width;
-      cy = 1 - (rp.top + rp.height * (w < 820 ? 0.3 : 0.27) - rc.top) / rc.height;
-      rhL = w < 820 ? Math.min(0.12, w / h * 0.09) : 0.17;
+      cy = 1 - (rp.top + rp.height * (w < 820 ? 0.4 : 0.45) - rc.top) / rc.height;
       gambarL();
     }
     function gambarL() {
       g.uniform2f(U.uRes, lubangEl.width, lubangEl.height); g.uniform2f(U.uPusat, cx, cy);
-      g.uniform1f(U.uT, waktu); g.uniform1f(U.uRh, rhL); g.uniform1f(U.uGelap, gelap() ? 1 : 0);
+      g.uniform1f(U.uT, waktu); g.uniform1f(U.uGelap, gelap() ? 1 : 0); g.uniform1f(U.uVar, LATAR); g.uniform1f(U.uSk, skL);
       g.drawArrays(g.TRIANGLES, 0, 3);
     }
     function bingkaiL(tm) {
