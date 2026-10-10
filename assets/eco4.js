@@ -4,8 +4,8 @@
    - manekin: assets/model/manekin.glb (Universal Base Characters, Quaternius, CC0),
      sudah dibagi halus. Saat dimuat, lengan diturunkan lalu permukaan dihaluskan
      dalam pose itu (Taubin) dan pose itu dijadikan pose ikat baru, supaya bahu
-     dan ketiak tidak terlihat patah. Seluruh badan hologram (shader GLSL: tepi
-     berpendar, garis pindai, sapuan cahaya), memudar di paha.
+     dan ketiak tidak terlihat patah. Seluruh badan hologram titik halus (shader
+     GLSL, referensi hologram tim Lusion), memudar di paha.
    - mata menyala menempel di tulang kepala; kepala selalu mengikuti kursor.
    - kapsul kaca cair masuk satu per satu mengikuti gulir; kata raksasa di
      belakang mengikuti kapsul terakhir. Klik kapsul: papan penjelasan.
@@ -254,21 +254,19 @@
     host.insertBefore(R.domElement, host.firstChild);
 
     /* hologram seluruh badan; memudar di paha (di bawah 1.0 meter dunia).
-       Gaya untuk moodboard lewat ?holo=a|b|c|d (referensi: hologram tim Lusion),
-       tanpa parameter: garis pindai biru. Cahaya utama dari kiri, isi tipis dari kanan,
+       Referensi: hologram tim Lusion. Dipakai: a (titik halus); b, c, d masih bisa
+       dicoba lewat ?holo=. Cahaya utama dari kiri, isi tipis dari kanan,
        kilap tajam di leher dan wajah.
          a  titik halus: badan murni dari titik, rapat di bagian terang, kosong di bagian gelap
          b  titik dan filamen: titik halus, bahu ke bawah larut jadi filamen kontur yang menyala
          c  titik dan filamen bercahaya: seperti b, filamen dan kilap lebih berpendar
          d  filamen penuh: seluruh badan dari filamen kontur tipis yang rapat */
-    var HOLO = (function () { try { var v = new URLSearchParams(location.search).get('holo'); return /^[abcd]$/.test(v) ? v : ''; } catch (e) { return ''; } })();
+    var HOLO = (function () { try { var v = new URLSearchParams(location.search).get('holo'); return /^[abcd]$/.test(v) ? v : 'a'; } catch (e) { return 'a'; } })();
     var PRE = 'uniform float uAtas;uniform float uBawah;varying float vYw;varying vec3 vPw;\n' +
       'float hh(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}\n' +
       'float nz(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(hh(i),hh(i+vec2(1.0,0.0)),f.x),mix(hh(i+vec2(0.0,1.0)),hh(i+1.0),f.x),f.y);}\n';
     var uAtas = { value: 1.17 }, uBawah = { value: 1.0 }, uWarna = { value: new THREE.Color() }, uWaktu = { value: 0 };
     var GAYA = {
-      '': 'float sc=0.55+0.45*step(0.5,fract(gl_FragCoord.y/4.0+uWaktu*0.5));\n' +
-          'float a=clamp(f*1.1+0.08+lam*0.16+sapu*0.4,0.0,1.0)*sc*m*kedip;\ngl_FragColor=vec4(uWarna*a,a);',
       a: 'float kunci=max(dot(nn,normalize(vec3(-0.7,0.25,0.65))),0.0);\n' +
          'float isi=max(dot(nn,normalize(vec3(0.8,0.1,0.6))),0.0);\n' +
          'float spek=pow(max(dot(nn,normalize(vec3(-0.7,0.25,1.65))),0.0),90.0);\n' +
@@ -324,10 +322,7 @@
       sh.fragmentShader = PRE + 'uniform vec3 uWarna;uniform float uWaktu;\n' + sh.fragmentShader.replace('#include <dithering_fragment>',
         'vec3 nn=normalize(vNormal);vec3 vv=normalize(vViewPosition);\n' +
         'float f=pow(1.0-abs(dot(nn,vv)),1.5);\n' +
-        'float sapu=smoothstep(0.04,0.0,abs(fract(uWaktu*0.22)-fract((uAtas-vYw)*2.0)));\n' +
         'float m=smoothstep(uBawah-0.2,uBawah+0.02,vYw);\n' +
-        'float lam=max(dot(nn,normalize(vec3(-0.35,0.55,0.75))),0.0);\n' +
-        'float kedip=0.94+0.06*sin(uWaktu*21.0)*sin(uWaktu*3.7);\n' +
         GAYA[HOLO]);
     };
 
@@ -403,8 +398,7 @@
 
     function terapkanTema() {
       var g = gelap();
-      if (!HOLO) uWarna.value.set(g ? 0xa9dcff : 0x2e4a7a);
-      else uWarna.value.set(g ? 0xd3e3e6 : 0x0f1115);
+      uWarna.value.set(g ? 0xd3e3e6 : 0x0f1115);
       uWarna.value.convertSRGBToLinear();
       minta();
     }
