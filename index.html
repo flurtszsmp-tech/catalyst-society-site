@@ -225,7 +225,7 @@
   .cur,.cur-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:999;border-radius:50%;
     will-change:transform}
   /* halo bg supaya kursor tetap terlihat di section terang maupun gelap */
-  .cur{width:7px;height:7px;background:var(--ink);transform:translate(-50%,-50%);transform-origin:0 0;
+  .cur{width:7px;height:7px;background:var(--ink);transform:translate(-50%,-50%);
     box-shadow:0 0 0 1.5px var(--bg),0 0 6px rgba(0,0,0,.25)}
   .cur-ring{width:34px;height:34px;border:1px solid var(--ink);opacity:.45;
     box-shadow:0 0 0 1px rgba(128,128,128,.28);
@@ -2387,22 +2387,55 @@
 
     /* ---------- kursor kustom ---------- */
     var dot = document.querySelector('.cur'), ring = document.querySelector('.cur-ring');
-    /* Motion blur: titik memanjang searah gerak, jejak buram tipis di belakangnya.
-       Panjang dan kepekatan mengikuti kecepatan; diam berarti tidak ada efek. */
-    var jejak = document.createElement('div');
-    jejak.className = 'cur-jejak';
-    document.body.appendChild(jejak);
-    var mx=innerWidth/2, my=innerHeight/2, rx=mx, ry=my, lx=mx, ly=my, vx=0, vy=0;
+    /* Lensa cair (seperti lusion.co): saat kursor bergerak, gelembung bening mengikuti
+       dengan sedikit jeda dan membiaskan isi halaman di bawahnya, pinggirnya berpelangi
+       tipis. Makin cepat, makin besar dan memanjang; diam, gelembung menghilang.
+       Chromium: pembiasan lewat filter SVG di backdrop-filter. Lainnya: buram tipis. */
+    var lensa = document.createElement('div');
+    lensa.className = 'cur-lensa';
+    document.body.appendChild(lensa);
+    if (navigator.userAgentData) (function(){
+      var N = 120, c = document.createElement('canvas'); c.width = c.height = N;
+      var g = c.getContext('2d'), im = g.createImageData(N, N), R = N/2;
+      for (var y=0; y<N; y++) for (var x=0; x<N; x++) {
+        var dx = (x+.5-R)/R, dy = (y+.5-R)/R, r = Math.sqrt(dx*dx+dy*dy), i = (y*N+x)*4;
+        /* tetes air: pembiasan paling kuat dekat tepi, nol di tengah dan di luar */
+        var k = r < 1 ? r*r*(1 - Math.pow(Math.max(r-.85,0)/.15, 2)) : 0;
+        im.data[i] = 128 - dx*127*k; im.data[i+1] = 128 - dy*127*k; im.data[i+2] = 128; im.data[i+3] = 255;
+      }
+      g.putImageData(im, 0, 0);
+      var peta = c.toDataURL();
+      function kanal(sk, m, nama){
+        return '<feDisplacementMap in="SourceGraphic" in2="peta" scale="'+sk+'" xChannelSelector="R" yChannelSelector="G" result="d'+nama+'"/>' +
+          '<feColorMatrix in="d'+nama+'" type="matrix" values="'+m+'" result="'+nama+'"/>';
+      }
+      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', 0); svg.setAttribute('height', 0); svg.setAttribute('aria-hidden', 'true');
+      svg.style.position = 'absolute';
+      svg.innerHTML = '<filter id="lensaKursor" x="0" y="0" width="'+N+'" height="'+N+'" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">' +
+        '<feImage href="'+peta+'" x="0" y="0" width="'+N+'" height="'+N+'" result="peta"/>' +
+        kanal(46, '1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0', 'r') +
+        kanal(54, '0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0', 'g') +
+        kanal(62, '0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0', 'b') +
+        '<feComposite in="r" in2="g" operator="arithmetic" k2="1" k3="1" result="rg"/>' +
+        '<feComposite in="rg" in2="b" operator="arithmetic" k2="1" k3="1"/></filter>';
+      document.body.appendChild(svg);
+      lensa.style.backdropFilter = lensa.style.webkitBackdropFilter = 'url(#lensaKursor)';
+    })();
+    var mx=innerWidth/2, my=innerHeight/2, rx=mx, ry=my, ax=mx, ay=my, lx=mx, ly=my, vx=0, vy=0, besar=0;
     addEventListener('mousemove', function(e){ mx=e.clientX; my=e.clientY; });
     (function loop(){
       rx += (mx-rx)*.16; ry += (my-ry)*.16;
-      vx += (mx-lx-vx)*.35; vy += (my-ly-vy)*.35; lx=mx; ly=my;
-      var laju = Math.sqrt(vx*vx+vy*vy), sudut = Math.atan2(vy, vx)*57.2958;
-      var regang = Math.min(laju/40, 1.2);
-      dot.style.transform='translate('+mx.toFixed(1)+'px,'+my.toFixed(1)+'px) rotate('+sudut.toFixed(1)+'deg) scale('+(1+regang).toFixed(3)+','+(1-regang*.25).toFixed(3)+') translate(-50%,-50%)';
-      jejak.style.width = Math.min(laju*3, 120).toFixed(1)+'px';
-      jejak.style.opacity = Math.min(laju/18, 1)*.55;
-      jejak.style.transform='translate('+mx.toFixed(1)+'px,'+my.toFixed(1)+'px) rotate('+sudut.toFixed(1)+'deg) translate(-100%,-50%)';
+      ax += (mx-ax)*.22; ay += (my-ay)*.22;
+      vx += (mx-lx-vx)*.3; vy += (my-ly-vy)*.3; lx=mx; ly=my;
+      var laju = Math.sqrt(vx*vx+vy*vy);
+      besar += (Math.min(laju/22, 1) - besar)*(laju/22 > besar ? .25 : .06);   /* muncul cepat, hilang pelan */
+      if (besar > .02) {
+        var regang = Math.min(laju/60, .45);
+        lensa.style.visibility = 'visible';
+        lensa.style.transform = 'translate('+ax.toFixed(1)+'px,'+ay.toFixed(1)+'px) rotate('+(Math.atan2(vy, vx)*57.2958).toFixed(1)+'deg) scale('+(besar*(1+regang)).toFixed(3)+','+(besar*(1-regang*.5)).toFixed(3)+') translate(-50%,-50%)';
+      } else lensa.style.visibility = 'hidden';
+      dot.style.transform='translate('+mx+'px,'+my+'px) translate(-50%,-50%)';
       ring.style.transform='translate('+rx+'px,'+ry+'px) translate(-50%,-50%)';
       requestAnimationFrame(loop);
     })();
