@@ -187,7 +187,7 @@
           'loading="lazy" decoding="async" width="56" height="56"></div>' +
         '<div class="com-lencana">' + lencana + '</div>' +
       '</div>' +
-      '<h3 translate="no">' + aman(k.nama) + '</h3>' +
+      '<h3 translate="no">' + aman(k.nama) + '<svg class="com-verified" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-spark4"/></svg></h3>' +
       '<div class="com-kanal" translate="no">' + KANAL[k.kanal] + '</div>' +
       '<div class="com-topik">' + topik + '</div>' +
       '<div class="com-kaki">' +

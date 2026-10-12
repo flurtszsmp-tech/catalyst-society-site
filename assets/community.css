@@ -194,3 +194,32 @@ html.dark-theme .ab-utama p,html.dark-theme .ab-sub p{color:#b5b5b5}
   .ab-sub li,.ab-sub li:nth-child(odd){padding-inline:0;border-right:0;border-bottom:1px solid var(--line)}
   .ab-sub li:last-child{border-bottom:0}
 }
+
+/* ---------- Community di landing: gaya kartu mengikuti direktori komunitas di repo Bagas,
+   isi tetap milik landing (channel, topik, tautan sosial, Join, FREE) ---------- */
+#community .com-filter{gap:8px;margin-bottom:clamp(22px,3vw,34px)}
+#community .com-filter button{padding:9px 16px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--d-gray);
+  background:none;border:1px solid var(--line);box-shadow:none}
+#community .com-filter button:hover{border-color:var(--ink);color:var(--ink);transform:none}
+#community .com-filter button.on{background:var(--black);border-color:var(--black);color:#fff}
+#community .com-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+#community .com-card{gap:14px;padding:22px 22px 20px;border-radius:20px}
+#community .com-head{margin-bottom:0}
+#community .com-logo{width:52px;height:52px;border-radius:14px;background:#fff;box-shadow:0 0 0 1px var(--line);border:0}
+#community .com-logo img{object-fit:cover}
+#community .com-badge{font-size:9.5px;letter-spacing:.14em;padding:4px 10px;border-radius:100px;border:1px solid var(--line);color:var(--muted)}
+#community .com-card h3{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:16px;letter-spacing:-.006em;line-height:1.2;margin:0}
+#community .com-verified{width:12px;height:12px;fill:var(--ink);stroke:none;opacity:.7;flex:none}
+#community .com-kanal{margin:-6px 0 0;font-size:12.5px;letter-spacing:0;text-transform:none;color:var(--muted);font-weight:300}
+#community .com-topik{gap:6px;margin:0;flex:1;align-content:flex-start}
+#community .com-topik span{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--d-gray);
+  padding:4px 10px;border-radius:100px;border:1px solid var(--line);background:none;line-height:1.5}
+#community .com-kaki{padding-top:13px}
+#community .com-join{padding:8px 14px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase}
+html.dark-theme #community .com-logo{background:#f2f2f2;box-shadow:0 0 0 1px rgba(255,255,255,.14)}
+html.dark-theme #community .com-filter button{background:none;border-color:rgba(255,255,255,.16);color:#c2c2c2}
+html.dark-theme #community .com-filter button.on{background:#fff;border-color:#fff;color:#000}
+html.dark-theme #community .com-topik span,html.dark-theme #community .com-badge{border-color:rgba(255,255,255,.16);color:#c2c2c2}
+html.dark-theme #community .com-verified{fill:#fff}
+@media (max-width:1040px){#community .com-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){#community .com-grid{grid-template-columns:1fr}}
