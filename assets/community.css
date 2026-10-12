@@ -167,17 +167,30 @@ html.dark-theme .pm-logo{border-color:rgba(255,255,255,.14)}
   .pm-row ul{animation:none}
 }
 
-/* ---------- About Us: judul lalu lima poin dalam satu baris (sesuai kertas founder) ---------- */
-.ab-judul{font-family:var(--display);font-weight:300;font-size:clamp(28px,3vw,44px);letter-spacing:-.035em;line-height:1;margin:0 0 20px}
-.ab-baris{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.ab-baris li{padding:24px 20px 26px;border-left:1px solid var(--line)}
-.ab-baris li:first-child{padding-left:0;border-left:0}
-.ab-baris b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(16px,1.35vw,19px);letter-spacing:-.02em;line-height:1.2;margin-bottom:8px}
-.ab-baris p{font-size:13px;line-height:1.55;color:var(--d-gray);margin:0}
-html.dark-theme .ab-baris{border-color:rgba(255,255,255,.14)}
-html.dark-theme .ab-baris li{border-left-color:rgba(255,255,255,.14)}
-html.dark-theme .ab-baris p{color:#b5b5b5}
+/* ---------- About Us (sesuai kertas founder): Products & Services sebagai poin utama di kiri,
+   empat poin lain di kanan. Garis tipis dan label kecil sama dengan blok angka di bawahnya. ---------- */
+.ab-blok{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.ab-utama{padding:clamp(26px,3vw,40px) clamp(24px,3vw,44px) clamp(26px,3vw,40px) 0;border-right:1px solid var(--line)}
+.ab-utama .rd-l{min-height:0}
+.ab-utama h2{font-family:var(--display);font-weight:300;font-size:clamp(32px,3.6vw,54px);line-height:1.02;letter-spacing:-.035em;
+  color:var(--ink);margin:clamp(14px,1.6vw,22px) 0 16px}
+.ab-utama p{font-size:15px;line-height:1.6;color:var(--d-gray);max-width:30ch;margin:0}
+.ab-sub{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.ab-sub li{padding:clamp(24px,2.6vw,36px) clamp(20px,2.6vw,36px);border-bottom:1px solid var(--line)}
+.ab-sub li:nth-child(odd){border-right:1px solid var(--line)}
+.ab-sub li:nth-child(n+3){border-bottom:0}
+.ab-sub b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(19px,1.7vw,24px);line-height:1.2;letter-spacing:-.022em;
+  color:var(--ink);margin-bottom:10px}
+.ab-sub p{font-size:15px;line-height:1.6;color:var(--d-gray);max-width:38ch;margin:0}
+html.dark-theme .ab-blok,html.dark-theme .ab-utama,html.dark-theme .ab-sub li{border-color:rgba(255,255,255,.16)}
+html.dark-theme .ab-utama h2,html.dark-theme .ab-sub b{color:#fff}
+html.dark-theme .ab-utama p,html.dark-theme .ab-sub p{color:#b5b5b5}
 @media (max-width:900px){
-  .ab-baris{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .ab-baris li,.ab-baris li:first-child{padding:14px 14px 14px 0;border-left:0;border-bottom:1px solid var(--line)}
+  .ab-blok{grid-template-columns:1fr}
+  .ab-utama{padding-right:0;border-right:0;border-bottom:1px solid var(--line)}
+}
+@media (max-width:600px){
+  .ab-sub{grid-template-columns:1fr}
+  .ab-sub li,.ab-sub li:nth-child(odd){padding-inline:0;border-right:0;border-bottom:1px solid var(--line)}
+  .ab-sub li:last-child{border-bottom:0}
 }
