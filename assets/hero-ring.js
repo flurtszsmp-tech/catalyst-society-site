@@ -532,8 +532,9 @@
   });
   wadah.insertBefore(foto, kanvas);
   function tataFoto() {
-    var r = jari * R_DALAM + 2;
-    /* lingkaran penuh seukuran lubang; bagian yang lewat tepi layar terpotong sendiri */
+    /* lingkaran penuh tepat seukuran lubang; sedikit lebih besar supaya tepinya terselip di bawah cincin,
+       jadi tidak ada sela antara foto dan cincin. Bagian yang lewat tepi layar terpotong sendiri. */
+    var r = jari * R_DALAM + 10;
     foto.style.cssText = 'left:' + (pusat.x - r) + 'px;top:' + (pusat.y - r) + 'px;width:' + (r * 2) + 'px;height:' + (r * 2) + 'px;border-radius:50%';
   }
 

@@ -239,7 +239,7 @@ html.dark-theme .hd-gr::before{background:linear-gradient(to top left,transparen
    Tema terang: lubang memakai abu yang sama dengan piring di belakang roda; foto program
    dibuat transparan dan memudar langsung ke abu itu. Teks di lubang jadi gelap. */
 html:not(.dark-theme) .ring-foto{background:radial-gradient(circle at 26% 36%,#dcdfe4,#cfd2d8 58%,#c3c7cf)}
-html:not(.dark-theme) .ring-foto::after{background:radial-gradient(circle at 50% 50%,rgba(208,211,217,.34),rgba(208,211,217,.5) 58%,rgba(200,204,211,.9) 90%);box-shadow:inset 0 0 46px 10px rgba(195,199,207,.75)}
+html:not(.dark-theme) .ring-foto::after{background:radial-gradient(circle at 50% 50%,rgba(208,211,217,.34),rgba(208,211,217,.46) 70%,rgba(200,204,211,.6) 100%);box-shadow:inset 0 0 26px 4px rgba(150,155,165,.35)}
 html:not(.dark-theme) .rf-isi img{opacity:.72;filter:grayscale(.25)}
 html:not(.dark-theme) .rf-isi.kosong{background:none}
 @media (min-width:1000px){
