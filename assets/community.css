@@ -89,7 +89,7 @@ html.dark-theme .com-logo{background:#fff}
 
 /* ---------- About Us ---------- */
 .about-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
-.about-grid--4{grid-template-columns:repeat(4,1fr)}
+.about-grid--5{grid-template-columns:repeat(5,1fr)}
 .about-cell{padding:26px;border-radius:20px}
 .about-cell .n{font-family:var(--display);font-size:12px;letter-spacing:.2em;
   text-transform:uppercase;color:var(--muted);margin-bottom:14px}
@@ -116,9 +116,9 @@ html.dark-theme .about-cell p{color:#b5b5b5}
 @media (max-width:1080px){
   .com-grid{grid-template-columns:repeat(3,1fr)}
   .about-grid{grid-template-columns:1fr}
-  .about-grid--4{grid-template-columns:repeat(2,1fr)}
+  .about-grid--5{grid-template-columns:repeat(2,1fr)}
 }
-@media (max-width:600px){.about-grid--4{grid-template-columns:1fr}}
+@media (max-width:600px){.about-grid--5{grid-template-columns:1fr}}
 @media (max-width:820px){
   .com-grid{grid-template-columns:repeat(2,1fr)}
 }

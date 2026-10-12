@@ -1,5 +1,6 @@
 /* Tempat video animasi. Isi menyusul, sekarang bertulis "Video coming soon". */
-.vid{padding-block:clamp(20px,4vw,56px) clamp(28px,5vw,72px)}
+/* duduk di section Introducing, di antara judul dan manekin */
+#ecosystem .vid-frame{margin:clamp(8px,1.6vw,20px) 0 clamp(28px,4vw,56px)}
 .vid-frame{position:relative;aspect-ratio:16/9;max-height:620px;width:100%;border-radius:clamp(20px,2.4vw,32px);overflow:hidden;
   background:#0b0b0e;color:#fff;display:flex;align-items:center;justify-content:center;
   border:1px solid rgba(10,10,14,.12);box-shadow:0 40px 80px -48px rgba(0,0,0,.6)}

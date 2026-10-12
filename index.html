@@ -858,13 +858,6 @@
   /* Posisi keenam simpul kini dari --baseAng (0,60,120,180,240,300) yang
      diputar oleh --spin, bukan lagi top/left tetap. */
   /* Kotak tagline: permukaan kaca (kelas .glass) */
-  .eco-note{display:flex;align-items:center;gap:20px;margin:52px auto 0;max-width:400px;
-    padding:20px 24px}
-  .eco-note .mark{width:26px;height:26px;flex:none;fill:var(--ink);
-    padding-right:20px;border-right:1px solid var(--line);box-sizing:content-box}
-  .eco-note b{font-family:var(--display);font-size:14px;font-weight:400;line-height:1.55;display:block}
-  .eco-note span{display:block;font-weight:700;color:var(--ink);font-size:14px}
-  .eco-note span{color:var(--muted);font-size:12.5px}
 
   /* ---------- industries ---------- */
   .ind-head{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:52px;flex-wrap:wrap}
@@ -1332,7 +1325,6 @@
 </style>
 <link rel="stylesheet" href="assets/appearance.css">
 <link rel="stylesheet" href="assets/community.css">
-<link rel="stylesheet" href="assets/problem.css">
 <link rel="stylesheet" href="assets/cursor.css">
 <link rel="stylesheet" href="assets/nav-dd.css">
 <link rel="stylesheet" href="assets/redefine.css">
@@ -1524,27 +1516,33 @@
         <div class="kicker" data-i18n="ab.kicker">About Us</div>
         <h2 class="h-lg" data-i18n="ab.judul">Memberdayakan Komunitas dengan Ide dan Inovasi</h2>
       </div>
-      <p class="lead" data-i18n="ab.lead">Produk &amp; Layanan</p>
+      <p class="lead" data-i18n="ab.lead">Lima pilar yang kami bangun untuk generasi muda Indonesia.</p>
+      
     </div>
 
-    <div class="about-grid about-grid--4 stagger">
+    <div class="about-grid about-grid--5 stagger">
       <div class="about-cell glass">
-        <div class="ab-top"><span class="ab-ic"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg></span><span class="n">01</span></div>
+        <div class="ab-top"><span class="ab-ic"><svg viewBox="0 0 24 24"><use href="#i-cube"/></svg></span><span class="n">01</span></div>
+        <b data-i18n="ab1.j"></b>
+        <p data-i18n="ab1.d"></p>
+      </div>
+      <div class="about-cell glass">
+        <div class="ab-top"><span class="ab-ic"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg></span><span class="n">02</span></div>
         <b data-i18n="ab4.j"></b>
         <p data-i18n="ab4.d"></p>
       </div>
       <div class="about-cell glass">
-        <div class="ab-top"><span class="ab-ic"><svg viewBox="0 0 24 24"><use href="#i-cube"/></svg></span><span class="n">02</span></div>
+        <div class="ab-top"><span class="ab-ic"><svg viewBox="0 0 24 24"><use href="#i-target"/></svg></span><span class="n">03</span></div>
         <b data-i18n="ab5.j"></b>
         <p data-i18n="ab5.d"></p>
       </div>
       <div class="about-cell glass">
-        <div class="ab-top"><span class="ab-ic"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg></span><span class="n">03</span></div>
+        <div class="ab-top"><span class="ab-ic"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg></span><span class="n">04</span></div>
         <b data-i18n="ab2.j"></b>
         <p data-i18n="ab2.d"></p>
       </div>
       <div class="about-cell glass">
-        <div class="ab-top"><span class="ab-ic"><svg viewBox="0 0 24 24"><use href="#i-users"/></svg></span><span class="n">04</span></div>
+        <div class="ab-top"><span class="ab-ic"><svg viewBox="0 0 24 24"><use href="#i-users"/></svg></span><span class="n">05</span></div>
         <b data-i18n="ab3.j"></b>
         <p data-i18n="ab3.d"></p>
       </div>
@@ -1587,6 +1585,13 @@
       </div>
     </div>
 
+    <div class="vid-frame rv" role="img" aria-label="Video coming soon">
+      <span class="vid-hatch" aria-hidden="true"></span>
+      <button type="button" class="vid-play" disabled aria-label="Play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></button>
+      <div class="vid-bar" aria-hidden="true"><span class="vid-t">0:00</span><span class="vid-trk"><i></i></span><span class="vid-t">0:00</span></div>
+      <div class="vid-teks"><span class="vid-k" data-i18n="vid.kicker">Video</span><b data-i18n="vid.soon">Video coming soon</b></div>
+    </div>
+
     <div class="eco4" id="eco4">
       <div class="eco4-pin" id="e8Pin">
         <div class="e8-ruang">
@@ -1623,57 +1628,12 @@
         </aside>
       </div>
     </div>
-
-    <div class="eco-note glass rv">
-      <svg class="mark" viewBox="0 0 24 24"><use href="#i-spark4"/></svg>
-      <div><b data-i18n="note.satu">Satu ekosistem.<br>Semua akses.</b><span data-i18n="note.tanpa">Tanpa batas.</span></div>
-    </div>
   </div>
 </section>
 
-<!-- video animasi: tempat disiapkan, isi menyusul -->
-<section class="band vid" id="video" aria-label="Video">
-  <div class="wrap">
-    <div class="vid-frame rv" role="img" aria-label="Video coming soon">
-      <span class="vid-hatch" aria-hidden="true"></span>
-      <button type="button" class="vid-play" disabled aria-label="Play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></button>
-      <div class="vid-bar" aria-hidden="true"><span class="vid-t">0:00</span><span class="vid-trk"><i></i></span><span class="vid-t">0:00</span></div>
-      <div class="vid-teks"><span class="vid-k" data-i18n="vid.kicker">Video</span><b data-i18n="vid.soon">Video coming soon</b></div>
-    </div>
-  </div>
-</section>
 
-<section class="stat-rail wrap">
-  <div class="hero-marquee">
-    <ul>
-      <li>Connect<span></span></li><li>Collaborate</li><li>Create</li><li>Change</li>
-      <li>Learn</li><li>Build</li><li>Impact</li>
-      <li>Connect</li><li>Collaborate</li><li>Create</li><li>Change</li>
-      <li>Learn</li><li>Build</li><li>Impact</li>
-    </ul>
-  </div>
-</section>
 
-<!-- community partners: marquee logo -->
-<section class="pm-band" id="partners" aria-label="Community Partners">
-  <div class="wrap">
-    <div class="shead shead--center rv">
-      <div class="kicker" data-i18n="pm.kicker">Community Partners</div>
-      <h2 class="h-md" data-i18n="pm.judul">Bertumbuh bersama komunitas Indonesia.</h2>
-    </div>
-  </div>
-  <div class="pm" id="pmMarquee"></div>
-</section>
 
-<section class="pm-band" id="corporate" aria-label="Corporate Partners">
-  <div class="wrap">
-    <div class="shead shead--center rv">
-      <div class="kicker" data-i18n="cp.kicker">Corporate Partners</div>
-      <h2 class="h-md" data-i18n="cp.judul">Didukung mitra korporat dan industri.</h2>
-    </div>
-  </div>
-  <div class="pm"><div class="pm-row pm-a"><ul><li><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="Coinvestasi" decoding="async" height="52"></span></li><li><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="Indonesia Blockchain Week" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li></ul></div></div>
-</section>
 
 
 <!-- industries -->
@@ -1740,16 +1700,39 @@
         </div>
       </article>
     </div>
-
-    <div class="partners rv">
-      <div class="pl" data-i18n="ind.mitra">100+ Community Partners</div>
-      <div class="track">
-        <ul>
-          <li translate="no">BISA AI</li><li translate="no">BLOCKPLAY</li><li translate="no">YOT</li><li translate="no">BISNIS MUDA</li><li translate="no">AICO</li><li translate="no">TRADIX COMMUNITY</li><li translate="no">BUILD CLUB</li><li translate="no">NUSANTARA CODE</li><li data-i18n="ind.lainnya">dan lainnya.</li>
-          <li translate="no">BISA AI</li><li translate="no">BLOCKPLAY</li><li translate="no">YOT</li><li translate="no">BISNIS MUDA</li><li translate="no">AICO</li><li translate="no">TRADIX COMMUNITY</li><li translate="no">BUILD CLUB</li><li translate="no">NUSANTARA CODE</li><li>dan lainnya.</li>
-        </ul>
-      </div>
     </div>
+  </div>
+</section>
+
+<!-- community partners: marquee logo -->
+<section class="pm-band" id="partners" aria-label="Community Partners">
+  <div class="wrap">
+    <div class="shead shead--center rv">
+      <div class="kicker" data-i18n="pm.kicker">Community Partners</div>
+      <h2 class="h-md" data-i18n="pm.judul">Bertumbuh bersama komunitas Indonesia.</h2>
+    </div>
+  </div>
+  <div class="pm" id="pmMarquee"></div>
+</section>
+
+<section class="pm-band" id="corporate" aria-label="Corporate Partners">
+  <div class="wrap">
+    <div class="shead shead--center rv">
+      <div class="kicker" data-i18n="cp.kicker">Corporate Partners</div>
+      <h2 class="h-md" data-i18n="cp.judul">Didukung mitra korporat dan industri.</h2>
+    </div>
+  </div>
+  <div class="pm"><div class="pm-row pm-a"><ul><li><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="Coinvestasi" decoding="async" height="52"></span></li><li><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="Indonesia Blockchain Week" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-logo--gelap"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li></ul></div></div>
+</section>
+
+<section class="stat-rail wrap">
+  <div class="hero-marquee">
+    <ul>
+      <li>Connect<span></span></li><li>Collaborate</li><li>Create</li><li>Change</li>
+      <li>Learn</li><li>Build</li><li>Impact</li>
+      <li>Connect</li><li>Collaborate</li><li>Create</li><li>Change</li>
+      <li>Learn</li><li>Build</li><li>Impact</li>
+    </ul>
   </div>
 </section>
 
