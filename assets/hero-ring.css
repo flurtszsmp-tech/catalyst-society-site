@@ -239,8 +239,8 @@ html.dark-theme .hd-gr::before{background:linear-gradient(to top left,transparen
    Tema terang: lubang memakai abu yang sama dengan piring di belakang roda; foto program
    dibuat transparan dan memudar langsung ke abu itu. Teks di lubang jadi gelap. */
 html:not(.dark-theme) .ring-foto{background:radial-gradient(circle at 26% 36%,#dcdfe4,#cfd2d8 58%,#c3c7cf)}
-html:not(.dark-theme) .ring-foto::after{background:radial-gradient(circle at 50% 50%,rgba(205,208,214,.45),rgba(205,208,214,.7) 55%,rgba(200,204,211,.97) 84%);box-shadow:inset 0 0 70px 18px rgba(195,199,207,.9)}
-html:not(.dark-theme) .rf-isi img{opacity:.5;filter:grayscale(.35) contrast(.9)}
+html:not(.dark-theme) .ring-foto::after{background:radial-gradient(circle at 50% 50%,rgba(208,211,217,.34),rgba(208,211,217,.5) 58%,rgba(200,204,211,.9) 90%);box-shadow:inset 0 0 46px 10px rgba(195,199,207,.75)}
+html:not(.dark-theme) .rf-isi img{opacity:.72;filter:grayscale(.25)}
 html:not(.dark-theme) .rf-isi.kosong{background:none}
 @media (min-width:1000px){
   html:not(.dark-theme) .hero.ada-roda .ring-info,
@@ -257,3 +257,6 @@ html:not(.dark-theme) .rf-isi.kosong{background:none}
   html:not(.dark-theme) .hero.ada-roda .ri-muat .i{stroke:#0a0a0e}
   html:not(.dark-theme) .hero.roda-c .ring-info{border-left-color:rgba(10,10,14,.3)}
 }
+
+/* HP: panel info roda tidak menempel ke tepi layar */
+@media (max-width:999px){.hero.ada-roda .ring-info{padding-left:18px;padding-right:18px;box-sizing:border-box}}
