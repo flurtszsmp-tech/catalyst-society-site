@@ -224,7 +224,7 @@ window.CATALYST_I18N = {
     /* footer */
     'foot.tagline':'Learn. Earn. Impact.',
     'foot.ekosistem':'Ekosistem', 'foot.program':'Program', 'foot.aksi':'Aksi', 'foot.terhubung':'Terhubung',
-    'foot.hak':'© 2027 Catalyst Society. Accelerating Future Builders.'
+    'foot.hak':'© 2026 Catalyst Society. Accelerating Future Builders.', 'foot.eko':'Ekosistem', 'foot.prog':'Program', 'foot.aksi':'Aksi', 'foot.terhubung':'Terhubung'
   },
 
   en: {
@@ -432,7 +432,7 @@ window.CATALYST_I18N = {
 
     'foot.tagline':'Learn. Earn. Impact.',
     'foot.ekosistem':'Ecosystem', 'foot.program':'Programs', 'foot.aksi':'Actions', 'foot.terhubung':'Connect',
-    'foot.hak':'© 2027 Catalyst Society. Accelerating Future Builders.'
+    'foot.hak':'© 2026 Catalyst Society. Accelerating Future Builders.', 'foot.eko':'Ecosystem', 'foot.prog':'Programs', 'foot.aksi':'Action', 'foot.terhubung':'Connect'
   },
 
   zh: {
@@ -640,7 +640,7 @@ window.CATALYST_I18N = {
 
     'foot.tagline':'学习。收获。影响。',
     'foot.ekosistem':'生态', 'foot.program':'项目', 'foot.aksi':'行动', 'foot.terhubung':'联系',
-    'foot.hak':'© 2027 Catalyst Society. Accelerating Future Builders.'
+    'foot.hak':'© 2026 Catalyst Society. Accelerating Future Builders.', 'foot.eko':'生态', 'foot.prog':'项目', 'foot.aksi':'行动', 'foot.terhubung':'联系'
   }
 };
 

@@ -57,3 +57,7 @@ html .eco-hub::after{opacity:.3}
 .eco-current{stroke:#72787e;opacity:.65}
 html.dark-theme .eco-current{stroke:#fff;opacity:.85}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* Header tetap terbaca di atas roda hitam dan foto gelap: latar header lebih padat */
+html :is(.nav,.nav.scrolled,.nav.di-gelap){background:color-mix(in srgb,var(--bg) 82%,transparent)!important;
+  backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2)}
