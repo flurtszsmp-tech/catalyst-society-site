@@ -41,12 +41,17 @@ window.CATALYST_I18N = {
     'com.semua':'Semua', 'com.gabung':'Gabung', 'com.segera':'Segera',
     'com.catatan':'Daftar komunitas terus bertambah seiring kolaborasi baru berjalan.',
     'pm.kicker':'Mitra Komunitas',
+    'cp.kicker':'Mitra Korporat', 'cp.judul':'Didukung mitra korporat dan industri.',
     'pm.judul':'Bertumbuh bersama komunitas Indonesia.',
 
     /* about us */
     'ab.kicker':'Tentang Kami',
     'ab.judul':'Memberdayakan Komunitas dengan Ide dan Inovasi',
-    'ab.lead':'Kami membangun program inklusif untuk memberdayakan generasi muda di seluruh Indonesia, dengan akses ke mentor, modal, jaringan yang luas, dan berbagai sumber daya untuk menyelesaikan masalah dan tantangan, demi mempercepat pertumbuhan sektor industri masa depan.',
+    'ab.lead':'Produk &amp; Layanan',
+    'ab4.j':'Ide &amp; Inovasi',
+    'ab4.d':'Ruang untuk melahirkan ide dan mengubahnya jadi inovasi bersama komunitas.',
+    'ab5.j':'Solusi Inovatif',
+    'ab5.d':'Solusi nyata untuk masalah dan tantangan lewat kolaborasi lintas industri.',
     'ab1.j':'Produk &amp; Layanan',
     'ab1.d':'Enam program terintegrasi, dari Catalyst Passport sampai Catalyst Summit, dalam satu platform.',
     'ab2.j':'Investasi Strategis',
@@ -98,7 +103,7 @@ window.CATALYST_I18N = {
     'eco.career.s':'Jalur karier yang terbuka',
     'eco.biz.s':'Dari ide menjadi produk',
     'eco.cap.s':'Akses ke investor dan pendanaan',
-    'hero.desc':'Catalyst Society adalah ekosistem generasi muda yang menghubungkan builders, innovators, investors, dan changemakers menjadi dampak nyata.',
+    'hero.desc':'Kami membangun program inklusif untuk memberdayakan generasi muda di seluruh Indonesia, dengan akses ke mentor, modal, jaringan yang luas, dan berbagai sumber daya.',
 
     /* statistik */
     'stat.members':'Anggota Aktif', 'stat.projects':'Proyek Aktif',
@@ -148,7 +153,7 @@ window.CATALYST_I18N = {
     'note.satu':'Satu ekosistem.<br>Semua akses.<br>', 'note.tanpa':'Tanpa batas.',
 
     /* bagian 03 */
-    's3.judul':'Satu Ekosistem.<br>Lima Industri.',
+    's3.judul':'Lima Industri.<br>Dalam Satu Ekosistem.',
     's4.judul':'Bukan sekadar komunitas.',
     's3.desc':'Terhubung ke <strong>Industri</strong> melalui berbagai<br><strong>Komunitas</strong> di Sektor berikut.',
     'ind.ai.d':'Artificial Intelligence, Software, Data, dan Emerging Technology.',
@@ -255,12 +260,17 @@ window.CATALYST_I18N = {
     'com.semua':'All', 'com.gabung':'Join', 'com.segera':'Soon',
     'com.catatan':'The list keeps growing as new collaborations begin.',
     'pm.kicker':'Community Partners',
+    'cp.kicker':'Corporate Partners', 'cp.judul':'Backed by corporate and industry partners.',
     'pm.judul':'Growing together with Indonesian communities.',
 
     /* about us */
     'ab.kicker':'About Us',
     'ab.judul':'Empowering Communities with Ideas and Innovation',
-    'ab.lead':'We build inclusive programs that aim to empower young generations across Indonesia, offering access to mentors, capital, extensive networks, and resources to solve problems and challenges to accelerate the growth of future industrial sectors.',
+    'ab.lead':'Products &amp; Services',
+    'ab4.j':'Ideas &amp; Innovations',
+    'ab4.d':'A space to spark ideas and turn them into innovation together with the community.',
+    'ab5.j':'Innovative Solutions',
+    'ab5.d':'Real solutions to problems and challenges through cross industry collaboration.',
     'ab1.j':'Product &amp; Service',
     'ab1.d':'Six integrated programs, from Catalyst Passport to Catalyst Summit, in one platform.',
     'ab2.j':'Strategic Investments',
@@ -311,7 +321,7 @@ window.CATALYST_I18N = {
     'eco.career.s':'Open career pathways',
     'eco.biz.s':'From idea to product',
     'eco.cap.s':'Access to investors and funding',
-    'hero.desc':'Catalyst Society is an ecosystem for the young generation, connecting builders, innovators, investors, and changemakers into real impact.',
+    'hero.desc':'We build inclusive programs that aim to empower young generations across Indonesia, offering access to mentors, capital, extensive networks, and resources.',
 
     'stat.members':'Active Members', 'stat.projects':'Active Projects',
     'stat.funded':'Projects Funded', 'stat.countries':'Countries',
@@ -357,7 +367,7 @@ window.CATALYST_I18N = {
     'node.cap':'Capital', 'node.cap.d':'Access funding and investors to scale up your idea.',
     'note.satu':'One ecosystem.<br>Full access.<br>', 'note.tanpa':'No limits.',
 
-    's3.judul':'One Ecosystem.<br>Five Industries.',
+    's3.judul':'Five Industries.<br>In One Ecosystem.',
     's4.judul':'More than a community.',
     's3.desc':'Connected to <strong>Industries</strong> through various<br><strong>Communities</strong> in these sectors.',
     'ind.ai.d':'Artificial Intelligence, Software, Data, and Emerging Technology.',
@@ -457,12 +467,17 @@ window.CATALYST_I18N = {
     'com.semua':'全部', 'com.gabung':'加入', 'com.segera':'即将开放',
     'com.catatan':'随着新的合作展开，社群名单会持续增加。',
     'pm.kicker':'合作社群',
+    'cp.kicker':'企业伙伴', 'cp.judul':'获得企业与产业伙伴的支持。',
     'pm.judul':'与印尼社群共同成长。',
 
     /* about us */
     'ab.kicker':'关于我们',
     'ab.judul':'以创意与创新赋能社群',
-    'ab.lead':'我们打造包容性的项目，致力于赋能印尼各地的年轻一代，提供导师、资金、广泛的人脉和各类资源，帮助他们解决问题与挑战，加速未来产业的发展。',
+    'ab.lead':'产品与服务',
+    'ab4.j':'创意与创新',
+    'ab4.d':'激发创意，并与社群一起把创意变成创新的空间。',
+    'ab5.j':'创新解决方案',
+    'ab5.d':'通过跨行业合作，为问题与挑战提供真实的解决方案。',
     'ab1.j':'产品与服务',
     'ab1.d':'六大整合项目，从 Catalyst Passport 到 Catalyst Summit，尽在一个平台。',
     'ab2.j':'战略投资',
@@ -513,7 +528,7 @@ window.CATALYST_I18N = {
     'eco.career.s':'开放的职业路径',
     'eco.biz.s':'从想法到产品',
     'eco.cap.s':'对接投资人与资金',
-    'hero.desc':'Catalyst Society 是面向年轻一代的生态系统，连接创造者、创新者、投资人与变革者，把想法变成真实的影响力。',
+    'hero.desc':'我们打造包容性的项目，致力于赋能印尼各地的年轻一代，提供导师、资金、广泛的人脉和各类资源。',
 
     'stat.members':'活跃成员', 'stat.projects':'活跃项目',
     'stat.funded':'已获资助项目', 'stat.countries':'覆盖国家',
@@ -559,7 +574,7 @@ window.CATALYST_I18N = {
     'node.cap':'资本', 'node.cap.d':'获得资金与投资人，让你的想法规模化。',
     'note.satu':'一个生态。<br>全面开放。<br>', 'note.tanpa':'没有边界。',
 
-    's3.judul':'一个生态。<br>五大行业。',
+    's3.judul':'五大行业。<br>同一个生态。',
     's4.judul':'不只是一个社群。',
     's3.desc':'通过各类<strong>社群</strong>连接以下领域的<br><strong>行业</strong>。',
     'ind.ai.d':'人工智能、软件、数据与新兴技术。',
