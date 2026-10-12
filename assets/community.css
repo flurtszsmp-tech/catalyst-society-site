@@ -223,3 +223,33 @@ html.dark-theme #community .com-topik span,html.dark-theme #community .com-badge
 html.dark-theme #community .com-verified{fill:#fff}
 @media (max-width:1040px){#community .com-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:600px){#community .com-grid{grid-template-columns:1fr}}
+
+/* kotak cari komunitas: kapsul di kanan baris saringan, seperti direktori di repo Bagas */
+#community .com-tools{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:clamp(22px,3vw,34px)}
+#community .com-tools .com-filter{margin-bottom:0}
+#community .com-search{display:flex;align-items:center;gap:9px;padding:9px 16px;border-radius:100px;border:1px solid var(--line);
+  min-width:230px;transition:border-color .24s,box-shadow .24s;cursor:text}
+#community .com-search svg{width:14px;height:14px;color:var(--muted);flex:none}
+#community .com-search input{border:0;outline:0;background:none;width:100%;min-width:0;font:inherit;font-size:13px;color:var(--ink)}
+#community .com-search input::placeholder{color:var(--muted)}
+#community .com-search:focus-within{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+#community .com-kosong{grid-column:1/-1;padding:48px 0;text-align:center;font-size:14px;color:var(--muted)}
+html.dark-theme #community .com-search{border-color:rgba(255,255,255,.16)}
+html.dark-theme #community .com-search:focus-within{border-color:#fff;box-shadow:0 0 0 1px #fff}
+@media (max-width:700px){#community .com-search{min-width:0;width:100%}}
+
+/* ---------- Founders (akhir landing): daftar bergaris tipis di kiri, foto di kanan,
+   bahasa visual sama dengan About Us dan blok angka ---------- */
+.fd-kiri .rd-l{min-height:0}
+.fd-blok{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.75fr);gap:clamp(28px,4vw,64px);align-items:end}
+.fd-judul{font-family:var(--display);font-weight:300;font-size:clamp(30px,3.4vw,52px);line-height:1.04;letter-spacing:-.035em;
+  color:var(--ink);margin:clamp(14px,1.6vw,22px) 0 clamp(26px,3vw,40px);max-width:12ch}
+.fd-daftar{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.fd-daftar li{display:flex;flex-direction:column;gap:6px;padding:clamp(16px,1.8vw,22px) 0;border-bottom:1px solid var(--line)}
+.fd-daftar b{font-family:var(--display);font-weight:400;font-size:clamp(20px,1.8vw,26px);letter-spacing:-.022em;line-height:1.15;color:var(--ink)}
+.fd-daftar span{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.fd-foto{margin:0;border-radius:clamp(16px,1.8vw,24px);overflow:hidden;background:#0a0a0e;aspect-ratio:3/2}
+.fd-foto img{display:block;width:100%;height:100%;object-fit:cover}
+html.dark-theme .fd-daftar,html.dark-theme .fd-daftar li{border-color:rgba(255,255,255,.16)}
+html.dark-theme .fd-judul,html.dark-theme .fd-daftar b{color:#fff}
+@media (max-width:900px){.fd-blok{grid-template-columns:1fr}.fd-foto{order:-1}}

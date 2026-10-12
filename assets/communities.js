@@ -197,9 +197,23 @@
     '</article>';
   }
 
+  /* Saringan kanal dan kata kunci bekerja bersama. Kata kunci dicocokkan ke nama,
+     kanal, dan topik, tanpa membedakan huruf besar kecil. */
+  var kanalAktif = '', kunci = '';
+  function teks(kode) {
+    var K = window.CATALYST_I18N, l = (document.documentElement.lang || 'id').slice(0, 2);
+    return (K && ((K[l] && K[l][kode]) || (K.id && K.id[kode]))) || '';
+  }
   function gambar(kanal) {
-    var daftar = kanal ? DATA.filter(function (k) { return k.kanal === kanal; }) : DATA;
-    wadah.innerHTML = daftar.map(kartu).join('');
+    if (kanal != null) kanalAktif = kanal;
+    var q = kunci.trim().toLowerCase();
+    var daftar = DATA.filter(function (k) {
+      if (kanalAktif && k.kanal !== kanalAktif) return false;
+      if (!q) return true;
+      return [k.nama, KANAL[k.kanal] || '', k.topik.join(' ')].join(' ').toLowerCase().indexOf(q) >= 0;
+    });
+    wadah.innerHTML = daftar.length ? daftar.map(kartu).join('')
+      : '<p class="com-kosong" data-i18n="com.kosong">' + (teks('com.kosong') || 'Komunitas tidak ditemukan.') + '</p>';
     Array.prototype.forEach.call(wadah.children, function (c, i) {
       c.style.setProperty('--i', i % 8);
     });
@@ -223,6 +237,15 @@
       });
       gambar(tombol.dataset.kanal);
     });
+  }
+
+  var cari = document.getElementById('comCari');
+  if (cari) {
+    cari.addEventListener('input', function () { kunci = cari.value; gambar(null); });
+    /* placeholder ikut bahasa aktif */
+    var pasangPh = function () { var t = teks('com.cari'); if (t) { cari.placeholder = t; cari.setAttribute('aria-label', t); } };
+    pasangPh();
+    document.addEventListener('bahasa-berubah', pasangPh);
   }
 
   /* Hitung komunitas per kanal untuk angka di tombol saringan. */

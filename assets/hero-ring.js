@@ -95,17 +95,17 @@
 
   /* ---------- data program ---------- */
   var PROGRAM = [
-    { nama: 'passport', judul: 'Catalyst Passport', akses: 'free', foto: '',
+    { nama: 'passport', judul: 'Catalyst Passport', akses: 'free', foto: 'assets/img/program/passport.webp', fokus: '62% 82%',
       ikon: 'M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM15 10a3 3 0 1 1-6 0a3 3 0 0 1 6 0zM9 16h6' },
-    { nama: 'finder', judul: 'Catalyst Finder', akses: 'free', foto: '',
+    { nama: 'finder', judul: 'Catalyst Finder', akses: 'free', foto: 'assets/img/program/finder.webp', fokus: '62% 82%',
       ikon: 'M17 11a6 6 0 1 1-12 0a6 6 0 0 1 12 0zM20 20l-4.5-4.5' },
-    { nama: 'academy', judul: 'Catalyst Academy', akses: 'premium', foto: '',
+    { nama: 'academy', judul: 'Catalyst Academy', akses: 'premium', foto: 'assets/img/program/academy.webp', fokus: '62% 82%',
       ikon: 'M12 4 2 9l10 5 10-5-10-5zM6 11.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5M22 9v5' },
-    { nama: 'labs', judul: 'Catalyst Labs', akses: 'premium', foto: 'assets/img/program/labs.webp', fokus: '42% 50%',
+    { nama: 'labs', judul: 'Catalyst Labs', akses: 'premium', foto: 'assets/img/program/labs.webp', fokus: '62% 82%',
       ikon: 'M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3M7 15h10' },
-    { nama: 'ventures', judul: 'Catalyst Ventures', akses: 'premium', foto: 'assets/img/program/ventures.webp', fokus: '50% 50%',
+    { nama: 'ventures', judul: 'Catalyst Ventures', akses: 'premium', foto: 'assets/img/program/ventures.webp', fokus: '62% 82%',
       ikon: 'M12 3c3.5 2 5 5.5 5 9l-3 3H10l-3-3c0-3.5 1.5-7 5-9zM10 18c-1 1-1.5 3-1.5 3s2-.5 3-1.5M14 18c1 1 1.5 3 1.5 3s-2-.5-3-1.5M13.6 10a1.6 1.6 0 1 1-3.2 0a1.6 1.6 0 0 1 3.2 0z' },
-    { nama: 'summit', judul: 'Catalyst Summit', akses: 'premium', foto: 'assets/img/program/summit.webp', fokus: '50% 40%',
+    { nama: 'summit', judul: 'Catalyst Summit', akses: 'premium', foto: 'assets/img/program/summit.webp', fokus: '62% 82%',
       ikon: 'M12 3c.6 4.6 2.4 6.4 7 7-4.6.6-6.4 2.4-7 7-.6-4.6-2.4-6.4-7-7 4.6-.6 6.4-2.4 7-7z' }
   ];
   var N = PROGRAM.length;
