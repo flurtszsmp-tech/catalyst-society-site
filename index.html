@@ -1512,10 +1512,9 @@
 <!-- about us -->
 <section class="band" id="about">
   <div class="wrap">
-    <div class="shead shead--split rv"><div class="shs-main"><span class="snum">01</span></div></div>
     <div class="ab-blok rv">
       <div class="ab-utama">
-        <span class="rd-l" data-i18n="ab.kicker">Tentang Kami</span>
+        <div class="ab-label"><span class="snum">01</span><span class="rd-l" data-i18n="ab.kicker">Tentang Kami</span></div>
         <h2 data-i18n="ab1.j">Produk &amp; Layanan</h2>
         <p data-i18n="ab1.d"></p>
       </div>
@@ -1743,11 +1742,15 @@
 <script>
 /* Baris logo partner (seperti lusion.co/about): selalu bergeser pelan; gulir ke bawah
    menggeser ke kiri, gulir ke atas ke kanan, makin cepat digulir makin cepat lalu melambat
-   halus. Hanya jalan saat barisnya terlihat. */
+   halus. Tiap baris punya kelembaman dan kecepatan sendiri, jadi baris bawah menyusul
+   sedikit terlambat, tidak serempak. Hanya jalan saat barisnya terlihat. */
 (function(){
   var uls=[].slice.call(document.querySelectorAll('.pm-row ul'));if(!uls.length)return;
   var rm=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
-  var DASAR=rm?14:38, arah=-1, dorong=0, v=-DASAR, y0=scrollY, t0=0, jalan=false, terlihat=0;
+  var DASAR=rm?14:38, arah=-1, dorong=0, y0=scrollY, t0=0, jalan=false, terlihat=0;
+  /* per baris: pengali kecepatan dasar, pengali dorongan gulir, dan seberapa cepat menyesuaikan */
+  var SIFAT=[[1,1,4.2],[.82,.86,1.7],[1.12,1.1,2.6],[.9,.95,1.2]];
+  var v=uls.map(function(u,i){return -DASAR*SIFAT[i%4][0]});
   var x=uls.map(function(u,i){return 0}), w=[];
   function ukur(){w=uls.map(function(u){return u.scrollWidth/2});x=x.map(function(v,i){return -w[i]*(i%2?.37:0)});}
   addEventListener('scroll',function(){
@@ -1759,10 +1762,11 @@
     if(!terlihat){jalan=false;return}
     var dt=t0?Math.min((t-t0)/1000,.05):.016;t0=t;
     dorong*=Math.pow(.06,dt);
-    v+=(arah*(DASAR+dorong)-v)*Math.min(1,dt*5);
     for(var i=0;i<uls.length;i++){
+      var f=SIFAT[i%4];
+      v[i]+=(arah*(DASAR*f[0]+dorong*f[1])-v[i])*Math.min(1,dt*f[2]);
       if(!w[i])continue;
-      x[i]+=v*dt;
+      x[i]+=v[i]*dt;
       if(x[i]<=-w[i])x[i]+=w[i];else if(x[i]>0)x[i]-=w[i];
       uls[i].style.transform='translate3d('+x[i].toFixed(2)+'px,0,0)';
     }
