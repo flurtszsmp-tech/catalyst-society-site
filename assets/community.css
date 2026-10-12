@@ -278,3 +278,10 @@ html.dark-theme #community .com-meta{border-top-color:rgba(255,255,255,.12)}
 html.dark-theme #community .com-card:hover .com-out{color:#fff}
 @media (prefers-reduced-motion:reduce){#community .com-card:hover .com-out{transform:rotate(-45deg)}}
 /* ---------- akhir kartu komunitas landing ---------- */
+
+/* foto kotak kutipan melebar ke kiri dengan gradasi panjang, supaya ruang hitam kosong di tengah berkurang */
+.about-quote .aq-foto{width:78%!important;max-width:none!important;aspect-ratio:auto!important;object-position:70% 45%!important;opacity:.6!important;
+  -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.18) 22%,rgba(0,0,0,.55) 45%,#000 72%)!important;
+          mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.18) 22%,rgba(0,0,0,.55) 45%,#000 72%)!important}
+.about-quote p{position:relative;z-index:1}
+@media (max-width:640px){.about-quote .aq-foto{width:100%!important;opacity:.28!important}}
