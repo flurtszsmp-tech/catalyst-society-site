@@ -357,10 +357,10 @@ setTimeout(function(){
   document.getElementById('tabDaftar').addEventListener('click', function(){ setMode('daftar'); });
 
   /* Sudah punya sesi aktif: langsung ke aplikasi */
-  if(DEMO && CATALYST.demoAktif()) location.href = 'app.html?v=' + Date.now();
+  if(DEMO && CATALYST.demoAktif()) location.href = '/bp/passport/';
   if(CATALYST.db){
     CATALYST.db.auth.getSession().then(function(r){
-      if(r.data.session) location.href = 'app.html?v=' + Date.now();
+      if(r.data.session) location.href = '/bp/passport/';
     });
   }
 
@@ -378,7 +378,7 @@ setTimeout(function(){
         tampilPesan(T('lg.daftarDemo', { u: CATALYST.DEMO_AKUN.username, p: CATALYST.DEMO_AKUN.sandi }), 'warn');
         return;
       }
-      if(CATALYST.demoMasuk(email, sandi)){ location.href = 'app.html?v=' + Date.now(); return; }
+      if(CATALYST.demoMasuk(email, sandi)){ location.href = '/bp/passport/'; return; }
       tampilPesan(T('lg.salahDemo'), 'err');
       return;
     }
@@ -401,13 +401,13 @@ setTimeout(function(){
         });
         if(res.error) throw res.error;
 
-        if(res.data.session){ location.href = 'app.html?v=' + Date.now(); return; }
+        if(res.data.session){ location.href = '/bp/passport/'; return; }
         setMode('masuk');
         tampilPesan(T('lg.daftarOk'), 'ok');
       } else {
         var login = await CATALYST.db.auth.signInWithPassword({ email: email, password: sandi });
         if(login.error) throw login.error;
-        location.href = 'app.html?v=' + Date.now();
+        location.href = '/bp/passport/';
         return;
       }
     } catch(err){

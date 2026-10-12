@@ -234,3 +234,26 @@ html.dark-theme .hd-ind{background:#fff}
 html.dark-theme .hd-gr::before{background:linear-gradient(to top left,transparent calc(50% - .8px),#fff calc(50% - .8px),#fff calc(50% + .8px),transparent calc(50% + .8px))}
 @media (max-width:420px){.hero-duo a{padding:15px 20px}}
 @media (prefers-reduced-motion:reduce){.hero-duo a,.hd-ind{transition-duration:.01s}}
+
+/* ---------- lubang roda tanpa bola hitam (permintaan founder, 12 Okt 2026) ----------
+   Tema terang: lubang memakai abu yang sama dengan piring di belakang roda; foto program
+   dibuat transparan dan memudar langsung ke abu itu. Teks di lubang jadi gelap. */
+html:not(.dark-theme) .ring-foto{background:radial-gradient(circle at 26% 36%,#dcdfe4,#cfd2d8 58%,#c3c7cf)}
+html:not(.dark-theme) .ring-foto::after{background:radial-gradient(circle at 50% 50%,rgba(205,208,214,.45),rgba(205,208,214,.7) 55%,rgba(200,204,211,.97) 84%);box-shadow:inset 0 0 70px 18px rgba(195,199,207,.9)}
+html:not(.dark-theme) .rf-isi img{opacity:.5;filter:grayscale(.35) contrast(.9)}
+html:not(.dark-theme) .rf-isi.kosong{background:none}
+@media (min-width:1000px){
+  html:not(.dark-theme) .hero.ada-roda .ring-info,
+  html:not(.dark-theme) .hero.ada-roda .ri-judul,html:not(.dark-theme) .hero.ada-roda .ri-desc{color:var(--ink)}
+  html:not(.dark-theme) .hero.ada-roda .ri-isi{color:rgba(10,10,14,.78)}
+  html:not(.dark-theme) .hero.ada-roda .ri-no,html:not(.dark-theme) .hero.ada-roda .ri-akses:not(.free){border-color:rgba(10,10,14,.4);color:rgba(10,10,14,.8)}
+  html:not(.dark-theme) .hero.ada-roda .ri-akses.free{background:#0a0a0e;border-color:#0a0a0e;color:#fff}
+  html:not(.dark-theme) .hero.ada-roda .ri-buka{background:#0a0a0e;color:#fff}
+  html:not(.dark-theme) .hero.ada-roda .ri-buka svg{stroke:#fff}
+  html:not(.dark-theme) .hero.ada-roda .ri-next{border-color:rgba(10,10,14,.45);color:var(--ink)}
+  html:not(.dark-theme) .hero.ada-roda .ri-next:hover{background:#0a0a0e;border-color:#0a0a0e;color:#fff}
+  html:not(.dark-theme) .hero.ada-roda .ri-lengkap{color:var(--ink)}
+  html:not(.dark-theme) .hero.ada-roda .ri-muat .j{stroke:rgba(10,10,14,.2)}
+  html:not(.dark-theme) .hero.ada-roda .ri-muat .i{stroke:#0a0a0e}
+  html:not(.dark-theme) .hero.roda-c .ring-info{border-left-color:rgba(10,10,14,.3)}
+}
