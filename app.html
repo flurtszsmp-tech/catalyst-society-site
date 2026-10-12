@@ -5,6 +5,9 @@
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Catalyst: Passport, Finder, Academy</title>
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -258,6 +261,9 @@
   @media (prefers-reduced-motion:reduce){
     .dock-pill,.dp,.dock-word{transition-duration:.18s!important;transition-delay:0s!important}
   }
+  /* Passport Bagas di dalam app: mengisi tinggi layar di bawah header */
+  #p-passport{padding:0}
+  .pp-bingkai{display:block;width:100%;height:calc(100vh - 96px);min-height:560px;border:0;border-radius:18px;background:transparent}
 </style>
 <link rel="stylesheet" href="assets/platform-lang.css">
 </head>
@@ -388,66 +394,8 @@
 
     <!-- ---------- PASSPORT ---------- -->
     <section class="page" id="p-passport">
-      <div class="phead">
-        <h1>Catalyst Passport</h1>
-        <p data-i18n="pp.sub">Bangun identitas profesional dalam satu digital profile.</p>
-      </div>
-
-      <div class="pp" style="margin-bottom:14px">
-        <div class="pp-glow"></div>
-        <div class="pp-in">
-          <div class="pp-ava" id="ppAva">?</div>
-          <div class="pp-body">
-            <div class="pp-cap">Catalyst Passport</div>
-            <div class="pp-name"><span id="ppNama">Memuat</span>
-              <svg viewBox="0 0 24 24" id="ppVerif" hidden><path d="M12 2l2.4 1.8 3 .1.9 2.8 2.4 1.8-.9 2.8.9 2.8-2.4 1.8-.9 2.8-3 .1L12 22l-2.4-1.8-3-.1-.9-2.8L3.3 15.5l.9-2.8-.9-2.8 2.4-1.8.9-2.8 3-.1z" fill="#fff"/><path d="m8.8 12.2 2.2 2.2 4.2-4.4" stroke="#000" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div class="pp-role" id="ppRole">Member of Catalyst Society</div>
-            <div class="pp-loc"><svg viewBox="0 0 24 24"><use href="#i-pin"/></svg><span id="ppLoc">Indonesia</span></div>
-            <div class="pp-tags" id="ppTags"></div>
-          </div>
-          <div class="pp-id"><div class="cap">Catalyst ID</div><b id="ppId">Memuat</b></div>
-        </div>
-
-        <div class="pp-stats">
-          <div><b id="ppXp">0</b><span>CATA Points</span></div>
-          <div><b id="ppKom">0</b><span data-i18n="pp.communities">Communities</span></div>
-          <div><b id="ppBdg">0</b><span data-i18n="pp.badges">Badges</span></div>
-          <div><b id="ppStage">Explorer</b><span data-i18n="home.stage">Journey Stage</span></div>
-        </div>
-
-        <div class="pp-bar">
-          <div class="lbl"><span id="ppFrom">Explorer</span><span>Innovator</span></div>
-          <div class="pp-track"><div class="pp-fill" id="ppFill"></div></div>
-        </div>
-      </div>
-
-      <div class="split">
-        <div>
-          <div class="card" style="margin-bottom:14px">
-            <div class="cap" style="margin-bottom:5px" data-i18n="pp.about">About Me</div>
-            <p style="font-size:12.5px;color:var(--d-gray);line-height:1.72" id="ppAbout">Belum ada deskripsi.</p>
-          </div>
-          <div class="card" style="margin-bottom:14px">
-            <div class="cap" style="margin-bottom:12px" data-i18n="pp.journey">Journey</div>
-            <div class="jr" id="ppJourney"></div>
-          </div>
-          <div class="card">
-            <div class="cap" style="margin-bottom:12px" data-i18n="pp.communities">Communities</div>
-            <div class="grid g3" id="ppKomList"></div>
-          </div>
-        </div>
-        <div>
-          <div class="card" style="margin-bottom:14px">
-            <div class="cap" style="margin-bottom:12px" data-i18n="pp.badges">Badges</div>
-            <div class="bdg" id="ppBadges"></div>
-          </div>
-          <div class="card">
-            <div class="cap" style="margin-bottom:12px" data-i18n="pp.certs">Certificates</div>
-            <div id="ppCerts"></div>
-          </div>
-        </div>
-      </div>
+      <!-- Passport dari repo GitHub Bagas (ekspor statis di /bp/passport/). Menu dan login tetap milik app ini. -->
+      <iframe class="pp-bingkai" id="ppBingkai" title="Catalyst Passport" data-src="bp/passport/" loading="lazy"></iframe>
     </section>
 
     <!-- ---------- FINDER ---------- -->
@@ -525,6 +473,7 @@
 
   /* ---------- navigasi ---------- */
   function buka(nama){
+    if(nama === 'passport'){ var bk = $('#ppBingkai'); if(bk && !bk.src) bk.src = bk.dataset.src; }
     $$('.page').forEach(function(p){ p.classList.toggle('on', p.id === 'p-' + nama); });
     $$('.dock a[data-page]').forEach(function(a){ a.classList.toggle('on', a.dataset.page === nama); });
     if(!terkunci || !kursorHalus.matches) tutupDock();
@@ -615,34 +564,16 @@
 
   var inisial = CATALYST.inisial(prof.full_name);
   $('#avaTop').textContent = inisial;
-  $('#ppAva').textContent  = inisial;
   $('#namaTop').textContent = prof.full_name;
   $('#idTop').textContent   = prof.catalyst_id;
   $('#hSelamat').textContent = T('home.selamat', { nama: prof.full_name.split(' ')[0] });
-  $('#ppNama').textContent  = prof.full_name;
-  $('#ppId').textContent    = prof.catalyst_id;
-  $('#ppAbout').textContent = X(prof.about) || T('pp.aboutKosong');
-  $('#ppLoc').textContent   = X(prof.location) || 'Indonesia';
-  if(prof.headline) $('#ppRole').textContent = prof.headline;
-  if(prof.is_verified) $('#ppVerif').hidden = false;
-
-  var ch = CATALYST.CHANNEL[prof.channel];
-  var tags = (prof.skills && prof.skills.length) ? prof.skills.slice(0,4) : (ch ? [ch.label] : []);
-  $('#ppTags').innerHTML = tags.map(function(t){ return '<span>' + t + '</span>'; }).join('');
-
   var stage = prof.journey_stage || 'explorer';
   var idx   = Math.max(0, CATALYST.JOURNEY.indexOf(stage));
   var cap   = function(s){ return s.charAt(0).toUpperCase() + s.slice(1); };
 
   $('#xpTop').textContent  = CATALYST.angka(prof.cata_points);
   $('#hXp').textContent    = CATALYST.angka(prof.cata_points);
-  $('#ppXp').textContent   = CATALYST.angka(prof.cata_points);
   $('#hStage').textContent = cap(stage);
-  $('#ppStage').textContent= cap(stage);
-  $('#ppFrom').textContent = cap(stage);
-  setTimeout(function(){
-    $('#ppFill').style.width = Math.round((idx / (CATALYST.JOURNEY.length - 1)) * 100) + '%';
-  }, 260);
 
   /* ---------- alur ekosistem ---------- */
   var alur = [
@@ -658,53 +589,20 @@
            '<b>' + a[0] + '</b><small>' + a[1] + '</small></div>';
   }).join('');
 
-  /* ---------- journey ---------- */
-  var jrEvents = demo ? D.data.journey.filter(function(e){return e.occurred_at;})
-    : ((await db.from('journey_events').select('*').eq('user_id', user.id).order('occurred_at')).data || []);
-  $('#ppJourney').innerHTML = CATALYST.JOURNEY.map(function(s, i){
-    var ev  = jrEvents.filter(function(e){ return e.stage === s; })[0];
-    var cls = i < idx ? 'done' : (i === idx ? 'now' : '');
-    return '<div class="jr-step ' + cls + '"><div class="n">' + T('pp.tahap', { n: i+1 }) + '</div><b>' + cap(s) + '</b>' +
-           '<small>' + (ev ? X(ev.detail || ev.title) : T('pp.belum')) + '</small></div>';
-  }).join('');
-
   /* ---------- komunitas ---------- */
   var kom = demo ? D.data.komunitas.map(function(c){return {communities:c};})
     : ((await db.from('community_members').select('communities(name,channel)').eq('user_id', user.id)).data || []);
   $('#hKom').textContent  = kom.length;
-  $('#ppKom').textContent = kom.length;
-  $('#ppKomList').innerHTML = kom.length
-    ? kom.map(function(k){
-        var c = k.communities || {};
-        var cc = CATALYST.CHANNEL[c.channel];
-        return '<div class="card" style="padding:13px"><h3>' + c.name + '</h3>' +
-               '<div class="cap" style="margin-top:3px">' + (cc ? cc.label : '') + '</div></div>';
-      }).join('')
-    : '<div class="empty" style="grid-column:1/-1">' + T('pp.komKosong') + '</div>';
 
   /* ---------- badge ---------- */
   var ub = demo ? D.data.badge.map(function(b){return {badges:b};})
     : ((await db.from('user_badges').select('badges(name,icon)').eq('user_id', user.id)).data || []);
   $('#hBdg').textContent  = ub.length;
-  $('#ppBdg').textContent = ub.length;
-  $('#ppBadges').innerHTML = ub.length
-    ? ub.map(function(b){
-        var bb = b.badges || {};
-        return '<div><svg viewBox="0 0 24 24"><use href="#i-' + (bb.icon || 'badge') + '"/></svg><b>' + bb.name + '</b></div>';
-      }).join('')
-    : '<div class="empty" style="grid-column:1/-1">' + T('pp.bdgKosong') + '</div>';
 
   /* ---------- sertifikat ---------- */
   var certs = demo ? D.data.sertifikat
     : ((await db.from('certificates').select('*').eq('user_id', user.id).order('issued_at', { ascending:false })).data || []);
   $('#acCert').textContent = certs.length;
-  $('#ppCerts').innerHTML = certs.length
-    ? certs.map(function(c){
-        return '<div class="evt"><div class="evt-date"><b>' + new Date(c.issued_at).getDate() + '</b>' +
-               '<span>' + new Date(c.issued_at).toLocaleDateString(PI.locale(),{month:'short'}) + '</span></div>' +
-               '<div class="evt-body"><b>' + X(c.title) + '</b><small>' + c.issuer + ' · ' + c.cert_code + '</small></div></div>';
-      }).join('')
-    : '<div class="empty">' + T('pp.certKosong') + '</div>';
 
   /* ---------- FINDER ---------- */
   var semuaOpp = demo ? D.data.peluang
@@ -883,7 +781,7 @@
   perbaruiRingkasAcademy();
 
   try {
-    var terakhir = sessionStorage.getItem('catalyst-halaman');
+    var terakhir = location.hash === '#passport' ? 'passport' : sessionStorage.getItem('catalyst-halaman');
     if(terakhir && document.getElementById('p-' + terakhir)) buka(terakhir);
   } catch(e){}
 

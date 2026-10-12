@@ -23,6 +23,8 @@ async function proses(dir) {
     const ext = extname(nama).toLowerCase();
     const mentah = readFileSync(src);
     sebelum += mentah.length;
+    // bp/ = ekspor Next.js (Passport Bagas), sudah dipadatkan Next; disalin apa adanya
+    if (src.split(/[\\/]/)[0] === 'bp') { mkdirSync(dirname(dst), { recursive: true }); copyFileSync(src, dst); sesudah += mentah.length; continue; }
     if (ext === '.js') {
       tulis(dst, transformSync(mentah.toString('utf8'), { minify: true, target: 'es2019', legalComments: 'none' }).code);
     } else if (ext === '.css') {
