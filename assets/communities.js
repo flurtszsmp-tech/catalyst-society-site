@@ -23,13 +23,6 @@
     social_impact: 'Social Impact'
   };
 
-  var LABEL_ANGGOTA = { free: 'Free', premium: 'Premium', selective: 'Selective' };
-  var JUDUL_ANGGOTA = {
-    free: 'Free Membership. Siapa pun boleh bergabung.',
-    premium: 'Premium Membership. Keanggotaan berbayar.',
-    selective: 'Selective Membership. Lewat seleksi atau undangan.'
-  };
-
   var DATA = [
     /* ---------- Investments ---------- */
     { nama:'Blockplay', kanal:'investments', logo:'blockplay.webp',
@@ -142,59 +135,33 @@
 
   if (!wadah) return;
 
-  /* Tautan sosial digambar hanya kalau isinya ada (Rule 1 dan Rule 6). */
-  var SOSIAL = [
-    { kunci:'web',     ikon:'i-globe',   nama:'Website'   },
-    { kunci:'ig',      ikon:'i-ig',      nama:'Instagram' },
-    { kunci:'wa',      ikon:'i-wa',      nama:'WhatsApp',  isi:true },
-    { kunci:'discord', ikon:'i-discord', nama:'Discord',   isi:true },
-    { kunci:'tiktok',  ikon:'i-tiktok',  nama:'TikTok',    isi:true }
-  ];
-
-  /* Tombol Join memakai tautan komunitas yang paling langsung.
-     Kalau semua kosong, tombol dimatikan (Rule 7). */
+  /* Seluruh kartu menjadi tautan ke komunitas: tautan paling langsung dulu,
+     lalu tautan sosial apa pun. Kalau semua kosong, kartu bukan tautan (Rule 7). */
   function tautanGabung(k) {
-    return k.wa || k.discord || k.web || k.ig || '';
+    return k.wa || k.discord || k.web || k.ig || k.tiktok || '';
   }
 
+  /* Bentuk kartu meniru CommunityCard.tsx di repo Bagas: logo dan panah keluar,
+     nama, satu baris bidang (topik), lalu garis meta berisi kanal. */
   function kartu(k) {
-    var sosial = SOSIAL.filter(function (s) { return k[s.kunci]; }).map(function (s) {
-      return '<a href="' + aman(k[s.kunci]) + '" target="_blank" rel="noopener"' +
-             ' aria-label="' + s.nama + ' ' + aman(k.nama) + '" title="' + s.nama + '">' +
-             '<svg viewBox="0 0 24 24"' + (s.isi ? ' class="isi"' : '') + '>' +
-             '<use href="#' + s.ikon + '"/></svg></a>';
-    }).join('');
-
-    var lencana = k.anggota.map(function (a) {
-      return '<span class="com-badge" title="' + JUDUL_ANGGOTA[a] + '" translate="no">' +
-             LABEL_ANGGOTA[a] + '</span>';
-    }).join('');
-
-    var topik = k.topik.map(function (t) {
-      return '<span>' + aman(t) + '</span>';
-    }).join('');
-
-    var gabung = tautanGabung(k);
-    var tombol = gabung
-      ? '<a class="com-join" href="' + aman(gabung) + '" target="_blank" rel="noopener">' +
-        '<span data-i18n="com.gabung">Gabung</span>' +
-        '<svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></a>'
-      : '<span class="com-join mati" data-i18n="com.segera">Segera</span>';
-
-    return '<article class="com-card glass" data-kanal="' + k.kanal + '">' +
-      '<div class="com-head">' +
-        '<div class="com-logo"><img src="assets/communities/' + k.logo + '" alt="' + aman(k.nama) + '" ' +
-          'loading="lazy" decoding="async" width="56" height="56"></div>' +
-        '<div class="com-lencana">' + lencana + '</div>' +
-      '</div>' +
-      '<h3 translate="no">' + aman(k.nama) + '<svg class="com-verified" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-spark4"/></svg></h3>' +
-      '<div class="com-kanal" translate="no">' + KANAL[k.kanal] + '</div>' +
-      '<div class="com-topik">' + topik + '</div>' +
-      '<div class="com-kaki">' +
-        '<div class="com-sosial">' + sosial + '</div>' +
-        tombol +
-      '</div>' +
-    '</article>';
+    var url = tautanGabung(k);
+    var buka = url
+      ? '<a class="com-card glass" href="' + aman(url) + '" target="_blank" rel="noopener" data-kanal="' + k.kanal + '">'
+      : '<div class="com-card glass" data-kanal="' + k.kanal + '">';
+    return buka +
+      '<span class="com-card-top">' +
+        '<span class="com-logo"><img src="assets/communities/' + k.logo + '" alt="' + aman(k.nama) + '" ' +
+          'loading="lazy" decoding="async" width="52" height="52"></span>' +
+        (url ? '<svg class="com-out" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg>' : '') +
+      '</span>' +
+      '<h3 class="com-title" translate="no">' + aman(k.nama) +
+        '<svg class="com-verified" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-spark4"/></svg></h3>' +
+      '<span class="com-desc" translate="no">' + aman(k.topik.join(' · ')) + '</span>' +
+      '<span class="com-meta" translate="no">' +
+        '<span class="com-tag">' + KANAL[k.kanal] + '</span>' +
+        '<span class="com-join-type">Community</span>' +
+      '</span>' +
+    (url ? '</a>' : '</div>');
   }
 
   /* Saringan kanal dan kata kunci bekerja bersama. Kata kunci dicocokkan ke nama,

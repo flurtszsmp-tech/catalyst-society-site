@@ -253,3 +253,28 @@ html.dark-theme #community .com-search:focus-within{border-color:#fff;box-shadow
 html.dark-theme .fd-daftar,html.dark-theme .fd-daftar li{border-color:rgba(255,255,255,.16)}
 html.dark-theme .fd-judul,html.dark-theme .fd-daftar b{color:#fff}
 @media (max-width:900px){.fd-blok{grid-template-columns:1fr}.fd-foto{order:-1}}
+
+/* ---------- Kartu komunitas landing = kartu direktori di repo Bagas (CommunityCard.tsx):
+   seluruh kartu tautan, logo dan panah keluar, nama, baris bidang, garis meta kanal ---------- */
+#community .com-card{color:inherit;text-decoration:none}
+#community .com-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+#community .com-logo{padding:0;overflow:hidden}
+#community .com-out{width:15px;height:15px;color:var(--muted);flex:none;opacity:.55;
+  transform:rotate(-45deg);transition:.3s var(--ease)}
+#community .com-card:hover .com-out{opacity:1;color:var(--ink);transform:rotate(-45deg) translateX(3px)}
+#community .com-title{min-width:0;color:var(--ink);font-weight:400}
+#community .com-desc{font-size:13px;line-height:1.6;color:var(--muted);font-weight:300;flex:1}
+#community .com-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding-top:13px;border-top:1px solid var(--line)}
+#community .com-tag{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--d-gray);
+  padding:4px 10px;border-radius:100px;border:1px solid var(--line);line-height:1.5}
+#community .com-join-type{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  margin-left:auto;display:inline-flex;align-items:center;gap:6px}
+#community .com-join-type::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
+html.dark-theme #community .com-title{color:#fff}
+html.dark-theme #community .com-desc,html.dark-theme #community .com-join-type{color:#a8a8a8}
+html.dark-theme #community .com-tag{border-color:rgba(255,255,255,.16);color:#c2c2c2}
+html.dark-theme #community .com-meta{border-top-color:rgba(255,255,255,.12)}
+html.dark-theme #community .com-card:hover .com-out{color:#fff}
+@media (prefers-reduced-motion:reduce){#community .com-card:hover .com-out{transform:rotate(-45deg)}}
+/* ---------- akhir kartu komunitas landing ---------- */
