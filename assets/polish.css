@@ -21,10 +21,70 @@ html .about-cell .ab-ic svg{width:20px;height:20px;fill:none;color:var(--bg)!imp
 .about-cell p{font-size:14px;line-height:1.6;max-width:32ch}
 .about-cell:hover .ab-ic{transform:rotate(-8deg) scale(1.06)}
 
-/* Nomor section: label kecil monospace dengan garis tipis, senada dengan label blok angka
-   (menggantikan angka raksasa bergaris) */
+/* Nomor section: angka kecil monospace sebaris dengan label di sampingnya, tanpa garis */
 .snum,.shead .snum,.shead--split .snum,.shead--rail .snum,.shead--right .snum,.shead--stagger .snum{
-  display:inline-flex!important;align-items:center;gap:12px;position:static!important;transform:none!important;
+  display:inline-block!important;position:static!important;transform:none!important;vertical-align:middle;
   font-family:var(--mono)!important;font-weight:400!important;font-size:12px!important;line-height:1!important;letter-spacing:.16em!important;
-  color:var(--muted)!important;-webkit-text-stroke:0!important;margin:0 0 18px!important}
-.snum::after{content:"";width:44px;height:1px;background:currentColor;opacity:.55}
+  color:var(--ink)!important;-webkit-text-stroke:0!important;margin:0 14px 14px 0!important}
+.snum + .kicker{display:inline-flex!important;vertical-align:middle}
+.shead--right .snum + .kicker{margin-left:0!important}
+
+/* ===== Kisi bergaris tipis untuk semua bagian berpoin (acuan: blok angka) =====
+   tanpa kartu, bayangan, kaca, ikon bulat, dan huruf kapital di judul poin */
+
+/* 05 Program: enam program, kisi 3 x 2, tanpa efek balik kartu */
+.prog-grid{gap:0!important;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.flip{height:auto!important;perspective:none!important;border-left:1px solid var(--line)}
+.flip:nth-child(3n+1){border-left:0}
+.flip:nth-child(n+4){border-top:1px solid var(--line)}
+.flip-in,.flip:hover .flip-in,.flip.on .flip-in{transform:none!important;height:auto!important}
+.flip-back{display:none!important}
+.flip-front,.flip-front.glass{position:static!important;background:none!important;border:0!important;border-radius:0!important;
+  box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  padding:clamp(24px,2.6vw,36px) clamp(20px,2.4vw,34px)!important;gap:0}
+.flip:nth-child(3n+1) .flip-front{padding-left:0!important}
+.flip-front.glass::before,.flip-front.glass::after{display:none!important}
+.flip .pico-ring{display:none!important}
+.flip .pn{border:0!important;padding:0!important;font-family:var(--mono)!important;font-weight:400!important;font-size:11px!important;
+  letter-spacing:.16em!important;color:var(--muted)!important;margin-bottom:16px}
+.flip h3{font-weight:400!important;font-size:clamp(20px,1.8vw,26px)!important;letter-spacing:-.022em!important;text-transform:none!important;line-height:1.15!important}
+.flip-front p{margin-top:10px!important;font-size:15px!important;line-height:1.6!important;color:var(--d-gray)!important;max-width:34ch}
+
+/* 07 Alur: enam langkah sebaris, dipisah garis */
+.flow{gap:0!important;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.flow-step,.flow-step.glass{background:none!important;border:0!important;border-left:1px solid var(--line)!important;border-radius:0!important;
+  box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  padding:clamp(20px,2.2vw,30px) clamp(14px,1.6vw,22px)!important;transform:none!important}
+.flow-step:first-child{border-left:0!important;padding-left:0!important}
+.flow-step.glass::before,.flow-step.glass::after{display:none!important}
+.flow-step .n{font-family:var(--mono);font-size:11px!important;letter-spacing:.16em!important;color:var(--muted)!important}
+.flow-step b{font-family:var(--display);font-weight:400;font-size:clamp(18px,1.5vw,22px)!important;letter-spacing:-.02em!important;margin-top:12px!important}
+.flow-step i{font-family:var(--mono);font-size:11px!important;letter-spacing:.16em!important;color:var(--muted)!important;margin-top:4px}
+.flow-step p{font-size:14.5px!important;line-height:1.6!important;color:var(--d-gray)!important;margin-top:12px!important}
+/* yang mereka dapat: daftar teks biasa, bukan pil */
+.get{gap:12px 0!important;margin-top:18px!important}
+.get span{background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  padding:0 22px 0 0!important;font-size:15px!important;color:var(--ink)!important;transform:none!important}
+.get span:not(:last-child)::after{content:"/";margin-left:22px;color:var(--line)}
+
+/* Prinsip: lima kolom bergaris, tanpa ikon */
+.val-grid{background:none!important;border:0!important;border-radius:0!important;gap:0!important;
+  border-top:1px solid var(--line)!important;border-bottom:1px solid var(--line)!important}
+.val-cell{background:none!important;min-height:0!important;border-left:1px solid var(--line);padding:clamp(22px,2.4vw,32px) clamp(16px,2vw,26px)!important}
+.val-cell:first-child{border-left:0;padding-left:0!important}
+.val-cell svg{display:none!important}
+.val-cell b{margin:0 0 10px!important;font-size:clamp(18px,1.5vw,22px)!important;letter-spacing:-.02em!important;text-transform:none!important}
+.val-cell p{font-size:14.5px!important;line-height:1.6!important;color:var(--d-gray)!important}
+
+html.dark-theme :is(.prog-grid,.flip,.flow,.flow-step,.val-grid,.val-cell){border-color:rgba(255,255,255,.16)!important}
+html.dark-theme :is(.flip-front p,.flow-step p,.val-cell p){color:#b5b5b5!important}
+html.dark-theme .get span{color:#e8e8e8!important}
+html.dark-theme .val-cell{background:none!important}
+
+@media (max-width:1040px){
+  .flip{border-left:0}.flip:nth-child(n+2){border-top:1px solid var(--line)}
+  .flip .flip-front{padding-left:0!important}
+  .flow-step{border-left:0!important;border-top:1px solid var(--line)!important;padding-left:0!important}
+  .val-grid{flex-direction:column}
+  .val-cell{border-left:0;border-top:1px solid var(--line);padding-left:0!important}
+}
