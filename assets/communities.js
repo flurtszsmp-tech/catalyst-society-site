@@ -141,12 +141,24 @@
     return k.wa || k.discord || k.web || k.ig || k.tiktok || '';
   }
 
-  /* Bentuk kartu meniru CommunityCard.tsx di repo Bagas: logo dan panah keluar,
-     nama, satu baris bidang (topik), lalu garis meta berisi kanal. */
+  /* Halaman detail tiap komunitas = halaman dari repo Bagas di /bp/communities/<slug>/
+     (Gabung Komunitas, Simpan ke Passport, daftar platform, komunitas terkait). */
+  var SLUG = {
+    'Blockplay':'blockplay', 'Investor Saham Pemula':'isp', 'Web3 Enthusiast':'web3-enthusiast', 'Kompaschain':'kompaschain',
+    'Crypto Legal Community':'crypto-legal', 'Tradix Community':'tradix', 'AI Community (AICO)':'aico', 'Bisa.AI':'bisa-ai',
+    'Indonesia AI':'indonesia-ai', 'Dicoding':'dicoding', 'Belajar Bareng Ko Andrew':'bbka', 'Mekari Community':'mekari',
+    'Bisnis Muda':'bisnis-muda', 'Build Club':'build-club', 'Python Indonesia':'python', 'GenSmart':'gensmart',
+    'AIESEC':'aiesec', 'Young On Top':'yot', 'Young Leaders Indonesia':'yli'
+  };
+
+  /* Bentuk kartu meniru CommunityCard.tsx di repo Bagas: logo dan panah, nama, satu baris
+     bidang (topik), lalu garis meta berisi kanal. Klik membuka halaman detail komunitas. */
   function kartu(k) {
-    var url = tautanGabung(k);
+    var slug = SLUG[k.nama];
+    var url = slug ? '/bp/communities/' + slug + '/' : tautanGabung(k);
+    var luar = !slug && url;
     var buka = url
-      ? '<a class="com-card glass" href="' + aman(url) + '" target="_blank" rel="noopener" data-kanal="' + k.kanal + '">'
+      ? '<a class="com-card glass" href="' + aman(url) + '"' + (luar ? ' target="_blank" rel="noopener"' : '') + ' data-kanal="' + k.kanal + '">'
       : '<div class="com-card glass" data-kanal="' + k.kanal + '">';
     return buka +
       '<span class="com-card-top">' +
