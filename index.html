@@ -1996,6 +1996,59 @@
   </div>
 </section>
 
+<!-- open collaboration (acuan pola berco-inc.com) -->
+<section class="band kl" id="kolaborasi">
+  <div class="wrap">
+    <div class="kl-blok rv">
+      <div class="kl-kiri">
+        <div class="ab-label"><span class="snum">09</span><span class="rd-l" data-i18n="kl.label">Open Collaboration</span></div>
+        <h2 class="kl-judul" data-i18n="kl.judul">Punya ide? Mari bangun bersama.</h2>
+        <p class="kl-lead" data-i18n="kl.lead">Komunitas, perusahaan, mentor, dan investor yang ingin berkolaborasi dengan Catalyst Society, ceritakan rencanamu.</p>
+        <ul class="kl-kontak">
+          <li><span class="rd-l" data-i18n="kl.email">Email</span><a href="mailto:info@catalystsociety.site">info@catalystsociety.site</a></li>
+          <li><span class="rd-l">Instagram</span><a href="https://www.instagram.com/catalystsociety.id/" target="_blank" rel="noopener">@catalystsociety.id</a></li>
+          <li><span class="rd-l">Website</span><a href="https://catalystsociety.site" target="_blank" rel="noopener">catalystsociety.site</a></li>
+        </ul>
+      </div>
+      <form class="kl-form" id="klForm" novalidate>
+        <p class="kl-form-j" data-i18n="kl.formj">Ceritakan tentang kamu dan kolaborasi yang kamu bayangkan.</p>
+        <label class="kl-isian"><span data-i18n="kl.nama">Nama</span><input name="nama" type="text" autocomplete="name" required></label>
+        <label class="kl-isian"><span data-i18n="kl.mail">Email</span><input name="email" type="email" autocomplete="email" required></label>
+        <label class="kl-isian"><span data-i18n="kl.org">Organisasi atau perusahaan</span><input name="organisasi" type="text" autocomplete="organization"></label>
+        <fieldset class="kl-jenis">
+          <legend data-i18n="kl.jenis">Jenis kolaborasi</legend>
+          <label><input type="radio" name="jenis" value="Community Partner" checked><span>Community Partner</span></label>
+          <label><input type="radio" name="jenis" value="Corporate Partner"><span>Corporate Partner</span></label>
+          <label><input type="radio" name="jenis" value="Mentor"><span>Mentor</span></label>
+          <label><input type="radio" name="jenis" value="Investor"><span>Investor</span></label>
+          <label><input type="radio" name="jenis" value="Lainnya"><span data-i18n="kl.lain">Lainnya</span></label>
+        </fieldset>
+        <label class="kl-isian"><span data-i18n="kl.pesan">Ceritakan idemu</span><textarea name="pesan" rows="3" required></textarea></label>
+        <button class="kl-kirim" type="submit"><span data-i18n="kl.kirim">Kirim kolaborasi</span><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        <p class="kl-status" id="klStatus" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+</section>
+<script>
+/* Belum ada server penerima: isi form dikirim lewat email (aplikasi email pengunjung terbuka
+   dengan subjek dan isi yang sudah terisi). Ganti ke Supabase atau layanan form bila sudah ada. */
+(function(){
+  var f=document.getElementById('klForm'),st=document.getElementById('klStatus');if(!f)return;
+  function t(k,a){var K=window.CATALYST_I18N,l=(document.documentElement.lang||'id').slice(0,2);return(K&&((K[l]&&K[l][k])||(K.id&&K.id[k])))||a}
+  f.addEventListener('submit',function(e){
+    e.preventDefault();
+    var kosong=[].slice.call(f.querySelectorAll('[required]')).filter(function(x){return !x.value.trim()||(x.type==='email'&&!x.checkValidity())});
+    f.querySelectorAll('.kl-isian').forEach(function(l){l.classList.remove('salah')});
+    if(kosong.length){kosong.forEach(function(x){x.closest('.kl-isian').classList.add('salah')});kosong[0].focus();st.textContent=t('kl.salah','Lengkapi nama, email yang valid, dan ide kolaborasimu.');return}
+    var d=new FormData(f),jenis=d.get('jenis')||'';
+    var isi='Nama: '+d.get('nama')+'\nEmail: '+d.get('email')+'\nOrganisasi: '+(d.get('organisasi')||'-')+'\nJenis kolaborasi: '+jenis+'\n\n'+d.get('pesan');
+    location.href='mailto:info@catalystsociety.site?subject='+encodeURIComponent('Kolaborasi Catalyst Society: '+jenis+' ('+d.get('nama')+')')+'&body='+encodeURIComponent(isi);
+    st.textContent=t('kl.ok','Aplikasi email kamu terbuka dengan isi form. Tinggal tekan kirim.');
+  });
+})();
+</script>
+
 </main>
 
 <!-- pita aksi, persis footer bar hitam di tiap slide Bagas -->

@@ -335,3 +335,45 @@ html.dark-theme .kd-anggota span,html.dark-theme .kd-gabung{background:#fff;colo
 html.dark-theme .kd-gabung svg{stroke:#000}
 html.dark-theme .kd-plat-l{border-top-color:rgba(255,255,255,.12)}
 @media (max-width:900px){.kd-grid{grid-template-columns:1fr}.kd-rel{grid-template-columns:1fr}}
+
+/* ---------- Open Collaboration (akhir landing): kontak bergaris tipis di kiri, kartu form hitam di kanan ---------- */
+.kl-blok{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(32px,5vw,88px);align-items:start}
+.kl-kiri .rd-l{min-height:0}
+.kl-judul{font-family:var(--display);font-weight:300;font-size:clamp(32px,3.6vw,54px);line-height:1.04;letter-spacing:-.035em;
+  color:var(--ink);margin:clamp(14px,1.6vw,22px) 0 16px;max-width:13ch}
+.kl-lead{font-size:15.5px;line-height:1.65;color:var(--d-gray);max-width:42ch;margin:0 0 clamp(28px,3.4vw,44px)}
+.kl-kontak{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.kl-kontak li{display:flex;justify-content:space-between;align-items:baseline;gap:18px;padding:16px 0;border-bottom:1px solid var(--line)}
+.kl-kontak .rd-l{min-height:0}
+.kl-kontak a{font-family:var(--display);font-size:clamp(16px,1.4vw,19px);letter-spacing:-.015em;color:var(--ink);text-decoration:none;
+  background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat;transition:background-size .4s var(--ease)}
+.kl-kontak a:hover{background-size:100% 1px}
+.kl-form{background:#0a0a0e;color:#fff;border-radius:clamp(20px,2.2vw,28px);padding:clamp(28px,3.4vw,48px);display:flex;flex-direction:column;gap:6px}
+.kl-form-j{margin:0 0 14px;font-size:15px;line-height:1.6;color:rgba(255,255,255,.7)}
+.kl-isian{display:block;position:relative;padding-top:20px}
+.kl-isian span{position:absolute;left:0;top:0;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.kl-isian input,.kl-isian textarea{display:block;width:100%;box-sizing:border-box;background:none;border:0;border-bottom:1px solid rgba(255,255,255,.22);
+  padding:10px 0 12px;font:inherit;font-size:16px;color:#fff;outline:none;border-radius:0;resize:vertical;transition:border-color .25s}
+.kl-isian input:focus,.kl-isian textarea:focus{border-bottom-color:#fff}
+.kl-isian.salah input,.kl-isian.salah textarea{border-bottom-color:#ff8a8a}
+.kl-isian.salah span{color:#ff9a9a}
+.kl-jenis{border:0;margin:18px 0 4px;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.kl-jenis legend{width:100%;margin-bottom:10px;padding:0;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.kl-jenis label{cursor:pointer}
+.kl-jenis input{position:absolute;opacity:0;pointer-events:none}
+.kl-jenis span{display:inline-block;padding:8px 14px;border-radius:100px;border:1px solid rgba(255,255,255,.22);font-size:13px;color:rgba(255,255,255,.8);
+  transition:background .25s,color .25s,border-color .25s}
+.kl-jenis label:hover span{border-color:rgba(255,255,255,.6)}
+.kl-jenis input:checked + span{background:#fff;color:#0a0a0e;border-color:#fff}
+.kl-jenis input:focus-visible + span{outline:2px solid #fff;outline-offset:2px}
+.kl-kirim{margin-top:22px;display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 22px;border-radius:100px;border:0;
+  background:#fff;color:#0a0a0e;font:inherit;font-size:15px;font-weight:500;cursor:pointer;transition:transform .3s,box-shadow .3s}
+.kl-kirim svg{width:15px;height:15px;stroke:currentColor;fill:none;transition:transform .3s}
+.kl-kirim:hover{transform:translateY(-2px);box-shadow:0 16px 30px -18px rgba(255,255,255,.45)}
+.kl-kirim:hover svg{transform:translateX(3px)}
+.kl-status{margin:12px 0 0;min-height:1.4em;font-size:13px;color:rgba(255,255,255,.7)}
+html.dark-theme .kl-judul,html.dark-theme .kl-kontak a{color:#fff}
+html.dark-theme .kl-lead{color:#b5b5b5}
+html.dark-theme .kl-kontak,html.dark-theme .kl-kontak li{border-color:rgba(255,255,255,.16)}
+html.dark-theme .kl-form{background:#141418;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+@media (max-width:900px){.kl-blok{grid-template-columns:1fr}}
