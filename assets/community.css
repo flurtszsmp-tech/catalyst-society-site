@@ -256,27 +256,27 @@ html.dark-theme .fd-judul,html.dark-theme .fd-daftar b{color:#fff}
 
 /* ---------- Kartu komunitas landing = kartu direktori di repo Bagas (CommunityCard.tsx):
    seluruh kartu tautan, logo dan panah keluar, nama, baris bidang, garis meta kanal ---------- */
-#community .com-card{color:inherit;text-decoration:none}
-#community .com-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-#community .com-logo{padding:0;overflow:hidden}
-#community .com-out{width:15px;height:15px;color:var(--muted);flex:none;opacity:.55;
+:is(#community,#komunitasDetail) .com-card{color:inherit;text-decoration:none}
+:is(#community,#komunitasDetail) .com-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+:is(#community,#komunitasDetail) .com-logo{padding:0;overflow:hidden}
+:is(#community,#komunitasDetail) .com-out{width:15px;height:15px;color:var(--muted);flex:none;opacity:.55;
   transform:rotate(-45deg);transition:.3s var(--ease)}
-#community .com-card:hover .com-out{opacity:1;color:var(--ink);transform:rotate(-45deg) translateX(3px)}
-#community .com-title{min-width:0;color:var(--ink);font-weight:400}
-#community .com-desc{font-size:13px;line-height:1.6;color:var(--muted);font-weight:300;flex:1}
-#community .com-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+:is(#community,#komunitasDetail) .com-card:hover .com-out{opacity:1;color:var(--ink);transform:rotate(-45deg) translateX(3px)}
+:is(#community,#komunitasDetail) .com-title{min-width:0;color:var(--ink);font-weight:400}
+:is(#community,#komunitasDetail) .com-desc{font-size:13px;line-height:1.6;color:var(--muted);font-weight:300;flex:1}
+:is(#community,#komunitasDetail) .com-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
   padding-top:13px;border-top:1px solid var(--line)}
-#community .com-tag{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--d-gray);
+:is(#community,#komunitasDetail) .com-tag{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--d-gray);
   padding:4px 10px;border-radius:100px;border:1px solid var(--line);line-height:1.5}
-#community .com-join-type{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+:is(#community,#komunitasDetail) .com-join-type{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
   margin-left:auto;display:inline-flex;align-items:center;gap:6px}
-#community .com-join-type::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
-html.dark-theme #community .com-title{color:#fff}
-html.dark-theme #community .com-desc,html.dark-theme #community .com-join-type{color:#a8a8a8}
-html.dark-theme #community .com-tag{border-color:rgba(255,255,255,.16);color:#c2c2c2}
-html.dark-theme #community .com-meta{border-top-color:rgba(255,255,255,.12)}
-html.dark-theme #community .com-card:hover .com-out{color:#fff}
-@media (prefers-reduced-motion:reduce){#community .com-card:hover .com-out{transform:rotate(-45deg)}}
+:is(#community,#komunitasDetail) .com-join-type::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
+html.dark-theme :is(#community,#komunitasDetail) .com-title{color:#fff}
+html.dark-theme :is(#community,#komunitasDetail) .com-desc,html.dark-theme :is(#community,#komunitasDetail) .com-join-type{color:#a8a8a8}
+html.dark-theme :is(#community,#komunitasDetail) .com-tag{border-color:rgba(255,255,255,.16);color:#c2c2c2}
+html.dark-theme :is(#community,#komunitasDetail) .com-meta{border-top-color:rgba(255,255,255,.12)}
+html.dark-theme :is(#community,#komunitasDetail) .com-card:hover .com-out{color:#fff}
+@media (prefers-reduced-motion:reduce){:is(#community,#komunitasDetail) .com-card:hover .com-out{transform:rotate(-45deg)}}
 /* ---------- akhir kartu komunitas landing ---------- */
 
 /* foto kotak kutipan melebar ke kiri dengan gradasi panjang, supaya ruang hitam kosong di tengah berkurang */
@@ -285,3 +285,53 @@ html.dark-theme #community .com-card:hover .com-out{color:#fff}
           mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.18) 22%,rgba(0,0,0,.55) 45%,#000 72%)!important}
 .about-quote p{position:relative;z-index:1}
 @media (max-width:640px){.about-quote .aq-foto{width:100%!important;opacity:.28!important}}
+
+/* ---------- halaman detail komunitas (/?k=<slug>), tampil di dalam landing ---------- */
+html.mode-kd main#top > :not(#komunitasDetail){display:none!important}
+.kd{padding-top:clamp(110px,12vw,150px)}
+.kd-back{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;margin-bottom:clamp(30px,4vw,48px)}
+.kd-back svg{width:14px;height:14px;stroke:currentColor;fill:none;transform:rotate(180deg);transition:transform .3s}
+.kd-back:hover{color:var(--ink)}.kd-back:hover svg{transform:rotate(180deg) translateX(3px)}
+.kd-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);gap:clamp(28px,5vw,80px);align-items:start}
+.kd-id{display:flex;align-items:center;gap:clamp(16px,2vw,24px);margin-bottom:clamp(22px,2.6vw,30px)}
+.kd-logo{width:76px!important;height:76px!important;border-radius:18px!important;flex:none}
+.kd-nama{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0;font-family:var(--display);font-weight:300;
+  font-size:clamp(34px,4vw,56px);line-height:1.04;letter-spacing:-.035em;color:var(--ink)}
+.kd-nama .com-verified{width:18px;height:18px;fill:var(--ink);opacity:.7;flex:none}
+.kd-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted)}
+.kd-meta i{width:4px;height:4px;border-radius:50%;background:currentColor}
+.kd-desk{font-size:16px;line-height:1.7;color:var(--d-gray);max-width:58ch;margin:0 0 clamp(22px,2.6vw,30px)}
+.kd-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.kd-tags .com-tag{font-size:10.5px;padding:6px 14px}
+.kd-anggota{display:flex;gap:8px;flex-wrap:wrap}
+.kd-anggota span{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;padding:7px 14px;border-radius:100px;
+  background:var(--black);color:#fff}
+.kd-sisi{border:1px solid var(--line);border-radius:22px;padding:clamp(22px,2.4vw,30px);background:var(--bg);
+  box-shadow:0 24px 50px -36px rgba(10,10,14,.35)}
+.kd-gabung{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 22px;border-radius:100px;background:var(--black);
+  color:#fff;text-decoration:none;font-size:14.5px;font-weight:500;transition:transform .3s,box-shadow .3s}
+.kd-gabung svg{width:14px;height:14px;stroke:#fff;fill:none;transform:rotate(-45deg)}
+.kd-gabung:hover{transform:translateY(-2px);box-shadow:0 16px 30px -18px rgba(0,0,0,.6)}
+.kd-gabung.mati{background:none;border:1px solid var(--line);color:var(--muted)}
+.kd-catat{margin:14px 0 0;text-align:center;font-size:12.5px;color:var(--muted)}
+.kd-plat-l{margin:clamp(20px,2.4vw,28px) 0 8px;padding-top:clamp(18px,2vw,24px);border-top:1px solid var(--line);
+  font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.kd-plat{list-style:none;margin:0;padding:0}
+.kd-plat a{display:flex;align-items:center;gap:14px;padding:13px 4px;color:var(--ink);text-decoration:none;font-size:15px;border-radius:10px}
+.kd-plat a:hover{background:color-mix(in srgb,var(--ink) 5%,transparent)}
+.kd-ik{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.5;flex:none}
+.kd-ik.isi{fill:currentColor;stroke:none}
+.kd-out{width:13px;height:13px;margin-left:auto;stroke:var(--muted);fill:none;transform:rotate(-45deg)}
+.kd-rel-j{margin:clamp(56px,7vw,96px) 0 clamp(20px,2.4vw,28px);font-family:var(--display);font-weight:300;font-size:clamp(26px,2.6vw,38px);
+  letter-spacing:-.03em;color:var(--ink)}
+.kd-rel{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+html.dark-theme .kd-sisi{border-color:rgba(255,255,255,.14);box-shadow:none}
+html.dark-theme .kd-nama,html.dark-theme .kd-plat a,html.dark-theme .kd-rel-j{color:#fff}
+html.dark-theme .kd-nama .com-verified{fill:#fff}
+html.dark-theme .kd-desk{color:#b5b5b5}
+html.dark-theme .kd-anggota span,html.dark-theme .kd-gabung{background:#fff;color:#000}
+html.dark-theme .kd-gabung svg{stroke:#000}
+html.dark-theme .kd-plat-l{border-top-color:rgba(255,255,255,.12)}
+@media (max-width:900px){.kd-grid{grid-template-columns:1fr}.kd-rel{grid-template-columns:1fr}}
