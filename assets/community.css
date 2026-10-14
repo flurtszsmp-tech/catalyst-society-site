@@ -197,46 +197,46 @@ html.dark-theme .ab-utama p,html.dark-theme .ab-sub p{color:#b5b5b5}
 
 /* ---------- Community di landing: gaya kartu mengikuti direktori komunitas di repo Bagas,
    isi tetap milik landing (channel, topik, tautan sosial, Join, FREE) ---------- */
-#community .com-filter{gap:8px;margin-bottom:clamp(22px,3vw,34px)}
-#community .com-filter button{padding:9px 16px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--d-gray);
+:is(#community,#komunitasDetail) .com-filter{gap:8px;margin-bottom:clamp(22px,3vw,34px)}
+:is(#community,#komunitasDetail) .com-filter button{padding:9px 16px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--d-gray);
   background:none;border:1px solid var(--line);box-shadow:none}
-#community .com-filter button:hover{border-color:var(--ink);color:var(--ink);transform:none}
-#community .com-filter button.on{background:var(--black);border-color:var(--black);color:#fff}
-#community .com-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-#community .com-card{gap:14px;padding:22px 22px 20px;border-radius:20px}
-#community .com-head{margin-bottom:0}
-#community .com-logo{width:52px;height:52px;border-radius:14px;background:#fff;box-shadow:0 0 0 1px var(--line);border:0}
-#community .com-logo img{object-fit:cover}
-#community .com-badge{font-size:9.5px;letter-spacing:.14em;padding:4px 10px;border-radius:100px;border:1px solid var(--line);color:var(--muted)}
-#community .com-card h3{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:16px;letter-spacing:-.006em;line-height:1.2;margin:0}
-#community .com-verified{width:12px;height:12px;fill:var(--ink);stroke:none;opacity:.7;flex:none}
-#community .com-kanal{margin:-6px 0 0;font-size:12.5px;letter-spacing:0;text-transform:none;color:var(--muted);font-weight:300}
-#community .com-topik{gap:6px;margin:0;flex:1;align-content:flex-start}
-#community .com-topik span{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--d-gray);
+:is(#community,#komunitasDetail) .com-filter button:hover{border-color:var(--ink);color:var(--ink);transform:none}
+:is(#community,#komunitasDetail) .com-filter button.on{background:var(--black);border-color:var(--black);color:#fff}
+:is(#community,#komunitasDetail) .com-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+:is(#community,#komunitasDetail) .com-card{gap:14px;padding:22px 22px 20px;border-radius:20px}
+:is(#community,#komunitasDetail) .com-head{margin-bottom:0}
+:is(#community,#komunitasDetail) .com-logo{width:52px;height:52px;border-radius:14px;background:#fff;box-shadow:0 0 0 1px var(--line);border:0}
+:is(#community,#komunitasDetail) .com-logo img{object-fit:cover}
+:is(#community,#komunitasDetail) .com-badge{font-size:9.5px;letter-spacing:.14em;padding:4px 10px;border-radius:100px;border:1px solid var(--line);color:var(--muted)}
+:is(#community,#komunitasDetail) .com-card h3{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:16px;letter-spacing:-.006em;line-height:1.2;margin:0}
+:is(#community,#komunitasDetail) .com-verified{width:12px;height:12px;fill:var(--ink);stroke:none;opacity:.7;flex:none}
+:is(#community,#komunitasDetail) .com-kanal{margin:-6px 0 0;font-size:12.5px;letter-spacing:0;text-transform:none;color:var(--muted);font-weight:300}
+:is(#community,#komunitasDetail) .com-topik{gap:6px;margin:0;flex:1;align-content:flex-start}
+:is(#community,#komunitasDetail) .com-topik span{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--d-gray);
   padding:4px 10px;border-radius:100px;border:1px solid var(--line);background:none;line-height:1.5}
-#community .com-kaki{padding-top:13px}
-#community .com-join{padding:8px 14px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase}
-html.dark-theme #community .com-logo{background:#f2f2f2;box-shadow:0 0 0 1px rgba(255,255,255,.14)}
-html.dark-theme #community .com-filter button{background:none;border-color:rgba(255,255,255,.16);color:#c2c2c2}
-html.dark-theme #community .com-filter button.on{background:#fff;border-color:#fff;color:#000}
-html.dark-theme #community .com-topik span,html.dark-theme #community .com-badge{border-color:rgba(255,255,255,.16);color:#c2c2c2}
-html.dark-theme #community .com-verified{fill:#fff}
-@media (max-width:1040px){#community .com-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:600px){#community .com-grid{grid-template-columns:1fr}}
+:is(#community,#komunitasDetail) .com-kaki{padding-top:13px}
+:is(#community,#komunitasDetail) .com-join{padding:8px 14px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase}
+html.dark-theme :is(#community,#komunitasDetail) .com-logo{background:#f2f2f2;box-shadow:0 0 0 1px rgba(255,255,255,.14)}
+html.dark-theme :is(#community,#komunitasDetail) .com-filter button{background:none;border-color:rgba(255,255,255,.16);color:#c2c2c2}
+html.dark-theme :is(#community,#komunitasDetail) .com-filter button.on{background:#fff;border-color:#fff;color:#000}
+html.dark-theme :is(#community,#komunitasDetail) .com-topik span,html.dark-theme :is(#community,#komunitasDetail) .com-badge{border-color:rgba(255,255,255,.16);color:#c2c2c2}
+html.dark-theme :is(#community,#komunitasDetail) .com-verified{fill:#fff}
+@media (max-width:1040px){:is(#community,#komunitasDetail) .com-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){:is(#community,#komunitasDetail) .com-grid{grid-template-columns:1fr}}
 
 /* kotak cari komunitas: kapsul di kanan baris saringan, seperti direktori di repo Bagas */
-#community .com-tools{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:clamp(22px,3vw,34px)}
-#community .com-tools .com-filter{margin-bottom:0}
-#community .com-search{display:flex;align-items:center;gap:9px;padding:9px 16px;border-radius:100px;border:1px solid var(--line);
+:is(#community,#komunitasDetail) .com-tools{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:clamp(22px,3vw,34px)}
+:is(#community,#komunitasDetail) .com-tools .com-filter{margin-bottom:0}
+:is(#community,#komunitasDetail) .com-search{display:flex;align-items:center;gap:9px;padding:9px 16px;border-radius:100px;border:1px solid var(--line);
   min-width:230px;transition:border-color .24s,box-shadow .24s;cursor:text}
-#community .com-search svg{width:14px;height:14px;color:var(--muted);flex:none}
-#community .com-search input{border:0;outline:0;background:none;width:100%;min-width:0;font:inherit;font-size:13px;color:var(--ink)}
-#community .com-search input::placeholder{color:var(--muted)}
-#community .com-search:focus-within{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
-#community .com-kosong{grid-column:1/-1;padding:48px 0;text-align:center;font-size:14px;color:var(--muted)}
-html.dark-theme #community .com-search{border-color:rgba(255,255,255,.16)}
-html.dark-theme #community .com-search:focus-within{border-color:#fff;box-shadow:0 0 0 1px #fff}
-@media (max-width:700px){#community .com-search{min-width:0;width:100%}}
+:is(#community,#komunitasDetail) .com-search svg{width:14px;height:14px;color:var(--muted);flex:none}
+:is(#community,#komunitasDetail) .com-search input{border:0;outline:0;background:none;width:100%;min-width:0;font:inherit;font-size:13px;color:var(--ink)}
+:is(#community,#komunitasDetail) .com-search input::placeholder{color:var(--muted)}
+:is(#community,#komunitasDetail) .com-search:focus-within{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+:is(#community,#komunitasDetail) .com-kosong{grid-column:1/-1;padding:48px 0;text-align:center;font-size:14px;color:var(--muted)}
+html.dark-theme :is(#community,#komunitasDetail) .com-search{border-color:rgba(255,255,255,.16)}
+html.dark-theme :is(#community,#komunitasDetail) .com-search:focus-within{border-color:#fff;box-shadow:0 0 0 1px #fff}
+@media (max-width:700px){:is(#community,#komunitasDetail) .com-search{min-width:0;width:100%}}
 
 /* ---------- Founders (akhir landing): daftar bergaris tipis di kiri, foto di kanan,
    bahasa visual sama dengan About Us dan blok angka ---------- */
