@@ -397,3 +397,61 @@ html.dark-theme .fd-banner{background:#0b0b0e;box-shadow:inset 0 0 0 1px rgba(25
   .fd-bg{position:relative;width:100%;height:auto;aspect-ratio:16/9;object-position:50% 0;opacity:1;-webkit-mask-image:linear-gradient(to top,transparent,#000 30%);mask-image:linear-gradient(to top,transparent,#000 30%)}
   .fd-isi{width:auto;padding:14px 24px 26px}
 }
+
+/* Founders: struktur nama (avatar disembunyikan di gaya bawaan) */
+.fd-ava{display:none;width:64px;height:64px;border-radius:50%;object-fit:cover;flex:none}
+.fd-t{display:flex;flex-direction:column;gap:6px}
+.fd-nama li{flex-direction:row!important;align-items:center;gap:16px}
+
+/* ===== pilihan gaya Founders untuk moodboard (?fd=a|b|c|d) ===== */
+/* A: baris tipis putih, avatar bulat kecil, tanpa foto besar */
+#founders.fd-v-a .fd-banner{background:none;color:var(--ink);min-height:0;padding:clamp(20px,2.2vw,28px) 0;border-radius:0;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto 1fr;gap:clamp(24px,4vw,64px);align-items:center}
+#founders.fd-v-a .fd-bg{display:none}
+#founders.fd-v-a .fd-isi{display:contents}
+#founders.fd-v-a .fd-isi .rd-l{color:var(--muted)}
+#founders.fd-v-a .fd-isi .snum{color:var(--ink)!important}
+#founders.fd-v-a .fd-nama{margin:0;border:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,3vw,48px)}
+#founders.fd-v-a .fd-nama li{border:0;padding:0}
+#founders.fd-v-a .fd-ava{display:block;width:56px;height:56px}
+#founders.fd-v-a .fd-nama b{color:var(--ink);font-size:clamp(18px,1.5vw,21px)}
+#founders.fd-v-a .fd-nama span{color:var(--muted)}
+
+/* B: banner hitam pendek, nama berdampingan, foto lebih kecil */
+#founders.fd-v-b .fd-banner{min-height:0;padding:clamp(24px,2.6vw,34px) clamp(28px,3.2vw,44px)}
+#founders.fd-v-b .fd-bg{width:46%;object-position:55% 22%}
+#founders.fd-v-b .fd-isi{width:min(56%,620px)}
+#founders.fd-v-b .fd-nama{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;border:0;margin-top:16px}
+#founders.fd-v-b .fd-nama li{border:0;padding:14px 0 0;border-top:1px solid rgba(255,255,255,.18)}
+#founders.fd-v-b .fd-nama b{font-size:clamp(18px,1.6vw,22px)}
+
+/* C: putih, foto kecil membulat di kiri, daftar bergaris di kanan */
+#founders.fd-v-c .fd-banner{background:none;color:var(--ink);min-height:0;padding:0;border-radius:0;display:grid;
+  grid-template-columns:minmax(220px,300px) 1fr;gap:clamp(24px,3.4vw,52px);align-items:center}
+#founders.fd-v-c .fd-bg{position:static;width:100%;height:auto;aspect-ratio:16/10;object-position:50% 20%;opacity:1;border-radius:16px;
+  -webkit-mask-image:none;mask-image:none}
+#founders.fd-v-c .fd-isi{width:auto}
+#founders.fd-v-c .fd-isi .rd-l{color:var(--muted)}
+#founders.fd-v-c .fd-isi .snum{color:var(--ink)!important}
+#founders.fd-v-c .fd-nama{border-top-color:var(--line)}
+#founders.fd-v-c .fd-nama li{border-bottom-color:var(--line);padding:14px 0}
+#founders.fd-v-c .fd-nama b{color:var(--ink);font-size:clamp(18px,1.5vw,21px)}
+#founders.fd-v-c .fd-nama span{color:var(--muted)}
+
+/* D: kapsul hitam ramping, avatar bulat, tanpa foto besar */
+#founders.fd-v-d .fd-banner{min-height:0;padding:clamp(18px,2vw,24px) clamp(24px,3vw,40px);display:grid;grid-template-columns:auto 1fr;
+  gap:clamp(24px,4vw,64px);align-items:center;border-radius:100px}
+#founders.fd-v-d .fd-bg{display:none}
+#founders.fd-v-d .fd-isi{display:contents}
+#founders.fd-v-d .fd-nama{margin:0;border:0;display:flex;justify-content:flex-end;gap:clamp(24px,4vw,64px)}
+#founders.fd-v-d .fd-nama li{border:0;padding:0}
+#founders.fd-v-d .fd-ava{display:block;width:52px;height:52px;box-shadow:0 0 0 1px rgba(255,255,255,.2)}
+#founders.fd-v-d .fd-nama b{font-size:clamp(17px,1.4vw,20px)}
+
+html.dark-theme #founders:is(.fd-v-a,.fd-v-c) .fd-nama b{color:#fff}
+@media (max-width:720px){
+  #founders:is(.fd-v-a,.fd-v-d) .fd-banner{grid-template-columns:1fr;border-radius:24px}
+  #founders:is(.fd-v-a,.fd-v-b) .fd-nama{grid-template-columns:1fr}
+  #founders.fd-v-d .fd-nama{flex-direction:column;align-items:flex-start;gap:16px}
+  #founders.fd-v-c .fd-banner{grid-template-columns:1fr}
+}
