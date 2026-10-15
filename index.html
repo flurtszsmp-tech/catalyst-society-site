@@ -1700,16 +1700,6 @@
   <div class="pm"><div class="pm-row pm-a"><ul><li><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="Coinvestasi" decoding="async" height="52"></span></li><li><span class="pm-logo pm-putih"><img src="assets/corporate/ibw.webp" alt="Indonesia Blockchain Week" decoding="async" height="52"></span></li><li><span class="pm-logo pm-putih"><img src="assets/corporate/w3wasia.webp" alt="Web3 Week Asia" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-putih"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-putih"><img src="assets/corporate/w3wasia.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-putih"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-putih"><img src="assets/corporate/w3wasia.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-putih"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-putih"><img src="assets/corporate/w3wasia.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-putih"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-putih"><img src="assets/corporate/w3wasia.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-putih"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-putih"><img src="assets/corporate/w3wasia.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-putih"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-putih"><img src="assets/corporate/w3wasia.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo"><img src="assets/corporate/coinvestasi.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-putih"><img src="assets/corporate/ibw.webp" alt="" decoding="async" height="52"></span></li><li aria-hidden="true"><span class="pm-logo pm-putih"><img src="assets/corporate/w3wasia.webp" alt="" decoding="async" height="52"></span></li></ul></div></div>
 </section>
 
-<section class="stat-rail wrap">
-  <div class="hero-marquee">
-    <ul>
-      <li>Connect<span></span></li><li>Collaborate</li><li>Create</li><li>Change</li>
-      <li>Learn</li><li>Build</li><li>Impact</li>
-      <li>Connect</li><li>Collaborate</li><li>Create</li><li>Change</li>
-      <li>Learn</li><li>Build</li><li>Impact</li>
-    </ul>
-  </div>
-</section>
 
 <!-- community -->
 <section class="band" id="community">
@@ -1745,43 +1735,53 @@
 <script>
 /* Baris logo partner (seperti lusion.co/about): selalu bergeser pelan; gulir ke bawah
    menggeser ke kiri, gulir ke atas ke kanan, makin cepat digulir makin cepat lalu melambat
-   halus. Tiap baris punya kelembaman dan kecepatan sendiri, jadi baris bawah menyusul
-   sedikit terlambat, tidak serempak. Hanya jalan saat barisnya terlihat. */
+   halus. Tiap baris punya kelembaman sendiri, jadi tidak serempak. Hanya jalan saat terlihat.
+   Panjang satu putaran = (lebar isi + jarak antar logo) / 2, karena isi baris = dua salinan
+   daftar yang sama; tanpa koreksi jarak, baris melompat setengah jarak di tiap putaran. */
 (function(){
   var uls=[].slice.call(document.querySelectorAll('.pm-row ul'));if(!uls.length)return;
   var rm=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
-  var DASAR=rm?14:38, arah=-1, dorong=0, y0=scrollY, t0=0, jalan=false, terlihat=0;
-  /* per baris: pengali kecepatan dasar, pengali dorongan gulir, dan seberapa cepat menyesuaikan */
+  var DASAR=rm?14:38, arah=-1, dorong=0, y0=scrollY, t0=0, jalan=false, terlihat=new Set();
   var SIFAT=[[1,1,4.2],[.82,.86,1.7],[1.12,1.1,2.6],[.9,.95,1.2]];
-  var v=uls.map(function(u,i){return -DASAR*SIFAT[i%4][0]});
-  var x=uls.map(function(u,i){return 0}), w=[];
-  function ukur(){w=uls.map(function(u){return u.scrollWidth/2});x=x.map(function(v,i){return -w[i]*(i%2?.37:0)});}
+  var v=uls.map(function(u,i){return -DASAR*SIFAT[i%4][0]}), x=uls.map(function(){return 0}), w=uls.map(function(){return 0});
+  function ukur(){
+    uls.forEach(function(u,i){
+      var jarak=parseFloat(getComputedStyle(u).columnGap)||0, p=(u.scrollWidth+jarak)/2;
+      if(!p)return;
+      if(!w[i]) x[i]=-p*(i%2?.37:0);          /* posisi awal hanya sekali; ukur ulang tidak menggeser baris */
+      else x[i]=((x[i]%p)-p)%p;
+      w[i]=p;
+    });
+  }
   addEventListener('scroll',function(){
     var d=scrollY-y0;y0=scrollY;if(!d)return;
     arah=d>0?-1:1;dorong=Math.min(dorong+Math.abs(d)*(rm?2:7),rm?120:1400);mulai();
   },{passive:true});
-  addEventListener('resize',ukur);
+  var tunda=0;addEventListener('resize',function(){clearTimeout(tunda);tunda=setTimeout(ukur,150)});
+  uls.forEach(function(u){u.querySelectorAll('img').forEach(function(im){if(!im.complete)im.addEventListener('load',ukur,{once:true})})});
   function bingkai(t){
-    if(!terlihat){jalan=false;return}
+    if(!terlihat.size||document.hidden){jalan=false;return}
     var dt=t0?Math.min((t-t0)/1000,.05):.016;t0=t;
     dorong*=Math.pow(.06,dt);
     for(var i=0;i<uls.length;i++){
+      if(!w[i])continue;
       var f=SIFAT[i%4];
       v[i]+=(arah*(DASAR*f[0]+dorong*f[1])-v[i])*Math.min(1,dt*f[2]);
-      if(!w[i])continue;
       x[i]+=v[i]*dt;
-      if(x[i]<=-w[i])x[i]+=w[i];else if(x[i]>0)x[i]-=w[i];
+      while(x[i]<=-w[i])x[i]+=w[i];
+      while(x[i]>0)x[i]-=w[i];
       uls[i].style.transform='translate3d('+x[i].toFixed(2)+'px,0,0)';
     }
     requestAnimationFrame(bingkai);
   }
-  function mulai(){if(!jalan&&terlihat){jalan=true;t0=0;requestAnimationFrame(bingkai)}}
+  function mulai(){if(!jalan&&terlihat.size&&!document.hidden){jalan=true;t0=0;requestAnimationFrame(bingkai)}}
   ukur();
-  if(window.addEventListener)addEventListener('load',ukur);
+  addEventListener('load',ukur);
+  document.addEventListener('visibilitychange',mulai);
   if('IntersectionObserver' in window){
-    var io=new IntersectionObserver(function(es){es.forEach(function(e){terlihat+=e.isIntersecting?1:-1});terlihat=Math.max(0,terlihat);mulai()});
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)terlihat.add(e.target);else terlihat.delete(e.target)});mulai()});
     document.querySelectorAll('.pm').forEach(function(p){io.observe(p)});
-  }else{terlihat=1;mulai()}
+  }else{document.querySelectorAll('.pm').forEach(function(p){terlihat.add(p)});mulai()}
 })();
 </script>
 
@@ -1914,21 +1914,18 @@
   </div>
 </section>
 
-<!-- founders -->
+<!-- founders: banner panjang seperti kotak kutipan, nama di kiri, foto memudar di kanan -->
 <section class="band fd" id="founders">
   <div class="wrap">
-    <div class="fd-blok rv">
-      <div class="fd-kiri">
+    <div class="fd-banner rv">
+      <img class="fd-bg" src="assets/img/founders.webp" alt="Madani Al Fairuz, Co-Founder dan CTO, bersama Bagas Dwi Putra, Founder dan CEO Catalyst Society" loading="lazy" decoding="async" width="1536" height="1024">
+      <div class="fd-isi">
         <div class="ab-label"><span class="snum">07</span><span class="rd-l" data-i18n="fd.label">Founders</span></div>
-        <h2 class="fd-judul" data-i18n="fd.judul">Orang di balik Catalyst Society.</h2>
-        <ul class="fd-daftar">
+        <ul class="fd-nama">
           <li><b translate="no">Bagas Dwi Putra</b><span data-i18n="fd.ceo">Founder &amp; CEO</span></li>
           <li><b translate="no">Madani Al Fairuz</b><span data-i18n="fd.cto">Co-Founder &amp; CTO</span></li>
         </ul>
       </div>
-      <figure class="fd-foto">
-        <img src="assets/img/founders.webp" alt="Madani Al Fairuz, Co-Founder dan CTO, bersama Bagas Dwi Putra, Founder dan CEO Catalyst Society" loading="lazy" decoding="async" width="1536" height="1024">
-      </figure>
     </div>
   </div>
 </section>
@@ -2007,7 +2004,7 @@
         <ul class="kl-kontak">
           <li><span class="rd-l" data-i18n="kl.email">Email</span><a href="mailto:info@catalystsociety.site">info@catalystsociety.site</a></li>
           <li><span class="rd-l">Instagram</span><a href="https://www.instagram.com/catalystsociety.id/" target="_blank" rel="noopener">@catalystsociety.id</a></li>
-          <li><span class="rd-l">Website</span><a href="https://catalystsociety.site" target="_blank" rel="noopener">catalystsociety.site</a></li>
+          <li><span class="rd-l">Website</span><a href="https://catalystsociety.id" target="_blank" rel="noopener">catalystsociety.id</a></li>
         </ul>
       </div>
       <form class="kl-form" id="klForm" novalidate>
@@ -2094,7 +2091,7 @@
         <b data-i18n="foot.terhubung">Terhubung</b>
         <a class="sosial" href="https://www.instagram.com/catalystsociety.id/" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24"><use href="#i-ig"/></svg><span translate="no">catalystsociety.id</span></a>
-        <a href="https://catalystsociety.site" target="_blank" rel="noopener"><span translate="no">catalystsociety.site</span></a>
+        <a href="https://catalystsociety.id" target="_blank" rel="noopener"><span translate="no">catalystsociety.id</span></a>
       </div>
     </div>
   </div>

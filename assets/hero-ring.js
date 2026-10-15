@@ -379,13 +379,13 @@
   var miring = { x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0 };   /* miring pecahan aktif */
   var BASE_X = 0.05, BASE_Y = -0.14;           /* miring diam supaya tebal kaca terbaca */
   var dorong = 0, seret = null, pLalu = null;
-  var tunggu = 0, jedaSampai = 0, dalam = false;
+  var tunggu = 0, jedaSampai = 0, dalamInfo = false;
 
   function menujuKe(k, jeda) {
     var kc = indeksDari(rot);
     var beda = modN(k - kc + 3) - 3;           /* jalur terpendek, -3 .. 2 */
     sasaran = rotStop(kc + beda);
-    if (jeda) jedaSampai = performance.now() + 6000;
+    if (jeda) jedaSampai = performance.now() + 2500;
     tunggu = 0;
     setAktif(k);
   }
@@ -400,8 +400,9 @@
     var r = wadah.getBoundingClientRect();
     var dx = e.clientX - (r.left + pusat.x), dy = e.clientY - (r.top + pusat.y);
     var jarak = Math.sqrt(dx * dx + dy * dy);
-    dalam = lebarLayar && jarak < jari && e.clientY >= r.top && e.clientY <= r.bottom;
 
+    /* tombol mouse sudah tidak ditekan tapi tarikan belum dilepas (pointerup hilang) */
+    if (seret && e.pointerType === 'mouse' && e.buttons === 0) lepas(e);
     if (seret) {
       var s = sudutKursor(e.clientX, e.clientY);
       var d = s - seret.sudut;
@@ -460,7 +461,7 @@
     if (!seret) return;
     var klik = seret.gerak < 6 && (e.timeStamp - seret.awal) < 450;
     seret = null;
-    jedaSampai = performance.now() + 6000;
+    jedaSampai = performance.now() + 2500;
     if (klik) {
       var h = segmenDi(e.clientX, e.clientY);
       if (h >= 0) { menujuKe(h, true); dorong = 0; return; }
@@ -473,10 +474,12 @@
   }
   wadah.addEventListener('pointerup', lepas);
   wadah.addEventListener('pointercancel', lepas);
-  window.addEventListener('pointerleave', function () { dalam = false; pLalu = null; miring.tx = miring.ty = 0; if (tip) tip.classList.remove('tampil'); });
+  wadah.addEventListener('lostpointercapture', lepas);
+  window.addEventListener('blur', function () { if (seret) lepas({ timeStamp: performance.now(), clientX: -1, clientY: -1 }); });
+  window.addEventListener('pointerleave', function () { dalamInfo = false; pLalu = null; miring.tx = miring.ty = 0; if (tip) tip.classList.remove('tampil'); });
   if (info) {
-    info.addEventListener('pointerenter', function () { dalam = true; });
-    info.addEventListener('pointerleave', function () { dalam = false; });
+    info.addEventListener('pointerenter', function () { dalamInfo = true; });
+    info.addEventListener('pointerleave', function () { dalamInfo = false; });
   }
 
   /* ---------- gambar ---------- */
@@ -501,7 +504,7 @@
         vRot += (galat * K - vRot * C) * dt;
         rot += vRot * dt;
         if (Math.abs(sasaran - rot) < 0.0015 && Math.abs(vRot) < 0.04) { rot = sasaran; vRot = 0; sasaran = null; }
-      } else if (!reduce && !dalam && !lengkap && performance.now() > jedaSampai) {
+      } else if (!reduce && !dalamInfo && !lengkap && performance.now() > jedaSampai) {
         tunggu += dt;
         if (tunggu > JEDA_OTOMATIS) { tunggu = 0; menujuKe(aktif + 1, false); }
       }

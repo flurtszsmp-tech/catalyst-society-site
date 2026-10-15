@@ -377,3 +377,23 @@ html.dark-theme .kl-lead{color:#b5b5b5}
 html.dark-theme .kl-kontak,html.dark-theme .kl-kontak li{border-color:rgba(255,255,255,.16)}
 html.dark-theme .kl-form{background:#141418;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
 @media (max-width:900px){.kl-blok{grid-template-columns:1fr}}
+
+/* ---------- Founders: banner hitam panjang (bahasa visual kotak kutipan), nama di kiri, foto memudar di kanan ---------- */
+.fd-banner{position:relative;overflow:hidden;border-radius:24px;background:#000;color:#fff;
+  min-height:clamp(280px,26vw,380px);display:flex;align-items:center;padding:clamp(30px,3.6vw,52px)}
+.fd-bg{position:absolute;right:0;top:0;height:100%;width:72%;object-fit:cover;object-position:60% 30%;opacity:.85;pointer-events:none;
+  -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 20%,rgba(0,0,0,.7) 42%,#000 66%);
+          mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.25) 20%,rgba(0,0,0,.7) 42%,#000 66%)}
+.fd-isi{position:relative;z-index:1;width:min(44%,440px)}
+.fd-isi .rd-l{min-height:0;color:rgba(255,255,255,.6)}
+.fd-isi .snum{color:#fff!important}
+.fd-nama{list-style:none;margin:clamp(18px,2vw,26px) 0 0;padding:0;border-top:1px solid rgba(255,255,255,.18)}
+.fd-nama li{display:flex;flex-direction:column;gap:6px;padding:clamp(14px,1.6vw,20px) 0;border-bottom:1px solid rgba(255,255,255,.18)}
+.fd-nama b{font-family:var(--display);font-weight:400;font-size:clamp(22px,2.2vw,32px);letter-spacing:-.025em;line-height:1.1;color:#fff}
+.fd-nama span{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+html.dark-theme .fd-banner{background:#0b0b0e;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+@media (max-width:720px){
+  .fd-banner{flex-direction:column;align-items:stretch;padding:0;min-height:0}
+  .fd-bg{position:relative;width:100%;height:auto;aspect-ratio:16/9;object-position:50% 0;opacity:1;-webkit-mask-image:linear-gradient(to top,transparent,#000 30%);mask-image:linear-gradient(to top,transparent,#000 30%)}
+  .fd-isi{width:auto;padding:14px 24px 26px}
+}
