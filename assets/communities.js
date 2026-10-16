@@ -290,19 +290,24 @@
     document.title = k.nama + ' · Catalyst Society';
     return true;
   }
+  /* tinggi halaman berubah saat detail dibuka/ditutup: ukur ulang Lenis dulu, lalu loncat */
+  function keY(y) {
+    if (window.lenis) { lenis.resize(); lenis.scrollTo(y, { immediate: true, force: true }); }
+    else window.scrollTo(0, y);
+  }
   function tampil(slug, gulir) {
     if (!isiDetail(slug)) return;
     slugAktif = slug;
     panel.hidden = false;
     document.documentElement.classList.add('mode-kd');
-    if (gulir !== false) window.scrollTo(0, 0);
+    if (gulir !== false) keY(0);
   }
   function tutup(keKomunitas) {
     if (!slugAktif) return;
     slugAktif = ''; panel.hidden = true; panel.innerHTML = '';
     document.documentElement.classList.remove('mode-kd');
     document.title = 'Catalyst Society. Accelerating Future Builders.';
-    if (keKomunitas) { var c = document.getElementById('community'); if (c) window.scrollTo(0, c.getBoundingClientRect().top + window.scrollY - 90); }
+    if (keKomunitas) { var c = document.getElementById('community'); if (c) keY(c.getBoundingClientRect().top + window.scrollY - 90); }
   }
   function dariAlamat() {
     var s = new URLSearchParams(location.search).get('k');

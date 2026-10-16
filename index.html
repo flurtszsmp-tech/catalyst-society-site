@@ -1591,7 +1591,7 @@
         </div>
         <div class="e4-hint" aria-hidden="true"><i></i><span data-i18n="eco.scroll">Scroll</span></div>
         <aside class="e8-papan" id="ecoDetail" role="dialog" aria-labelledby="edJudul" aria-hidden="true">
-          <div class="e8-inti e8-lg">
+          <div class="e8-inti e8-lg" data-lenis-prevent>
             <button type="button" class="ed-tutup" aria-label="Tutup"><svg viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
             <div class="e8-isi">
               <h3 class="ed-judul" id="edJudul" translate="no"></h3>
@@ -2103,11 +2103,20 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
 <script>
 (function(){
   var rm = matchMedia('(prefers-reduced-motion:reduce)').matches;
   var body = document.body;
   var root = document.documentElement;
+
+  /* Gulir halus seperti berco-inc.com (Lenis). Reduce motion tetap halus tapi lebih cepat
+     sampai, bukan dimatikan. Sentuh di HP tetap gulir bawaan. */
+  if(window.Lenis){
+    window.lenis = new Lenis({lerp: rm ? .2 : .085, wheelMultiplier: 1});
+    (function jalan(t){ lenis.raf(t); requestAnimationFrame(jalan); })(performance.now());
+    if(body.classList.contains('locked')) lenis.stop();
+  }
 
   /* ---------- keadaan gerak yang mengikuti gulir ----------
      Dideklarasikan di awal karena perbaruiGulir memanggil perbaruiMaju,
@@ -2185,6 +2194,7 @@
     if(!l) return;
     l.classList.add('done');
     body.classList.remove('locked');
+    if(window.lenis) lenis.start();
     setTimeout(function(){ l.remove(); }, 1200);
   }
   if(rm){ killLoader(); }
@@ -2334,10 +2344,12 @@
   burger.addEventListener('click', function(){
     menu.classList.toggle('open');
     body.classList.toggle('locked', menu.classList.contains('open'));
+    if(window.lenis) lenis[menu.classList.contains('open') ? 'stop' : 'start']();
   });
   menu.querySelectorAll('a').forEach(function(a){
     a.addEventListener('click', function(){
       menu.classList.remove('open'); body.classList.remove('locked');
+      if(window.lenis) lenis.start();
     });
   });
 
@@ -2346,8 +2358,8 @@
     a.addEventListener('click', function(ev){
       var t = document.querySelector(a.getAttribute('href'));
       if(!t) return;
-      if(window.lenis) return;
       ev.preventDefault();
+      if(window.lenis){ lenis.scrollTo(t, {offset: -96}); return; }
       var y = t.getBoundingClientRect().top + scrollY - 96;
       scrollTo({top: y, behavior: rm ? 'auto' : 'smooth'});
     });
