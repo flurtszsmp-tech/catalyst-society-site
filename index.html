@@ -859,34 +859,44 @@
      diputar oleh --spin, bukan lagi top/left tetap. */
   /* Kotak tagline: permukaan kaca (kelas .glass) */
 
-  /* ---------- industries ---------- */
+  /* ---------- industries ----------
+     Lima panel berjajar. Panel aktif (disentuh kursor, difokus keyboard, atau diketuk)
+     melebar dan memperlihatkan deskripsi; panel lain tetap terbaca dari judulnya.
+     Panel yang terakhir aktif tetap terbuka saat kursor keluar, jadi tidak memantul. */
   .ind-head{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:52px;flex-wrap:wrap}
   .ind-head h2{margin-top:20px;max-width:14ch}
-  .ind-rail{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(240px,23vw,300px);gap:20px;
-    overflow-x:auto;padding-bottom:14px;scroll-snap-type:x mandatory;
-    scrollbar-width:none}
-  .ind-rail::-webkit-scrollbar{display:none}
-  .ind-card{position:relative;height:clamp(380px,52vh,480px);border-radius:24px;overflow:hidden;
-    scroll-snap-align:start;background:var(--black);color:#fff;
-    border:1px solid rgba(255,255,255,.08);isolation:isolate}
-  /* transform digerakkan tiap frame oleh --maju (parallax), jadi TIDAK
-     ditransisikan di sini, hanya opacity yang halus. Rasa "hidup" saat hover
-     dipindah ke opacity dan kilau .ind-sheen. */
+  .ind-rail{display:flex;gap:10px;container-type:inline-size}
+  .ind-card{position:relative;flex:1 1 0;min-width:0;height:clamp(400px,56vh,500px);border-radius:16px;overflow:hidden;
+    background:var(--black);color:#fff;isolation:isolate;cursor:pointer;outline:none;
+    transition:opacity .8s var(--ease),transform .8s var(--ease),flex-grow .75s var(--ease);
+    transition-delay:calc(var(--i,0)*70ms),calc(var(--i,0)*70ms),0s}
+  .ind-card.aktif{flex-grow:3}
+  .ind-card:focus-visible{box-shadow:0 0 0 2px var(--bg,#fff),0 0 0 4px currentColor}
+  /* transform foto digerakkan tiap frame oleh --maju (parallax); zoom aktif memakai
+     properti scale terpisah supaya tidak bertabrakan. */
   .ind-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-    opacity:.42;transition:opacity .6s var(--ease);will-change:transform}
-  .ind-card::after{content:"";position:absolute;inset:0;
-    background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.82));z-index:1}
+    opacity:.55;transition:opacity .7s var(--ease),scale 1.4s var(--ease);will-change:transform}
+  .ind-card.aktif img{opacity:.82;scale:1.04}
+  .ind-card::after{content:"";position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.86))}
   .ind-card>*{position:relative;z-index:2}
-  .ind-card:hover img{opacity:.58}
-  .ind-inner{position:absolute;inset:0;padding:26px;display:flex;flex-direction:column}
-  .ind-inner .num{font-family:var(--display);font-weight:400;font-size:15px;letter-spacing:.1em;opacity:.6}
-  .ind-inner .ico{margin-top:auto;width:34px;height:34px;stroke:#fff;stroke-width:1.4}
-  .ind-inner h3{font-family:var(--display);font-weight:400;font-size:19px;letter-spacing:-.01em;margin:16px 0 8px}
-  .ind-inner p{font-size:12.5px;color:#bdbdbd;line-height:1.55}
-  .ind-sheen{position:absolute;inset:0;z-index:3;pointer-events:none;
-    background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.14) 50%,transparent 60%);
-    transform:translateX(-100%);transition:transform .9s var(--ease)}
-  .ind-card:hover .ind-sheen{transform:translateX(100%)}
+  .ind-inner{position:absolute;inset:0;padding:20px;display:flex;flex-direction:column}
+  .ind-inner .num{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.12em;opacity:.7}
+  /* lebar judul = lebar isi panel sempit (rail dibagi 7 bagian: 4 sempit + 1 aktif x3),
+     jadi judul tidak berganti baris di tengah animasi melebar */
+  .ind-inner h3{margin-top:auto;width:calc((100cqw - 40px) / 7 - 40px);font-family:var(--display);font-weight:400;
+    font-size:clamp(17px,1.3vw,19px);line-height:1.2;letter-spacing:-.01em}
+  .ind-inner p{width:min(32ch,100%);font-size:13px;color:#cfcfcf;line-height:1.55;
+    max-height:0;opacity:0;overflow:hidden;transition:opacity .35s var(--ease),max-height .6s var(--ease),margin .6s var(--ease)}
+  .ind-card.aktif p{max-height:6em;opacity:1;margin-top:10px;transition-delay:.22s,0s,0s}
+  @media (max-width:860px){
+    .ind-rail{overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
+    .ind-rail::-webkit-scrollbar{display:none}
+    .ind-card,.ind-card.aktif{flex:0 0 72vw;scroll-snap-align:start;cursor:auto}
+    .ind-card img,.ind-card.aktif img{opacity:.72;scale:1}
+    .ind-inner h3{width:auto}
+    .ind-inner p,.ind-card.aktif p{max-height:none;opacity:1;margin-top:10px}
+  }
 
   /* Pita hitam "100+ COMMUNITY PARTNERS" persis slide 03 */
   .partners{margin-top:52px;position:relative;padding-top:34px}
@@ -1623,53 +1633,43 @@
       <p class="lead" data-i18n="s3.desc">Terhubung ke <strong>Industri</strong> melalui berbagai<br><strong>Komunitas</strong> di Sektor berikut.</p>
     </div>
 
-    <div class="ind-rail stagger">
+    <div class="ind-rail stagger" id="indRail">
       <article class="ind-card">
         <img src="assets/industri/ai.webp" alt="" loading="lazy" decoding="async">
-        <div class="ind-sheen"></div>
         <div class="ind-inner">
           <span class="num">01</span>
-          <svg class="ico" viewBox="0 0 24 24"><use href="#i-cube"/></svg>
           <h3 translate="no">AI &amp; Technology</h3>
           <p data-i18n="ind.ai.d">Artificial Intelligence, Software, Data, dan Emerging Technology.</p>
         </div>
       </article>
       <article class="ind-card">
         <img src="assets/industri/business.webp" alt="" loading="lazy" decoding="async">
-        <div class="ind-sheen"></div>
         <div class="ind-inner">
           <span class="num">02</span>
-          <svg class="ico" viewBox="0 0 24 24"><use href="#i-chart"/></svg>
           <h3 translate="no">Business</h3>
           <p data-i18n="ind.biz.d">Startup, Entrepreneurship, dan Business Development.</p>
         </div>
       </article>
       <article class="ind-card">
         <img src="assets/industri/investments.webp" alt="" loading="lazy" decoding="async">
-        <div class="ind-sheen"></div>
         <div class="ind-inner">
           <span class="num">03</span>
-          <svg class="ico" viewBox="0 0 24 24"><use href="#i-capital"/></svg>
           <h3 translate="no">Investments</h3>
           <p data-i18n="ind.inv.d">Finance, Investment, Capital Market, dan Wealth Building.</p>
         </div>
       </article>
       <article class="ind-card">
         <img src="assets/industri/dev.webp" alt="" loading="lazy" decoding="async">
-        <div class="ind-sheen"></div>
         <div class="ind-inner">
           <span class="num">04</span>
-          <svg class="ico" viewBox="0 0 24 24"><use href="#i-rocket"/></svg>
           <h3 translate="no">Dev &amp; Builder</h3>
           <p data-i18n="ind.dev.d">Development, Product, Design, Leadership, dan Career.</p>
         </div>
       </article>
       <article class="ind-card">
         <img src="assets/industri/social.webp" alt="" loading="lazy" decoding="async">
-        <div class="ind-sheen"></div>
         <div class="ind-inner">
           <span class="num">05</span>
-          <svg class="ico" viewBox="0 0 24 24"><use href="#i-spark"/></svg>
           <h3 translate="no">Social Impact</h3>
           <p data-i18n="ind.soc.d">Education, Environment, Community, dan Sustainable Impact.</p>
         </div>
@@ -1677,6 +1677,23 @@
     </div>
     </div>
   </div>
+<script>
+/* panel industri aktif: kursor (dengan jeda kecil supaya sapuan cepat tidak membuka semua),
+   fokus keyboard, atau ketukan */
+(function(){
+  var rail=document.getElementById('indRail');if(!rail)return;
+  var kartu=[].slice.call(rail.children),t=0;
+  function pilih(k){kartu.forEach(function(x){x.classList.toggle('aktif',x===k)})}
+  kartu.forEach(function(k){
+    k.tabIndex=0;
+    k.addEventListener('pointerenter',function(e){if(e.pointerType!=='mouse')return;clearTimeout(t);t=setTimeout(function(){pilih(k)},90)});
+    k.addEventListener('pointerleave',function(){clearTimeout(t)});
+    k.addEventListener('focus',function(){pilih(k)});
+    k.addEventListener('click',function(){pilih(k)});
+  });
+  pilih(kartu[0]);
+})();
+</script>
 </section>
 
 <!-- community partners: marquee logo -->
