@@ -201,11 +201,15 @@
 
   function terapkanTema() {
     var g = gelap();
-    scene.environment = g ? ENV.putih : ENV.hitam;
+    var gb = g && document.documentElement.classList.contains('gb');
+    scene.environment = g && !gb ? ENV.putih : ENV.hitam;
     ambien.intensity = g ? 0.35 : 0.0;
     cahaya.intensity = g ? 0.35 : 0.5;
     bahan.concat([bahanBusur]).forEach(function (m) {
-      if (g) {
+      if (gb) {
+        /* usulan tema gelap: roda grafit mengilap dengan pantulan gelap, bukan putih menyilaukan */
+        m.color.set(0x2c2d33); m.roughness = 0.1; m.clearcoatRoughness = 0.04; m.envMapIntensity = 1.4;
+      } else if (g) {
         m.color.set(0xffffff); m.roughness = 0.12; m.clearcoatRoughness = 0.05; m.envMapIntensity = 0.85;
       } else {
         m.color.set(0x000000); m.roughness = 0.08; m.clearcoatRoughness = 0.03; m.envMapIntensity = 1.5;
@@ -218,7 +222,7 @@
       x.clearRect(0, 0, 256, 256);
       x.save();
       x.translate(128, 128); x.scale(7.4, 7.4); x.translate(-12, -12);
-      x.strokeStyle = g ? '#0a0a0d' : '#ffffff';
+      x.strokeStyle = g && !gb ? '#0a0a0d' : '#ffffff';
       x.lineWidth = 1.5; x.lineCap = 'round'; x.lineJoin = 'round';
       x.stroke(t.path);
       x.restore();

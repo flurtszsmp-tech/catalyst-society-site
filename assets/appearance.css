@@ -68,3 +68,21 @@ html:not(.dark-theme) .actionbar .ab-item svg{stroke:var(--ink)}
 html:not(.dark-theme) .actionbar .ab-item svg use[href="#i-spark4"]{fill:var(--ink)}
 /* angka hadiah Summit tidak terpotong di HP */
 @media (max-width:560px){.summit-stat .big{font-size:clamp(34px,11vw,52px)!important}}
+
+/* ===== usulan tema gelap (?gelap=baru): hitam lebih lembut, putih murni diredam,
+   permukaan bertingkat supaya batas kartu terbaca tanpa terasa menyilaukan ===== */
+html.dark-theme.gb{--bg:#0d0d10;--paper:#0d0d10;--ink:#e8e8eb;--line:rgba(255,255,255,.08);--redam:#e2e2e5;--muka:#16161a}
+html.dark-theme.gb body{background:var(--bg)}
+html.dark-theme.gb :is(.btn,.ri-buka,.ri-akses.free,.com-join,.kd-gabung,.kd-anggota span,.com-filter button.on,.lang-list button.on,.kl-kirim){
+  background:var(--redam)!important;border-color:var(--redam)!important;color:#0d0d10!important}
+html.dark-theme.gb .hero-duo{background:var(--bg);border-color:rgba(255,255,255,.22);box-shadow:none}
+html.dark-theme.gb .hd-ind{background:var(--redam)}
+/* tile logo komunitas: putih diredam dan diberi garis tipis */
+html.dark-theme.gb .com-logo{background:var(--redam);box-shadow:0 0 0 1px rgba(255,255,255,.06)}
+/* logo mitra: satu warna abu terang yang sama, logo berbentuk lingkaran gelap tidak lagi jadi bola putih */
+html.dark-theme.gb .pm-logo img{opacity:.72;mix-blend-mode:lighten}   /* latar hitam pekat di file logo larut ke latar halaman */
+html.dark-theme.gb .pm-cakram img{filter:grayscale(1) brightness(1.15)}
+/* panel industri dan banner founders: tepi tipis supaya tidak tenggelam di latar */
+html.dark-theme.gb .ind-card{box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+html.dark-theme.gb #founders .fd-banner{background:var(--muka);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+html.dark-theme.gb .kl-form,html.dark-theme.gb .kl-kartu{background:var(--muka)}

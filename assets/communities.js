@@ -114,10 +114,13 @@
      Setiap baris memuat daftar dua kali supaya putarannya tanpa sambungan
      (keyframe menggeser tepat -50%). Salinan kedua disembunyikan dari
      pembaca layar. */
+  /* logo lingkaran penuh dengan pinggir gelap (diukur dari pikselnya): kalau warnanya dibalik
+     di tema gelap, jadi bola putih */
+  var CAKRAM = { 'aico.webp': 1, 'bbka.webp': 1, 'bisa.ai.webp': 1, 'dicoding.webp': 1, 'isp.webp': 1, 'pyhton.webp': 1, 'tradix.webp': 1 };
   var jalur = document.getElementById('pmMarquee');
   if (jalur) {
     var logoSel = function (k, salinan) {
-      return '<li' + (salinan ? ' aria-hidden="true"' : '') + '><span class="pm-logo">' +
+      return '<li' + (salinan ? ' aria-hidden="true"' : '') + '><span class="pm-logo' + (CAKRAM[k.logo] ? ' pm-cakram' : '') + '">' +
              '<img src="assets/communities/' + k.logo + '" alt="' + (salinan ? '' : aman(k.nama)) + '" ' +
              'decoding="async" height="52"></span></li>';
     };
