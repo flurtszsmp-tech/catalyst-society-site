@@ -1,0 +1,72 @@
+/* Tanya Catalyst: tombol chat CS AI di pojok kanan bawah. Hitam putih senada landing,
+   tanpa ikon berwarna atau gelembung kartun. */
+.cs-tombol{position:fixed;right:20px;bottom:20px;z-index:900;display:flex;align-items:center;gap:10px;
+  padding:13px 20px 13px 16px;border:0;border-radius:100px;background:#0a0a0e;color:#fff;cursor:pointer;
+  font:500 14px/1 var(--body,"Geist",system-ui,sans-serif);letter-spacing:.01em;
+  box-shadow:0 18px 40px -18px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,255,255,.08);
+  transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .3s,box-shadow .3s}
+.cs-tombol:hover{transform:translateY(-2px);box-shadow:0 22px 44px -18px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.12)}
+.cs-tombol svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6}
+.cs-tombol .cs-titik{width:7px;height:7px;border-radius:50%;background:#3ddc84;box-shadow:0 0 0 3px rgba(61,220,132,.18)}
+.cs-buka .cs-tombol{opacity:0;pointer-events:none;transform:translateY(8px)}
+
+.cs-panel{position:fixed;right:20px;bottom:20px;z-index:901;width:min(380px,calc(100vw - 40px));height:min(580px,calc(100vh - 110px));
+  display:flex;flex-direction:column;border-radius:22px;overflow:hidden;background:#fff;color:#0a0a0e;
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.45),0 0 0 1px rgba(0,0,0,.06);
+  opacity:0;visibility:hidden;transform:translateY(14px) scale(.98);transform-origin:100% 100%;
+  transition:opacity .3s,transform .4s cubic-bezier(.22,1,.36,1),visibility .3s}
+.cs-buka .cs-panel{opacity:1;visibility:visible;transform:none}
+
+.cs-kepala{display:flex;align-items:center;gap:12px;padding:16px 16px 14px 18px;border-bottom:1px solid rgba(0,0,0,.07)}
+.cs-logo{width:34px;height:34px;border-radius:50%;background:#0a0a0e;color:#fff;display:grid;place-items:center;flex:none;font:600 15px/1 var(--display,"Geist",sans-serif)}
+.cs-kepala b{display:block;font:500 15px/1.2 var(--display,"Geist",sans-serif)}
+.cs-kepala small{display:block;margin-top:3px;font-size:11.5px;color:#7a7a80}
+.cs-tutup{margin-left:auto;width:34px;height:34px;border:0;border-radius:50%;background:transparent;color:inherit;cursor:pointer;display:grid;place-items:center}
+.cs-tutup:hover{background:rgba(0,0,0,.05)}
+.cs-tutup svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.8;fill:none}
+
+.cs-isi{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:18px 16px 8px;display:flex;flex-direction:column;gap:10px}
+.cs-pesan{max-width:86%;padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.55;white-space:normal;word-wrap:break-word}
+.cs-pesan.bot{align-self:flex-start;background:#f2f2f4;border-bottom-left-radius:6px}
+.cs-pesan.saya{align-self:flex-end;background:#0a0a0e;color:#fff;border-bottom-right-radius:6px}
+.cs-pesan a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.cs-pesan ul{margin:6px 0 2px;padding-left:18px}
+.cs-pesan li{margin:2px 0}
+.cs-pesan.galat{background:#fff3f2;color:#8a1f17}
+.cs-mengetik{display:inline-flex;gap:4px;padding:2px 0}
+.cs-mengetik i{width:6px;height:6px;border-radius:50%;background:#9a9aa0;animation:csKetik 1.1s infinite ease-in-out}
+.cs-mengetik i:nth-child(2){animation-delay:.15s}.cs-mengetik i:nth-child(3){animation-delay:.3s}
+@keyframes csKetik{0%,60%,100%{opacity:.3;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+
+.cs-saran{display:flex;flex-wrap:wrap;gap:6px;padding:4px 16px 10px}
+.cs-saran button{border:1px solid rgba(0,0,0,.12);background:#fff;color:inherit;border-radius:100px;padding:7px 12px;font:inherit;font-size:12.5px;cursor:pointer;transition:background .2s,border-color .2s}
+.cs-saran button:hover{background:#0a0a0e;border-color:#0a0a0e;color:#fff}
+
+.cs-form{display:flex;align-items:flex-end;gap:8px;padding:10px 12px 12px;border-top:1px solid rgba(0,0,0,.07)}
+.cs-form textarea{flex:1;resize:none;max-height:110px;min-height:42px;border:1px solid rgba(0,0,0,.12);border-radius:21px;padding:11px 16px;
+  font:inherit;font-size:14px;line-height:1.4;color:inherit;background:transparent;outline:none}
+.cs-form textarea:focus{border-color:#0a0a0e}
+.cs-kirim{width:42px;height:42px;flex:none;border:0;border-radius:50%;background:#0a0a0e;color:#fff;cursor:pointer;display:grid;place-items:center;transition:opacity .2s}
+.cs-kirim:disabled{opacity:.35;cursor:default}
+.cs-kirim svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.8;fill:none}
+.cs-catatan{padding:0 16px 10px;font-size:10.5px;color:#9a9aa0;text-align:center}
+
+html.dark-theme .cs-tombol{background:#e8e8eb;color:#0a0a0e;box-shadow:0 18px 40px -18px rgba(0,0,0,.9)}
+html.dark-theme .cs-panel{background:#141418;color:#ececef;box-shadow:0 30px 80px -30px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.08)}
+html.dark-theme .cs-kepala,html.dark-theme .cs-form{border-color:rgba(255,255,255,.08)}
+html.dark-theme .cs-logo,html.dark-theme .cs-kirim{background:#e8e8eb;color:#0a0a0e}
+html.dark-theme .cs-pesan.bot{background:#202027}
+html.dark-theme .cs-pesan.saya{background:#e8e8eb;color:#0a0a0e}
+html.dark-theme .cs-saran button{background:transparent;border-color:rgba(255,255,255,.16)}
+html.dark-theme .cs-saran button:hover{background:#e8e8eb;color:#0a0a0e}
+html.dark-theme .cs-form textarea{border-color:rgba(255,255,255,.16)}
+html.dark-theme .cs-form textarea:focus{border-color:#e8e8eb}
+html.dark-theme .cs-tutup:hover{background:rgba(255,255,255,.08)}
+html.dark-theme .cs-pesan.galat{background:#2a1513;color:#ffb4ab}
+
+@media (max-width:600px){
+  .cs-tombol{right:14px;bottom:14px;padding:12px 16px 12px 14px}
+  .cs-panel{right:8px;left:8px;bottom:8px;width:auto;height:min(78vh,620px);border-radius:20px}
+  body:has(#eco4.buka) .cs-tombol{opacity:0;pointer-events:none}
+}
+@media (prefers-reduced-motion:reduce){.cs-panel,.cs-tombol{transition-duration:.15s}.cs-mengetik i{animation-duration:2s}}
