@@ -293,7 +293,7 @@
   .shead .snum{transform:translate3d(0,calc((var(--maju,.5) - .5) * -46px),0)}
   /* Foto industri dan foto Summit menepi pelan mengikuti gulir, memberi
      kesan lapisan, bukan gambar diam yang menempel di belakang teks. */
-  .ind .ind-card img{transform:translate3d(0,calc((var(--maju,.5) - .5) * 34px),0) scale(1.08)}
+  .ind .ind-card img{transform:translate3d(-50%,calc((var(--maju,.5) - .5) * 34px),0) scale(1.08)}
   .summit .summit-media img{transform:translate3d(0,calc((var(--maju,.5) - .5) * -50px),0) scale(1.1)}
   /* gambar dibuka seperti tirai, bukan sekadar meredup */
   /* sudut membulat ikut dibawa di dalam clip-path, kalau tidak sudutnya
@@ -868,13 +868,15 @@
   .ind-rail{display:flex;gap:10px;container-type:inline-size}
   .ind-card{position:relative;flex:1 1 0;min-width:0;height:clamp(400px,56vh,500px);border-radius:16px;overflow:hidden;
     background:var(--black);color:#fff;isolation:isolate;cursor:pointer;outline:none;
-    transition:opacity .8s var(--ease),transform .8s var(--ease),flex-grow .75s var(--ease);
+    transition:opacity .8s var(--ease),transform .8s var(--ease),flex-grow .7s cubic-bezier(.25,.8,.25,1);
     transition-delay:calc(var(--i,0)*70ms),calc(var(--i,0)*70ms),0s}
   .ind-card.aktif{flex-grow:3}
   .ind-card:focus-visible{box-shadow:0 0 0 2px var(--bg,#fff),0 0 0 4px currentColor}
-  /* transform foto digerakkan tiap frame oleh --maju (parallax); zoom aktif memakai
-     properti scale terpisah supaya tidak bertabrakan. */
-  .ind-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  /* Foto selalu selebar panel aktif dan ditaruh di tengah; panel hanya memotongnya.
+     Kalau foto ikut melebar, browser menggambar ulang foto di tiap frame animasi
+     dan geraknya patah. transform foto digerakkan oleh --maju (parallax); zoom aktif
+     memakai properti scale terpisah supaya tidak bertabrakan. */
+  .ind-card img{position:absolute;top:0;left:50%;width:calc((100cqw - 40px) * 3 / 7);max-width:none;height:100%;object-fit:cover;
     opacity:.55;transition:opacity .7s var(--ease),scale 1.4s var(--ease);will-change:transform}
   .ind-card.aktif img{opacity:.82;scale:1.04}
   .ind-card::after{content:"";position:absolute;inset:0;z-index:1;
@@ -893,7 +895,8 @@
     .ind-rail{overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
     .ind-rail::-webkit-scrollbar{display:none}
     .ind-card,.ind-card.aktif{flex:0 0 72vw;scroll-snap-align:start;cursor:auto}
-    .ind-card img,.ind-card.aktif img{opacity:.72;scale:1}
+    .ind-card img,.ind-card.aktif img{opacity:.72;scale:1;left:0;width:100%}
+    .ind .ind-card img{transform:translate3d(0,calc((var(--maju,.5) - .5) * 34px),0) scale(1.08)}
     .ind-inner h3{width:auto}
     .ind-inner p,.ind-card.aktif p{max-height:none;opacity:1;margin-top:10px}
   }
@@ -2494,9 +2497,14 @@
         kanal(54, '0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0', 'g') +
         kanal(62, '0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0', 'b') +
         '<feComposite in="r" in2="g" operator="arithmetic" k2="1" k3="1" result="rg"/>' +
-        '<feComposite in="rg" in2="b" operator="arithmetic" k2="1" k3="1"/></filter>';
+        '<feComposite in="rg" in2="b" operator="arithmetic" k2="1" k3="1"/></filter>' +
+        /* ekor: satu pembiasan tanpa pecah warna, sepertiga beban gelembung depan; pinggir
+           pelangi memang hanya terlihat di gelembung depan, jadi bentuk jejaknya tetap sama */
+        '<filter id="lensaEkor" x="0" y="0" width="'+N+'" height="'+N+'" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">' +
+        '<feImage href="'+peta+'" x="0" y="0" width="'+N+'" height="'+N+'" result="peta"/>' +
+        '<feDisplacementMap in="SourceGraphic" in2="peta" scale="54" xChannelSelector="R" yChannelSelector="G"/></filter>';
       document.body.appendChild(svg);
-      lensa.forEach(function(l){ l.el.style.backdropFilter = l.el.style.webkitBackdropFilter = 'url(#lensaKursor)'; });
+      lensa.forEach(function(l, i){ l.el.style.backdropFilter = l.el.style.webkitBackdropFilter = i ? 'url(#lensaEkor)' : 'url(#lensaKursor)'; });
     })();
     var mx=innerWidth/2, my=innerHeight/2, rx=mx, ry=my, lx=mx, ly=my, vx=0, vy=0, besar=0;
     addEventListener('mousemove', function(e){ mx=e.clientX; my=e.clientY; });
