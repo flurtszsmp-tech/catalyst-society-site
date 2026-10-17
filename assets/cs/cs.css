@@ -1,14 +1,26 @@
 /* Tanya Catalyst: tombol chat CS AI di pojok kanan bawah. Hitam putih senada landing,
    tanpa ikon berwarna atau gelembung kartun. */
 .cs-tombol{position:fixed;right:20px;bottom:20px;z-index:900;display:grid;place-items:center;
-  width:56px;height:56px;padding:0;border:0;border-radius:50%;background:#0a0a0e;color:#fff;cursor:pointer;
-  font:500 14px/1 var(--body,"Geist",system-ui,sans-serif);letter-spacing:.01em;
-  box-shadow:0 18px 40px -18px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,255,255,.08);
-  transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .3s,box-shadow .3s}
-.cs-tombol:hover{transform:translateY(-2px);box-shadow:0 22px 44px -18px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.12)}
-.cs-tombol svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6}
-.cs-tombol .cs-titik{position:absolute;top:13px;right:13px;width:8px;height:8px;border-radius:50%;background:#3ddc84;box-shadow:0 0 0 2px #0a0a0e}
-html.dark-theme .cs-tombol .cs-titik{box-shadow:0 0 0 2px #e8e8eb}
+  width:58px;height:58px;padding:0;border:0;border-radius:50%;background:#0a0a0e;color:#fff;cursor:pointer;isolation:isolate;
+  animation:csNyala 3.6s ease-in-out infinite;
+  transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .3s}
+.cs-tombol:hover{transform:scale(1.06)}
+/* pendar: lingkaran bernapas pelan, tanda asisten menyala */
+@keyframes csNyala{
+  0%,100%{box-shadow:0 12px 30px -12px rgba(0,0,0,.55),0 0 0 0 rgba(140,200,255,0),0 0 18px -2px rgba(150,205,255,.28)}
+  50%{box-shadow:0 12px 30px -12px rgba(0,0,0,.55),0 0 0 6px rgba(140,200,255,.08),0 0 30px 2px rgba(150,205,255,.45)}}
+/* cincin cahaya tipis yang terus berputar, bias pelangi halus senada lensa kursor */
+.cs-cahaya{position:absolute;inset:0;border-radius:50%;pointer-events:none;z-index:-1;
+  background:conic-gradient(from 0deg,transparent 0deg,transparent 200deg,rgba(120,200,255,.55) 285deg,#fff 318deg,rgba(255,130,200,.65) 342deg,transparent 360deg);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2.5px),#000 calc(100% - 2px));
+          mask:radial-gradient(farthest-side,transparent calc(100% - 2.5px),#000 calc(100% - 2px));
+  animation:csCincin 3.2s linear infinite}
+@keyframes csCincin{to{transform:rotate(360deg)}}
+.cs-mark{width:28px;height:28px;fill:currentColor;overflow:visible;animation:csPutar 9s cubic-bezier(.65,0,.35,1) infinite}
+/* sesekali logo berputar satu kali, bintangnya berkedip */
+@keyframes csPutar{0%,80%{transform:rotate(0)}92%,100%{transform:rotate(360deg)}}
+.cs-spark{transform-box:fill-box;transform-origin:center;animation:csKelip 9s ease-in-out infinite}
+@keyframes csKelip{0%,84%,100%{transform:scale(1);opacity:1}89%{transform:scale(1.6);opacity:.6}94%{transform:scale(.8);opacity:1}}
 .cs-buka .cs-tombol{opacity:0;pointer-events:none;transform:translateY(8px)}
 
 .cs-panel{position:fixed;right:20px;bottom:20px;z-index:901;width:min(380px,calc(100vw - 40px));height:min(580px,calc(100vh - 110px));
@@ -19,7 +31,12 @@ html.dark-theme .cs-tombol .cs-titik{box-shadow:0 0 0 2px #e8e8eb}
 .cs-buka .cs-panel{opacity:1;visibility:visible;transform:none}
 
 .cs-kepala{display:flex;align-items:center;gap:12px;padding:16px 16px 14px 18px;border-bottom:1px solid rgba(0,0,0,.07)}
-.cs-logo{width:34px;height:34px;border-radius:50%;background:#0a0a0e;color:#fff;display:grid;place-items:center;flex:none;font:600 15px/1 var(--display,"Geist",sans-serif)}
+.cs-logo{position:relative;width:40px;height:40px;border-radius:50%;background:#0a0a0e;color:#fff;display:grid;place-items:center;flex:none;isolation:isolate;
+  box-shadow:0 0 18px -4px rgba(150,205,255,.45)}
+.cs-logo .cs-cahaya{animation-duration:6s}
+.cs-logo .cs-mark{width:20px;height:20px;animation:none}
+.cs-logo .cs-spark{animation:csKelip 5s ease-in-out infinite}
+.cs-online{position:absolute;right:0;bottom:1px;width:10px;height:10px;border-radius:50%;background:#3ddc84;box-shadow:0 0 0 2px #fff}
 .cs-kepala b{display:block;font:500 15px/1.2 var(--display,"Geist",sans-serif)}
 .cs-kepala small{display:block;margin-top:3px;font-size:11.5px;color:#7a7a80}
 .cs-tutup{margin-left:auto;width:34px;height:34px;border:0;border-radius:50%;background:transparent;color:inherit;cursor:pointer;display:grid;place-items:center}
@@ -52,10 +69,11 @@ html.dark-theme .cs-tombol .cs-titik{box-shadow:0 0 0 2px #e8e8eb}
 .cs-kirim svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.8;fill:none}
 .cs-catatan{padding:0 16px 10px;font-size:10.5px;color:#9a9aa0;text-align:center}
 
-html.dark-theme .cs-tombol{background:#e8e8eb;color:#0a0a0e;box-shadow:0 18px 40px -18px rgba(0,0,0,.9)}
+html.dark-theme .cs-tombol{background:#e8e8eb;color:#0a0a0e}
 html.dark-theme .cs-panel{background:#141418;color:#ececef;box-shadow:0 30px 80px -30px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.08)}
 html.dark-theme .cs-kepala,html.dark-theme .cs-form{border-color:rgba(255,255,255,.08)}
 html.dark-theme .cs-logo,html.dark-theme .cs-kirim{background:#e8e8eb;color:#0a0a0e}
+html.dark-theme .cs-online{box-shadow:0 0 0 2px #141418}
 html.dark-theme .cs-pesan.bot{background:#202027}
 html.dark-theme .cs-pesan.saya{background:#e8e8eb;color:#0a0a0e}
 html.dark-theme .cs-saran button{background:transparent;border-color:rgba(255,255,255,.16)}
@@ -66,8 +84,10 @@ html.dark-theme .cs-tutup:hover{background:rgba(255,255,255,.08)}
 html.dark-theme .cs-pesan.galat{background:#2a1513;color:#ffb4ab}
 
 @media (max-width:600px){
-  .cs-tombol{right:14px;bottom:14px;width:52px;height:52px}
+  .cs-tombol{right:14px;bottom:14px;width:54px;height:54px}
   .cs-panel{right:8px;left:8px;bottom:8px;width:auto;height:min(78vh,620px);border-radius:20px}
   body:has(#eco4.buka) .cs-tombol{opacity:0;pointer-events:none}
 }
-@media (prefers-reduced-motion:reduce){.cs-panel,.cs-tombol{transition-duration:.15s}.cs-mengetik i{animation-duration:2s}}
+/* kurangi gerak: tetap menyala dan cincin tetap jalan pelan, logo tidak berputar */
+@media (prefers-reduced-motion:reduce){.cs-panel,.cs-tombol{transition-duration:.15s}.cs-mengetik i{animation-duration:2s}
+  .cs-mark,.cs-spark{animation:none}.cs-cahaya{animation-duration:9s}.cs-tombol{animation-duration:6s}}

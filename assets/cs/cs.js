@@ -33,7 +33,9 @@
   var IKON = {
     chat: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v10H9l-5 4z" stroke-linejoin="round"/></svg>',
     x: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>',
-    kirim: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    kirim: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    logo: '<svg class="cs-mark" viewBox="-108 -118 244 236" aria-hidden="true"><path d="M 79.86 -60.18 A 100 100 0 1 0 79.86 60.18 L 49.52 37.31 A 62 62 0 1 1 49.52 -37.31 Z"/>' +
+          '<path class="cs-spark" d="M 126.5 -87.7 Q 108.05 -84.22 104.8 -64.5 Q 101.55 -84.22 83.1 -87.7 Q 101.55 -91.18 104.8 -110.9 Q 108.05 -91.18 126.5 -87.7 Z"/></svg>'
   };
 
   var tombol = document.createElement('button');
@@ -41,7 +43,7 @@
   var panel = document.createElement('section');
   panel.className = 'cs-panel'; panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'false');
   panel.innerHTML =
-    '<header class="cs-kepala"><span class="cs-logo" translate="no">C</span><div><b></b><small></small></div>' +
+    '<header class="cs-kepala"><span class="cs-logo"><span class="cs-cahaya"></span>' + IKON.logo + '<i class="cs-online"></i></span><div><b></b><small></small></div>' +
     '<button type="button" class="cs-tutup">' + IKON.x + '</button></header>' +
     '<div class="cs-isi" data-lenis-prevent aria-live="polite"></div>' +
     '<div class="cs-saran"></div>' +
@@ -52,7 +54,7 @@
       input = form.querySelector('textarea'), kirimBtn = form.querySelector('.cs-kirim');
 
   function label() {
-    tombol.innerHTML = IKON.chat + '<span class="cs-titik" aria-hidden="true"></span>';
+    tombol.innerHTML = '<span class="cs-cahaya" aria-hidden="true"></span>' + IKON.logo;
     tombol.setAttribute('aria-label', t('tombol')); tombol.title = t('tombol');
     panel.setAttribute('aria-label', t('judul'));
     panel.querySelector('.cs-kepala b').textContent = t('judul');
