@@ -76,7 +76,7 @@
     s = s.replace(/([\w.+-]+@[\w-]+\.[\w.]+)/g, '<a href="mailto:$1">$1</a>');
     var baris = s.split(/\n/), out = [], dalam = false;
     baris.forEach(function (b) {
-      var m = b.match(/^\s*(?:[*•]|\d+[.)])\s+(.*)/);
+      var m = b.match(/^\s*(?:[*•-]|\d+[.)])\s+(.*)/);
       if (m) { if (!dalam) { out.push('<ul>'); dalam = true; } out.push('<li>' + m[1] + '</li>'); }
       else { if (dalam) { out.push('</ul>'); dalam = false; } if (b.trim()) out.push(b + '<br>'); }
     });
