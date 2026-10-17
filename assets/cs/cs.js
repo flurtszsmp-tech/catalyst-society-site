@@ -52,8 +52,8 @@
       input = form.querySelector('textarea'), kirimBtn = form.querySelector('.cs-kirim');
 
   function label() {
-    tombol.innerHTML = '<span class="cs-titik" aria-hidden="true"></span>' + IKON.chat + '<span>' + t('tombol') + '</span>';
-    tombol.setAttribute('aria-label', t('tombol'));
+    tombol.innerHTML = IKON.chat + '<span class="cs-titik" aria-hidden="true"></span>';
+    tombol.setAttribute('aria-label', t('tombol')); tombol.title = t('tombol');
     panel.setAttribute('aria-label', t('judul'));
     panel.querySelector('.cs-kepala b').textContent = t('judul');
     panel.querySelector('.cs-kepala small').textContent = t('sub');
