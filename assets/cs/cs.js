@@ -10,17 +10,17 @@
     id: { tombol: 'Tanya Catalyst', judul: 'Catalyst Assistant', sub: 'Dijawab AI dari info resmi Catalyst', ph: 'Tulis pertanyaanmu…',
       halo: 'Halo! Saya asisten Catalyst Society. Mau tahu soal program, komunitas, Passport, atau cara berkolaborasi?',
       saran: ['Apa itu Catalyst Society?', 'Cara gabung komunitas', 'Apa itu Catalyst Passport?', 'Info Catalyst Summit'],
-      galat: 'Maaf, asisten sedang tidak bisa dihubungi. Coba lagi sebentar, atau email info@catalystsociety.site.',
+      galat: 'Maaf, asisten sedang tidak bisa dihubungi. Coba lagi sebentar, atau email info@catalystsociety.id.',
       catatan: 'AI bisa keliru. Untuk hal penting, hubungi tim Catalyst.', tutup: 'Tutup', kirim: 'Kirim' },
     en: { tombol: 'Ask Catalyst', judul: 'Catalyst Assistant', sub: 'AI answers from official Catalyst info', ph: 'Type your question…',
       halo: 'Hi! I am the Catalyst Society assistant. Want to know about our programs, communities, Passport, or how to collaborate?',
       saran: ['What is Catalyst Society?', 'How to join a community', 'What is Catalyst Passport?', 'Catalyst Summit info'],
-      galat: 'Sorry, the assistant is unavailable right now. Try again shortly, or email info@catalystsociety.site.',
+      galat: 'Sorry, the assistant is unavailable right now. Try again shortly, or email info@catalystsociety.id.',
       catatan: 'AI can make mistakes. For anything important, contact the Catalyst team.', tutup: 'Close', kirim: 'Send' },
     zh: { tombol: '咨询 Catalyst', judul: 'Catalyst 助手', sub: '由 AI 根据 Catalyst 官方信息回答', ph: '输入你的问题…',
       halo: '你好！我是 Catalyst Society 助手。想了解我们的项目、社区、Passport，或如何合作吗？',
       saran: ['Catalyst Society 是什么？', '如何加入社区', 'Catalyst Passport 是什么？', 'Catalyst Summit 信息'],
-      galat: '抱歉，助手暂时无法连接。请稍后再试，或发送邮件至 info@catalystsociety.site。',
+      galat: '抱歉，助手暂时无法连接。请稍后再试，或发送邮件至 info@catalystsociety.id。',
       catatan: 'AI 可能会出错。重要事项请联系 Catalyst 团队。', tutup: '关闭', kirim: '发送' }
   };
   function bahasa() { var l = (document.documentElement.lang || 'id').slice(0, 2); return T[l] ? l : 'id'; }

@@ -130,7 +130,7 @@ Growth (bertumbuh, berdampak, berkelanjutan), Integrity (jujur, terbuka, bisa di
 ## Kolaborasi dan kontak
 
 - Komunitas, perusahaan, mentor, dan investor yang ingin berkolaborasi bisa mengisi form Open Collaboration di bagian bawah website (pilihan: Community Partner, Corporate Partner, Mentor, Investor, Lainnya).
-- Email: info@catalystsociety.site
+- Email: info@catalystsociety.id
 - Instagram: @catalystsociety.id
 - Website: catalystsociety.id
 - LinkedIn founder: linkedin.com/in/bagasdwiputra
