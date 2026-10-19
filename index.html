@@ -2025,7 +2025,7 @@
         <h2 class="kl-judul" data-i18n="kl.judul">Punya ide? Mari bangun bersama.</h2>
         <p class="kl-lead" data-i18n="kl.lead">Komunitas, perusahaan, mentor, dan investor yang ingin berkolaborasi dengan Catalyst Society, ceritakan rencanamu.</p>
         <ul class="kl-kontak">
-          <li><span class="rd-l" data-i18n="kl.email">Email</span><a href="mailto:info@catalystsociety.site">info@catalystsociety.site</a></li>
+          <li><span class="rd-l" data-i18n="kl.email">Email</span><a href="mailto:info@catalystsociety.id">info@catalystsociety.id</a></li>
           <li><span class="rd-l">Instagram</span><a href="https://www.instagram.com/catalystsociety.id/" target="_blank" rel="noopener">@catalystsociety.id</a></li>
           <li><span class="rd-l">Website</span><a href="https://catalystsociety.id" target="_blank" rel="noopener">catalystsociety.id</a></li>
         </ul>
@@ -2063,7 +2063,7 @@
     if(kosong.length){kosong.forEach(function(x){x.closest('.kl-isian').classList.add('salah')});kosong[0].focus();st.textContent=t('kl.salah','Lengkapi nama, email yang valid, dan ide kolaborasimu.');return}
     var d=new FormData(f),jenis=d.get('jenis')||'';
     var isi='Nama: '+d.get('nama')+'\nEmail: '+d.get('email')+'\nOrganisasi: '+(d.get('organisasi')||'-')+'\nJenis kolaborasi: '+jenis+'\n\n'+d.get('pesan');
-    location.href='mailto:info@catalystsociety.site?subject='+encodeURIComponent('Kolaborasi Catalyst Society: '+jenis+' ('+d.get('nama')+')')+'&body='+encodeURIComponent(isi);
+    location.href='mailto:info@catalystsociety.id?subject='+encodeURIComponent('Kolaborasi Catalyst Society: '+jenis+' ('+d.get('nama')+')')+'&body='+encodeURIComponent(isi);
     st.textContent=t('kl.ok','Aplikasi email kamu terbuka dengan isi form. Tinggal tekan kirim.');
   });
 })();
