@@ -517,6 +517,14 @@ setTimeout(function(){
   });
   pasangSosial();
 
+  /* Tujuan sesudah masuk. Akun admin ke dashboard admin; selain itu ke halaman
+     yang tadinya diminta (?next=, hanya jalur internal) atau ke Passport. */
+  function tujuan(email){
+    if(String(email || '').toLowerCase() === 'info@catalystsociety.id') return '/bp/admin/';
+    var n = new URLSearchParams(location.search).get('next') || '';
+    return /^\/bp\/[^/]/.test(n) ? n : '/bp/passport/';
+  }
+
   /* Sudah punya sesi aktif: langsung ke aplikasi */
   if(DEMO && CATALYST.demoAktif()) location.href = '/bp/passport/';
   var MODE_URL = new URLSearchParams(location.search).get('mode');
@@ -525,7 +533,7 @@ setTimeout(function(){
     /* link atur ulang kata sandi membuka sesi pemulihan: tampilkan form kata sandi baru */
     CATALYST.db.auth.onAuthStateChange(function(ev){ if(ev === 'PASSWORD_RECOVERY') setMode('sandiBaru'); });
     CATALYST.db.auth.getSession().then(function(r){
-      if(r.data.session && MODE_URL !== 'sandi-baru') location.href = '/bp/passport/';
+      if(r.data.session && MODE_URL !== 'sandi-baru') location.href = tujuan(r.data.session.user.email);
     });
   }
 
@@ -554,7 +562,7 @@ setTimeout(function(){
         } else {
           var r3 = await CATALYST.db.auth.updateUser({ password: sandi });
           if(r3.error) throw r3.error;
-          location.href = '/bp/passport/';
+          location.href = tujuan(r3.data && r3.data.user && r3.data.user.email);
           return;
         }
       } catch(err){
@@ -600,13 +608,13 @@ setTimeout(function(){
         });
         if(res.error) throw res.error;
 
-        if(res.data.session){ location.href = '/bp/passport/'; return; }
+        if(res.data.session){ location.href = tujuan(email); return; }
         setMode('masuk');
         tampilPesan(T('lg.daftarOk'), 'ok');
       } else {
         var login = await CATALYST.db.auth.signInWithPassword({ email: email, password: sandi });
         if(login.error) throw login.error;
-        location.href = '/bp/passport/';
+        location.href = tujuan(email);
         return;
       }
     } catch(err){

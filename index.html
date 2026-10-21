@@ -2641,14 +2641,33 @@ addEventListener('DOMContentLoaded', function(){
     akun.forEach(function(e){ e.hidden = !masuk; });
     if(!masuk) return;
     var m = sesi.user.user_metadata || {};
-    var nama = m.full_name || m.name || (sesi.user.email || '').split('@')[0] || 'Passport';
-    var foto = m.avatar_url || m.picture || '';
+    var email = (sesi.user.email || '').toLowerCase();
+    // Akun admin tidak punya Passport; tombolnya membuka dashboard admin.
+    if(email === 'info@catalystsociety.id'){
+      tampil('Admin', '', '/bp/admin/');
+      return;
+    }
+    tampil(m.full_name || m.name || email.split('@')[0] || 'Passport', m.avatar_url || m.picture || '', '/bp/passport/');
+    // Nama dan foto terbaru ada di profil Passport, termasuk foto yang diunggah sendiri.
+    CATALYST.db.from('profiles').select('full_name, avatar_path, avatar_url').eq('id', sesi.user.id).maybeSingle()
+      .then(function(r){
+        var p = r && r.data;
+        if(!p) return;
+        var foto = p.avatar_path
+          ? CATALYST_CONFIG.SUPABASE_URL + '/storage/v1/object/public/avatars/' + p.avatar_path.split('/').map(encodeURIComponent).join('/')
+          : (p.avatar_url || '');
+        tampil(p.full_name, foto, '/bp/passport/');
+      });
+  }
+  function tampil(nama, foto, tujuan){
+    // Hanya alamat https yang dipakai sebagai gambar latar, supaya isian tidak bisa keluar dari url().
+    var aman = /^https:\/\/[^"'()\s]+$/.test(foto) ? foto : '';
+    document.querySelectorAll('.akun').forEach(function(e){ e.href = tujuan; e.setAttribute('aria-label', nama); e.title = nama; });
     document.querySelectorAll('.akun-nama').forEach(function(e){ e.textContent = nama.split(' ')[0]; });
     document.querySelectorAll('.akun-ava').forEach(function(e){
-      if(foto){ e.style.backgroundImage = 'url("' + foto + '")'; e.textContent = ''; }
-      else e.textContent = nama.trim().charAt(0).toUpperCase();
+      if(aman){ e.style.backgroundImage = 'url("' + aman + '")'; e.textContent = ''; }
+      else { e.style.backgroundImage = ''; e.textContent = nama.trim().charAt(0).toUpperCase(); }
     });
-    document.querySelectorAll('.akun').forEach(function(e){ e.setAttribute('aria-label', nama); e.title = nama; });
   }
   CATALYST.db.auth.getSession().then(function(r){ pasang(r.data.session); });
   CATALYST.db.auth.onAuthStateChange(function(_, sesi){ pasang(sesi); });

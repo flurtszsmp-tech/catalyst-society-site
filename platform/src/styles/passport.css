@@ -699,3 +699,83 @@ button.pass-step.can-open:focus-visible{outline:2px solid var(--ink);outline-off
 .pass-step-wrap:first-child{flex:1 0 120px}
 .pass-step{min-width:98px}
 .pass-join{flex-basis:20px}
+
+/* ===========================================================
+   Revisi v3: tombol dan pratinjau CV, centang biru sertifikat,
+   dialog masukan. Dipakai dasbor dan profil publik.
+   =========================================================== */
+:root{--verified:#1d9bf0}
+
+/* ---------- centang biru sertifikat ---------- */
+.pass-cert-ok{color:var(--verified)!important}
+.pass-cert-ok svg{width:12px;height:12px;fill:var(--verified)}
+
+/* ---------- tombol CV ---------- */
+.pass-badges-foot{display:block}
+.cvb{position:relative;display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+  padding:11px 12px;border-radius:14px;color:#fff;overflow:hidden;isolation:isolate;
+  background:linear-gradient(135deg,#141418 0%,#000 60%);
+  box-shadow:0 14px 28px -18px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.08);
+  transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.cvb::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(120px 60px at 85% 0%,rgba(255,255,255,.16),transparent 70%)}
+.cvb:hover{transform:translateY(-2px);box-shadow:0 20px 34px -18px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.1)}
+.cvb:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.cvb-ico{flex:none;width:38px;height:44px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  background:#fff;color:#000;position:relative}
+.cvb-ico::after{content:"PDF";position:absolute;bottom:-5px;right:-6px;font:600 7.5px/1 var(--body);letter-spacing:.06em;
+  padding:3px 4px;border-radius:4px;background:#e5484d;color:#fff}
+.cvb-ico svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.5}
+.cvb-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.cvb-txt b{font-size:13px;font-weight:500;display:flex;align-items:center;gap:7px}
+.cvb-txt b em{font-style:normal;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;
+  padding:2px 6px;border-radius:5px;background:rgba(255,255,255,.14);color:#d6d6d6}
+.cvb-txt small{font-size:10.5px;color:#a8a8a8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cvb-go{flex:none;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.1);transition:background .3s var(--ease),transform .3s var(--ease)}
+.cvb-go svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:1.6}
+.cvb:hover .cvb-go{background:#fff;transform:scale(1.06)}
+.cvb:hover .cvb-go svg{stroke:#000}
+.cvb.cvb-empty{background:var(--pass-surface);color:var(--ink);border:1px dashed var(--line);box-shadow:none}
+.cvb.cvb-empty::before{display:none}
+.cvb.cvb-empty .cvb-ico{background:var(--paper);color:var(--ink);height:38px}
+.cvb.cvb-empty .cvb-ico::after{display:none}
+.cvb.cvb-empty .cvb-txt small{color:var(--muted)}
+.cvb.cvb-empty:hover{border-color:var(--ink);box-shadow:none}
+html.dark-theme .cvb:not(.cvb-empty){background:linear-gradient(135deg,#f2f2f2,#fff);color:#000}
+html.dark-theme .cvb:not(.cvb-empty) .cvb-ico{background:#000;color:#fff}
+html.dark-theme .cvb:not(.cvb-empty) .cvb-txt small{color:#555}
+html.dark-theme .cvb:not(.cvb-empty) .cvb-go{background:rgba(0,0,0,.08)}
+html.dark-theme .cvb:not(.cvb-empty) .cvb-go svg{stroke:#000}
+
+/* ---------- pratinjau CV ---------- */
+.cvv{border:0;padding:0;background:transparent;width:min(960px,calc(100vw - 24px));max-width:none;
+  height:min(92vh,1100px);margin:auto;overflow:visible}
+.cvv::backdrop{background:rgba(6,6,8,.7);backdrop-filter:blur(6px)}
+.cvv[open]{animation:cvv-masuk .35s var(--ease) both}
+@keyframes cvv-masuk{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.cvv-in{height:100%;display:flex;flex-direction:column;border-radius:18px;overflow:hidden;
+  background:var(--pass-surface,#fff);box-shadow:0 40px 90px -30px rgba(0,0,0,.6)}
+.cvv-head{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.cvv-ico{flex:none;width:34px;height:34px;border-radius:9px;background:#000;color:#fff;display:flex;align-items:center;justify-content:center}
+.cvv-ico svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.5}
+html.dark-theme .cvv-ico{background:#fff;color:#000}
+.cvv-title{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.cvv-title b{font-size:13.5px;font-weight:500}
+.cvv-title small{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cvv-body{flex:1;min-height:0;background:var(--paper);position:relative}
+.cvv-frame{width:100%;height:100%;border:0;display:block;background:#fff}
+.cvv-state{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;font-size:13px;color:var(--muted);padding:20px;text-align:center}
+.cvv-spin{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--ink);animation:cvv-putar .8s linear infinite}
+@keyframes cvv-putar{to{transform:rotate(360deg)}}
+@media (max-width:560px){.cvv-head .ui-btn{display:none}}
+
+/* ---------- dialog masukan ---------- */
+.fb-kinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.fb-kind{display:flex;flex-direction:column;gap:2px;text-align:left;padding:10px 12px;border-radius:12px;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);transition:.2s var(--ease)}
+.fb-kind b{font-size:12.5px;font-weight:500}
+.fb-kind small{font-size:11px;color:var(--muted);line-height:1.4}
+.fb-kind:hover{border-color:var(--ink)}
+.fb-kind.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+@media (max-width:440px){.fb-kinds{grid-template-columns:minmax(0,1fr)}}

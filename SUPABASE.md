@@ -64,7 +64,7 @@ Catatan: Passport diterbitkan sebagai halaman statis (tanpa server), jadi pemeri
 | Project ref | `ydhoxefcntwayjkslzje` |
 | API URL | https://ydhoxefcntwayjkslzje.supabase.co |
 | Region | Singapore (ap-southeast-1) |
-| Skema | `0001_init.sql` dan `0002_journey_v2.sql` sudah dijalankan |
+| Skema | `0001_init.sql`, `0002_journey_v2.sql`, `0003_admin_dan_penyederhanaan.sql` sudah dijalankan |
 
 Kunci `anon` memang tampil di sumber halaman. Yang menjaga data bukan
 kerahasiaan kunci itu, melainkan Row Level Security di database. Kunci
@@ -155,3 +155,23 @@ cd platform && npm run test:db
 
 Menjalankan uji RLS (0001) dan uji Journey v2 (0001 + 0002 di atas data lama)
 di PGlite, tanpa menyentuh project Supabase.
+
+## Admin dan penyederhanaan (migrasi 0003)
+
+- **Admin tunggal: `info@catalystsociety.id`.** Hak admin aktif otomatis saat
+  akun itu terdaftar *dan* emailnya terkonfirmasi. Akun admin tidak punya
+  Passport. Dashboard ada di `/bp/admin/`; halaman masuk mengarahkan akun ini
+  ke sana. Daftarkan akun admin selagi *Confirm email* masih aktif.
+- **Komunitas bebas:** tanpa verifikasi dan tanpa poin. Tombol Tambahkan
+  langsung membuka grup komunitasnya. Tetap dihitung untuk tahap Connector.
+- **Sertifikat** otomatis terverifikasi bila ID kredensial atau tautan bukti
+  diisi; tanpa keduanya tampil dengan keterangan "belum terverifikasi".
+  Sertifikat tidak memberi poin.
+- **Verifikasi tim** hanya untuk pengajuan tahap Journey (bootcamp, Catalyst
+  Finder, Catalyst Labs, Founder), diperiksa di dashboard admin.
+- **CV** bisa PDF unggahan atau tautan (Google Drive) di tabel `cv_links`;
+  dibuka sebagai pratinjau, tidak diunduh.
+- **Masukan pengguna** di tabel `feedback`, dikirim dari menu Kirim masukan
+  di Passport dan hanya terbaca admin.
+- Admin membaca seluruh data aktivitas lewat `admin_users()` dan
+  `admin_activity()`; kata sandi dan token akun tidak pernah ikut.

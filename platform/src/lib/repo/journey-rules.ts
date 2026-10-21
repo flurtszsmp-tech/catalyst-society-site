@@ -56,7 +56,7 @@ export const STAGE_RULES: Record<Stage, StageRule> = {
     about:
       'Anda mulai membangun jaringan: aktif di komunitas mitra dan terhubung dengan sesama anggota Catalyst Society.',
     requirements: [
-      { key: 'communities', label: 'Komunitas terverifikasi', target: 5, unit: 'komunitas', href: '/passport/communities', cta: 'Buka Komunitas' },
+      { key: 'communities', label: 'Komunitas yang diikuti', target: 5, unit: 'komunitas', href: '/passport/communities', cta: 'Buka Komunitas' },
       { key: 'following', label: 'Koneksi yang Anda ikuti', target: 5, unit: 'orang', href: '/passport/connections', cta: 'Temukan orang' },
     ],
     points: 25,
