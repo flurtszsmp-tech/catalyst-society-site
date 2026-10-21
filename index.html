@@ -860,6 +860,15 @@
      diputar oleh --spin, bukan lagi top/left tetap. */
   /* Kotak tagline: permukaan kaca (kelas .glass) */
 
+  /* Pengantar sebelum panggung hologram: satu baris pertanyaan dengan garis tipis,
+     tanpa kartu atau nomor besar. */
+  .eco-tanya{display:flex;flex-direction:column;align-items:center;gap:clamp(18px,2.4vw,28px);
+    margin:clamp(70px,9vw,130px) 0 clamp(26px,3.4vw,44px);text-align:center}
+  .eco-garis{width:1px;height:clamp(40px,5vw,64px);background:linear-gradient(var(--line),rgba(0,0,0,0))}
+  html.dark-theme .eco-garis{background:linear-gradient(rgba(255,255,255,.22),rgba(255,255,255,0))}
+  .eco-tanya h3{font-family:var(--display);font-weight:400;letter-spacing:-.02em;line-height:1.1;
+    font-size:clamp(26px,3.4vw,46px)}
+
   /* ---------- industries ----------
      Lima panel berjajar. Panel aktif (disentuh kursor, difokus keyboard, atau diketuk)
      melebar dan memperlihatkan deskripsi; panel lain tetap terbaca dari judulnya.
@@ -1585,6 +1594,11 @@
       <button type="button" class="vid-play" disabled aria-label="Play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></button>
       <div class="vid-bar" aria-hidden="true"><span class="vid-t">0:00</span><span class="vid-trk"><i></i></span><span class="vid-t">0:00</span></div>
       <div class="vid-teks"><span class="vid-k" data-i18n="vid.kicker">Video</span><b data-i18n="vid.soon">Video coming soon</b></div>
+    </div>
+
+    <div class="eco-tanya rv">
+      <span class="eco-garis" aria-hidden="true"></span>
+      <h3 data-i18n="eco.tanya">Apa yang Anda dapatkan?</h3>
     </div>
 
     <div class="eco4" id="eco4">

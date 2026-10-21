@@ -125,7 +125,7 @@ window.CATALYST_I18N = {
     'node.anda':'Anda',
     'node.anda.d':'Setiap ide berawal dari Anda. Kami hadir untuk membantu ide Anda menjadi dampak nyata.',
     /* section 02: detail tiap elemen. Sumber: Pitch Deck 2 (Agustus 2026); tingkat akses perlu konfirmasi Bagas */
-    'eco.hint':'Klik panel untuk melihat detail',
+    'eco.hint':'Klik panel untuk melihat detail', 'eco.tanya':'Apa yang Anda dapatkan?',
     'eco.tutup':'Tutup',
     'eco.dapat':'Yang Anda dapatkan',
     'eco.mentor.p':'Akses ke mentor seharusnya ditentukan oleh kompetensi, bukan koneksi pribadi. Lewat Catalyst, talenta muda dipertemukan dengan praktisi, profesional, dan expert dari komunitas dan perusahaan mitra.',
@@ -343,7 +343,7 @@ window.CATALYST_I18N = {
     'node.anda':'You',
     'node.anda.d':'Every idea starts with you. We are here to help your idea become real impact.',
     /* section 02: detail tiap elemen. Sumber: Pitch Deck 2 (Agustus 2026); tingkat akses perlu konfirmasi Bagas */
-    'eco.hint':'Click a panel for details',
+    'eco.hint':'Click a panel for details', 'eco.tanya':'What do you get?',
     'eco.tutup':'Close',
     'eco.dapat':'What you get',
     'eco.mentor.p':'Access to mentors should be decided by competence, not personal connections. Through Catalyst, young talent meets practitioners, professionals, and experts from partner communities and companies.',
@@ -553,7 +553,7 @@ window.CATALYST_I18N = {
     'node.anda':'你',
     'node.anda.d':'每个想法都始于你。我们帮助你的想法成为真实的影响力。',
     /* section 02: detail tiap elemen. Sumber: Pitch Deck 2 (Agustus 2026); tingkat akses perlu konfirmasi Bagas */
-    'eco.hint':'点击面板查看详情',
+    'eco.hint':'点击面板查看详情', 'eco.tanya':'你能获得什么？',
     'eco.tutup':'关闭',
     'eco.dapat':'你将获得',
     'eco.mentor.p':'获得导师的机会应取决于能力，而不是人脉。通过 Catalyst，年轻人才可以结识来自合作社群与企业的从业者、专业人士和专家。',
