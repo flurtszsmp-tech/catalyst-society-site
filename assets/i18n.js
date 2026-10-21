@@ -9,7 +9,7 @@ window.CATALYST_I18N = {
   id: {
     /* navigasi */
     'nav.masalah':'Masalah', 'nav.ekosistem':'Ekosistem', 'nav.industri':'Industri',
-    'nav.program':'Program', 'nav.summit':'Summit', 'nav.masuk':'Masuk', 'nav.daftar':'Daftar',
+    'nav.program':'Program', 'nav.summit':'Summit', 'nav.masuk':'Masuk', 'nav.daftar':'Daftar', 'nav.passport':'Get Passport', 'nav.keAkun':'Buka Passport saya',
     'nav.home':'Home', 'nav.komunitas':'Community', 'nav.tentang':'About Us',
     /* keterangan kartu program */
     'pc.1':'Identitas Digital',
@@ -231,7 +231,7 @@ window.CATALYST_I18N = {
 
   en: {
     'nav.masalah':'Problem', 'nav.ekosistem':'Ecosystem', 'nav.industri':'Industries',
-    'nav.program':'Programs', 'nav.summit':'Summit', 'nav.masuk':'Sign in', 'nav.daftar':'Sign up',
+    'nav.program':'Programs', 'nav.summit':'Summit', 'nav.masuk':'Sign in', 'nav.daftar':'Sign up', 'nav.passport':'Get Passport', 'nav.keAkun':'Open my Passport',
     'nav.home':'Home', 'nav.komunitas':'Community', 'nav.tentang':'About Us',
     /* keterangan kartu program */
     'pc.1':'Digital Identity',
@@ -441,7 +441,7 @@ window.CATALYST_I18N = {
 
   zh: {
     'nav.masalah':'问题', 'nav.ekosistem':'生态', 'nav.industri':'行业',
-    'nav.program':'项目', 'nav.summit':'峰会', 'nav.masuk':'登录', 'nav.daftar':'注册',
+    'nav.program':'项目', 'nav.summit':'峰会', 'nav.masuk':'登录', 'nav.daftar':'注册', 'nav.passport':'获取 Passport', 'nav.keAkun':'打开我的 Passport',
     'nav.home':'首页', 'nav.komunitas':'社群', 'nav.tentang':'关于我们',
     /* keterangan kartu program */
     'pc.1':'数字身份',

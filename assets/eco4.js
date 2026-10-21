@@ -19,6 +19,7 @@
   var pin = document.getElementById('e8Pin');
   var host = document.getElementById('e5Fig');
   var anda = document.getElementById('e5Anda');
+  var tanya = document.getElementById('e8Tanya');
   var papan = document.getElementById('ecoDetail');
   var kataEl = document.getElementById('e8Kata');
   var hint = root.querySelector('.e4-hint');
@@ -59,6 +60,12 @@
   }
   function terapkan(p) {
     terakhir = -1;
+    /* pertanyaan pembuka: muncul di awal panggung, lenyap saat gelembung pertama datang */
+    if (tanya) {
+      var masuk = jepit(p / 0.06), pudar = jepit((p - 0.07) / 0.09);
+      tanya.style.setProperty('--t-o', (masuk * (1 - pudar)).toFixed(3));
+      tanya.style.setProperty('--t-y', ((1 - masuk) * 16 - pudar * 26).toFixed(1) + 'px');
+    }
     el.forEach(function (e, i) {
       var u = keluar(jepit((p - (0.08 + i * 0.07)) / 0.16)), sisi = +e.dataset.sisi;
       e.style.setProperty('--o', u.toFixed(3));
@@ -113,6 +120,90 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') tutup(); });
   document.addEventListener('bahasa-berubah', function () { if (buka) isiPapan(); });
 
+  /* ---------- gelembung didorong kursor (hanya tetikus) ----------
+     Tiap gelembung punya pegas ke tempat asalnya. Kursor yang mendekat mendorongnya
+     menjauh, lalu pegas menariknya pulang; sisa laju membuatnya memantul beberapa kali
+     sebelum diam. Gelembung juga saling menolak supaya tidak pernah tumpang tindih, dan
+     dibatasi agar tetap di dalam panggung. Hanya berjalan saat panggung terlihat. */
+  var fisika = (function () {
+    if (reduce || !window.matchMedia || !matchMedia('(hover:hover)').matches) return null;
+    var JANGKAU = 150, DORONG = 2600, PEGAS = 42, REDAM = 5.2, MAKS = 150;
+    var b = el.map(function (e) { return { e: e, x: 0, y: 0, vx: 0, vy: 0, cx: 0, cy: 0, r: 0 }; });
+    var mx = -1e4, my = -1e4, adaKursor = false, jalanF = false, lalu = 0, batas = null, terlihatF = false;
+    /* pengamat sendiri: bagian 3D punya penanda tampil miliknya di lingkup lain */
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { terlihatF = e[0].isIntersecting; }, { threshold: 0 }).observe(root);
+    else terlihatF = true;
+
+    function ukurF() {
+      var p = host.getBoundingClientRect();
+      batas = p;
+      b.forEach(function (o) {
+        var r = o.e.getBoundingClientRect();
+        o.r = r.width / 2;
+        o.cx = r.left + o.r - o.x;      /* titik diam, lepas dari geseran saat ini */
+        o.cy = r.top + o.r - o.y;
+      });
+    }
+    function bingkaiF(t) {
+      if (!terlihatF || document.hidden) { jalanF = false; return; }
+      var dt = lalu ? Math.min((t - lalu) / 1000, 0.04) : 0.016; lalu = t;
+      var sibuk = false;
+      for (var i = 0; i < b.length; i++) {
+        var o = b[i], gx = o.cx + o.x, gy = o.cy + o.y;
+        /* dorongan kursor: makin dekat makin kuat, berhenti tepat di tepi jangkauan */
+        if (adaKursor) {
+          var dx = gx - mx, dy = gy - my, d = Math.hypot(dx, dy) || 1, jangkau = JANGKAU + o.r;
+          if (d < jangkau) {
+            var kuat = (1 - d / jangkau) * DORONG / Math.max(d, 26);
+            o.vx += dx * kuat * dt; o.vy += dy * kuat * dt;
+          }
+        }
+        /* saling menolak supaya tidak bertumpuk */
+        for (var k = i + 1; k < b.length; k++) {
+          var u = b[k], ux = (u.cx + u.x) - gx, uy = (u.cy + u.y) - gy;
+          var jarak = Math.hypot(ux, uy) || 1, mau = o.r + u.r + 6;
+          if (jarak < mau) {
+            var f = (mau - jarak) / mau * 900;
+            o.vx -= ux / jarak * f * dt; o.vy -= uy / jarak * f * dt;
+            u.vx += ux / jarak * f * dt; u.vy += uy / jarak * f * dt;
+          }
+        }
+        /* pegas ke tempat asal, lalu peredam supaya pantulannya berhenti halus */
+        o.vx += (-o.x * PEGAS) * dt; o.vy += (-o.y * PEGAS) * dt;
+        var r2 = Math.exp(-REDAM * dt);
+        o.vx *= r2; o.vy *= r2;
+        o.x += o.vx * dt; o.y += o.vy * dt;
+        /* memantul di tepi panggung */
+        if (batas) {
+          var kiri = batas.left + o.r - (o.cx + o.x), kanan = (o.cx + o.x) - (batas.right - o.r);
+          if (kiri > 0) { o.x += kiri; o.vx = Math.abs(o.vx) * 0.6; }
+          else if (kanan > 0) { o.x -= kanan; o.vx = -Math.abs(o.vx) * 0.6; }
+          var atas = batas.top + o.r - (o.cy + o.y), bawah = (o.cy + o.y) - (batas.bottom - o.r);
+          if (atas > 0) { o.y += atas; o.vy = Math.abs(o.vy) * 0.6; }
+          else if (bawah > 0) { o.y -= bawah; o.vy = -Math.abs(o.vy) * 0.6; }
+        }
+        if (o.x > MAKS) o.x = MAKS; else if (o.x < -MAKS) o.x = -MAKS;
+        if (o.y > MAKS) o.y = MAKS; else if (o.y < -MAKS) o.y = -MAKS;
+        if (Math.abs(o.x) > 0.12 || Math.abs(o.y) > 0.12 || Math.abs(o.vx) > 0.6 || Math.abs(o.vy) > 0.6) sibuk = true;
+        else { o.x = o.y = o.vx = o.vy = 0; }
+        o.e.style.translate = o.x.toFixed(2) + 'px ' + o.y.toFixed(2) + 'px';
+      }
+      if (sibuk || adaKursor) requestAnimationFrame(bingkaiF);
+      else jalanF = false;
+    }
+    function mulaiF() { if (!jalanF && terlihatF && !document.hidden) { jalanF = true; lalu = 0; requestAnimationFrame(bingkaiF); } }
+    window.addEventListener('pointermove', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      mx = e.clientX; my = e.clientY; adaKursor = true;
+      if (!batas) ukurF();
+      mulaiF();
+    }, { passive: true });
+    window.addEventListener('pointerleave', function () { adaKursor = false; });
+    addEventListener('scroll', function () { batas = null; if (adaKursor) { ukurF(); mulaiF(); } }, { passive: true });
+    addEventListener('resize', function () { b.forEach(function (o) { o.x = o.y = o.vx = o.vy = 0; o.e.style.translate = ''; }); batas = null; });
+    return { ukur: ukurF, mulai: mulaiF };
+  })();
+
   /* ---------- bias lensa di tepi kaca (hanya Chromium) ---------- */
   var chromium = !!navigator.userAgentData, nf = 0, defs = null;
   function petaBias(W, H, r, pita) {
@@ -150,13 +241,9 @@
     defs.appendChild(f);
     e.style.backdropFilter = e.style.webkitBackdropFilter = 'url(#' + id + ')';
   }
-  var biasKapsul = false, biasPapan = false;
-  function pasangBiasKapsul() {
-    if (biasKapsul || !el[0].offsetWidth) return;
-    biasKapsul = true;
-    /* gelembung: lingkaran penuh, bening seperti lensa kursor (blur kecil, bias kuat di tepi) */
-    el.forEach(function (e) { pasangBias(e, 999, 20, 46, 1.2); });
-  }
+  var biasPapan = false;
+  /* Gelembung kini bola hitam pekat, jadi tidak perlu pembiasan latar di tepinya. */
+  function pasangBiasKapsul() {}
   function pasangBiasPapan() {
     if (biasPapan) return;
     var inti = papan.querySelector('.e8-inti');
@@ -508,6 +595,7 @@
     if (gl.minta) gl.minta();
     else { kini = tujuan; terapkan(kini); }
     pasangBiasKapsul();
+    if (fisika) setTimeout(fisika.ukur, 300);
   }
   if (reduce) { root.classList.add('diam'); tujuan = kini = 1; }
   else { window.addEventListener('scroll', picu, { passive: true }); hitung(); kini = tujuan; }
@@ -515,6 +603,6 @@
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (e) { if (e[0].isIntersecting) { mulai3D(); pasangBiasKapsul(); } }, { rootMargin: '800px 0px' }).observe(root);
   } else mulai3D();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { biasKapsul = false; biasPapan = false; if (defs) defs.innerHTML = ''; el.forEach(function (e) { e.style.backdropFilter = e.style.webkitBackdropFilter = ''; }); if (papan) { var ii = papan.querySelector('.e8-inti'); ii.style.backdropFilter = ii.style.webkitBackdropFilter = ''; } pasangBiasKapsul(); if (buka) pasangBiasPapan(); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { biasPapan = false; if (defs) defs.innerHTML = ''; el.forEach(function (e) { e.style.backdropFilter = e.style.webkitBackdropFilter = ''; }); if (papan) { var ii = papan.querySelector('.e8-inti'); ii.style.backdropFilter = ii.style.webkitBackdropFilter = ''; } pasangBiasKapsul(); if (buka) pasangBiasPapan(); });
   picu();
 })();

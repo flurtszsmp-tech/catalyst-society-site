@@ -1,14 +1,14 @@
 /* Clear glass keeps the same material in both themes; only ink changes. */
 :root{--bg:#fff;--paper:#fff;--surface-rgb:255,255,255;--glass-ink:#111;--glass-copy:#4b4b4b;--glass-tint:rgba(255,255,255,.045);--glass-depth:rgba(0,0,0,.18)}
 html.dark-theme{--bg:#000;--paper:#000;--glass-ink:#f5f5f5;--glass-copy:#c9c9c9;--glass-depth:rgba(0,0,0,.18)}
-html body,html section,html footer,html .dark,html .val-cell,html .val-cell:hover,html .actionbar,html .tirai{background:var(--bg)!important;color:var(--ink)}
-.top-scrim,.blob,.eco::after,.summit-media{display:none!important}
-html .dark :is(.h-xl,.h-lg,.h-md),html .summit-stat :is(.big,b),html .summit-tags b{color:var(--ink)}
-html .dark :is(.lead,.kicker),html .summit .lead{color:var(--muted)}
+html body,html section:not(.summit),html footer,html .dark,html .val-cell,html .val-cell:hover,html .actionbar,html .tirai{background:var(--bg)!important;color:var(--ink)}
+.top-scrim,.blob,.eco::after{display:none!important}
+html .dark :is(.h-xl,.h-lg,.h-md){color:var(--ink)}
+html .dark :is(.lead,.kicker){color:var(--muted)}
 html .dark .snum{-webkit-text-stroke-color:var(--line)}
 html .dark .chip,html .chip{background:none;color:var(--ink)}
 html .dark .chip svg{stroke:var(--ink)}
-html .dark .prob-chips,html .summit-tags{border-color:var(--line)}
+html .dark .prob-chips{border-color:var(--line)}
 html .nav-menu{background:var(--bg);color:var(--ink);backdrop-filter:none}
 
 /* A small blur and soft shadow define the glass without a border or opaque fill. */
@@ -86,3 +86,14 @@ html.dark-theme.gb .pm-cakram img{filter:grayscale(1) brightness(1.15)}
 html.dark-theme.gb .ind-card{box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
 html.dark-theme.gb #founders .fd-banner{background:var(--muka);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
 html.dark-theme.gb .kl-form,html.dark-theme.gb .kl-kartu{background:var(--muka)}
+
+/* Bagian 06 Catalyst Summit kembali memakai foto panggung sebagai latar (permintaan client).
+   Satu satunya bagian gelap di tema terang, jadi warna teksnya diambil dari gaya .dark aslinya. */
+.summit{background:#0a0a0e!important;color:#fff}
+.summit :is(.h-xl,.h-lg,.h-md),.summit-stat :is(.big,b),.summit-tags b{color:#fff!important}
+.summit .lead{color:#b7b7b7!important}
+.summit .kicker{color:#9a9a9a!important}
+.summit-tags{border-color:rgba(255,255,255,.14)!important}
+.summit-stat .sm span{color:#9a9a9a!important}
+.summit .snum{color:rgba(255,255,255,.55)!important;-webkit-text-stroke-color:rgba(255,255,255,.22)!important}
+html.dark-theme .summit{background:#09090b!important}
