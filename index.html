@@ -2650,6 +2650,15 @@ addEventListener('DOMContentLoaded', function(){
     });
     document.querySelectorAll('.akun').forEach(function(e){ e.setAttribute('aria-label', nama); e.title = nama; });
   }
+  /* token Supabase tersimpan di localStorage: dipakai lebih dulu supaya tombol akun
+     langsung tampil tanpa menunggu jaringan. Hasil getSession tetap jadi penentu akhir. */
+  try{
+    var kunci = Object.keys(localStorage).filter(function(k){ return /^sb-.+-auth-token$/.test(k); })[0];
+    if(kunci){
+      var simpan = JSON.parse(localStorage.getItem(kunci) || 'null');
+      if(simpan && simpan.user) pasang(simpan);
+    }
+  }catch(e){}
   CATALYST.db.auth.getSession().then(function(r){ pasang(r.data.session); });
   CATALYST.db.auth.onAuthStateChange(function(_, sesi){ pasang(sesi); });
 });
