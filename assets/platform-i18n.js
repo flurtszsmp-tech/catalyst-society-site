@@ -124,7 +124,7 @@ window.PI18N = (function () {
       'lg.errBatas':'Terlalu sering meminta email. Coba lagi beberapa menit lagi.',
       'lg.errLinkKedaluwarsa':'Link sudah kedaluwarsa atau sudah dipakai. Silakan minta link baru.',
       'lg.errSandiSama':'Kata sandi baru harus berbeda dari yang lama.',
-      'lg.chip':'Gabung Catalyst Society',
+     
       'lg.l1':'Daftar atau masuk ke akun',
       'lg.l2':'Lengkapi profil Catalyst Passport',
       'lg.l3':'Gabung komunitas dan program',
@@ -248,7 +248,7 @@ window.PI18N = (function () {
       'lg.errBatas':'Too many email requests. Try again in a few minutes.',
       'lg.errLinkKedaluwarsa':'This link has expired or was already used. Please request a new one.',
       'lg.errSandiSama':'The new password must be different from the old one.',
-      'lg.chip':'Join Catalyst Society',
+     
       'lg.l1':'Sign up or sign in',
       'lg.l2':'Complete your Catalyst Passport',
       'lg.l3':'Join communities and programs',
@@ -372,7 +372,7 @@ window.PI18N = (function () {
       'lg.errBatas':'请求邮件过于频繁，请几分钟后再试。',
       'lg.errLinkKedaluwarsa':'链接已过期或已被使用，请重新获取。',
       'lg.errSandiSama':'新密码必须与旧密码不同。',
-      'lg.chip':'加入 Catalyst Society',
+     
       'lg.l1':'注册或登录账户',
       'lg.l2':'完善 Catalyst Passport 资料',
       'lg.l3':'加入社区与项目',

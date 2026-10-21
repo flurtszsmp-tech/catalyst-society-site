@@ -167,8 +167,8 @@ export const Sidebar = forwardRef<HTMLElement, Props>(function Sidebar({ open, o
                   browser, jadi Passport terbuka lagi tanpa masuk ulang. <a>
                   biasa, bukan Link, karena beranda berada di luar basePath /bp. */}
               <a href="/" onClick={onNavigate}>
-                <Icon name="home" />
-                Beranda Catalyst
+                <Icon name="back" />
+                Back to site
               </a>
             </li>
             <li>

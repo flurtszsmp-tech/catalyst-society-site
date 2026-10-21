@@ -64,10 +64,10 @@
   .kicker{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--gray);
     display:flex;align-items:center;gap:12px;margin-bottom:14px}
   .card h2{font-size:clamp(25px,2.6vw,34px);line-height:1.02;letter-spacing:normal;font-weight:300}
-  .card .sub{font-size:13px;color:var(--d-gray);margin-top:11px;line-height:1.72}
+  .card .sub{font-size:13px;color:var(--d-gray);margin-top:9px;line-height:1.6}
 
   /* Pil penanda bergeser, bukan latar yang berpindah mendadak antar tombol */
-  .tabs{display:flex;gap:0;margin:26px 0 22px;padding:4px;border:1px solid var(--line);
+  .tabs{display:flex;gap:0;margin:clamp(14px,2.4vh,26px) 0 clamp(12px,2vh,22px);padding:4px;border:1px solid var(--line);
     border-radius:100px;position:relative;isolation:isolate}
   /* Lebar dan posisi pil diukur dari tombol yang benar-benar aktif, lalu
      digeser dengan transform. Transform berjalan di compositor sehingga
@@ -95,11 +95,11 @@
   .tabs button:active{background:none;box-shadow:none;transform:none}
   .tabs button:focus{outline:none;box-shadow:none;background:none}
 
-  .field{margin-bottom:15px}
+  .field{margin-bottom:clamp(9px,1.5vh,15px)}
   /* Field opsional membuka dan menutup dengan tinggi teranimasi, tanpa lompatan */
   .field.anim{margin-bottom:0;max-height:0;opacity:0;overflow:hidden;
     transition:max-height .44s var(--ease),opacity .3s var(--ease),margin-bottom .44s var(--ease)}
-  .field.anim.show{max-height:120px;opacity:1;margin-bottom:15px}
+  .field.anim.show{max-height:120px;opacity:1;margin-bottom:clamp(9px,1.5vh,15px)}
   .field label{display:block;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
     color:var(--gray);margin-bottom:7px}
   .field input,.field select{width:100%;padding:13px 15px;border:1px solid var(--line);border-radius:11px;
@@ -119,8 +119,8 @@
   .balik{display:block;margin:14px auto 0;font-size:12px}
   .balik[hidden]{display:none}
 
-  .submit{width:100%;padding:14px;border-radius:100px;background:var(--black);color:#fff;
-    font-size:13px;letter-spacing:.02em;margin-top:8px;
+  .submit{width:100%;padding:clamp(11px,1.8vh,14px);border-radius:100px;background:var(--black);color:#fff;
+    font-size:13px;letter-spacing:.02em;margin-top:clamp(4px,1vh,8px);
     transition:transform .3s var(--ease),box-shadow .3s var(--ease),opacity .25s var(--ease);
     display:inline-flex;align-items:center;justify-content:center;gap:9px;
     -webkit-tap-highlight-color:transparent}
@@ -154,7 +154,7 @@
   .msg code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;
     background:rgba(0,0,0,.06);padding:1px 5px;border-radius:4px}
 
-  .back{margin-top:26px;font-size:11.5px;color:var(--gray);display:inline-flex;align-items:center;gap:8px;
+  .back{margin-top:clamp(12px,2.2vh,26px);font-size:11.5px;color:var(--gray);display:inline-flex;align-items:center;gap:8px;
     transition:.25s var(--ease)}
   .back:hover{color:var(--ink)}
   .back svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.6}
@@ -186,7 +186,7 @@
   .shell{max-width:1180px;margin:clamp(14px,4vh,44px) auto;min-height:min(780px,calc(100vh - 2 * clamp(14px,4vh,44px)));
     grid-template-columns:1.04fr 1fr;background:#fff;border-radius:30px;padding:10px;
     box-shadow:0 40px 90px -40px rgba(10,10,14,.35),0 0 0 1px rgba(10,10,14,.04)}
-  .brandside{border-radius:22px;background:#050507;padding:34px clamp(26px,3.2vw,44px) 30px;isolation:isolate}
+  .brandside{border-radius:22px;background:#050507;padding:clamp(22px,3.4vh,34px) clamp(26px,3.2vw,44px) clamp(20px,3vh,30px);isolation:isolate}
   /* tirai cahaya perak yang bergoyang pelan dari bawah, butiran halus di atasnya */
   .brandside::before{content:"";position:absolute;inset:0;z-index:-1;
     background:radial-gradient(120% 60% at 50% 112%,rgba(255,255,255,.30),transparent 62%),
@@ -201,43 +201,79 @@
   .bs-merek{display:flex;align-items:center;gap:11px}
   .bs-top .bs-ig{font-size:11.5px}
   .bs-mid{margin-top:auto}
-  .bs-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:100px;font-size:12px;color:#e8e8eb;
-    background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);margin-bottom:18px}
-  .bs-chip i{width:6px;height:6px;border-radius:50%;background:#3ddc84;box-shadow:0 0 0 3px rgba(61,220,132,.18)}
   .bs-mid h1{font-size:clamp(34px,3.6vw,52px);line-height:1;font-weight:400;letter-spacing:-.02em}
   .bs-mid p{color:#a9a9ae;margin-top:16px}
-  .bs-langkah{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:28px}
-  .bs-langkah li{list-style:none;display:flex;flex-direction:column;justify-content:space-between;gap:26px;min-height:128px;padding:14px;border-radius:16px;
+  .bs-langkah{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:clamp(18px,3.2vh,28px)}
+  .bs-langkah li{list-style:none;display:flex;flex-direction:column;justify-content:space-between;gap:clamp(14px,3vh,26px);min-height:clamp(96px,14vh,128px);padding:14px;border-radius:16px;
     font-size:12.5px;line-height:1.4;color:#d4d4d8;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);
     -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);transition:background .4s var(--ease),color .4s var(--ease)}
   .bs-langkah b{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:500 11px var(--mono);box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
   .bs-langkah li.on{background:#fff;color:#0a0a0e;box-shadow:none}
   .bs-langkah li.on b{background:#0a0a0e;color:#fff;box-shadow:none}
 
-  .formside{padding:40px clamp(22px,4vw,60px)}
+  .formside{padding:clamp(20px,3.4vh,40px) clamp(22px,4vw,60px)}
   .card{max-width:400px}
-  .field input,.field select{background:#f4f4f6;border-color:transparent;border-radius:12px;padding:14px 16px}
+  /* Nama dan channel berdampingan saat daftar, sisanya selebar kartu. Formulir jadi
+     lebih pendek sehingga seluruh halaman muat satu layar tanpa gulir. */
+  #form{display:grid;grid-template-columns:1fr 1fr;column-gap:14px}
+  #form > *{grid-column:1 / -1}
+  #fNama,#fChannel{grid-column:span 1}
+  .field input,.field select{background:#f4f4f6;border-color:transparent;border-radius:12px;padding:clamp(10px,1.6vh,14px) 16px}
   .field input:focus,.field select:focus{background:#fff;border-color:var(--black)}
-  .atau{display:flex;align-items:center;gap:14px;margin:22px 0 14px;font-size:11.5px;color:var(--gray)}
+  .atau{display:flex;align-items:center;gap:14px;margin:clamp(12px,2vh,22px) 0 clamp(8px,1.3vh,14px);font-size:11.5px;color:var(--gray)}
   .atau::before,.atau::after{content:"";flex:1;height:1px;background:var(--line)}
   .sosial[hidden],.btn-sosial[hidden],.ganti[hidden]{display:none}
   .sosial-btn{display:flex;flex-direction:column;gap:10px}
-  .btn-sosial{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:13px;border-radius:100px;font-size:13px;font-weight:500;
+  /* dua penyedia aktif: tombolnya berdampingan supaya halaman tetap muat satu layar */
+  .sosial-btn.dua{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .sosial-btn.dua .btn-sosial{font-size:12px;gap:8px;padding:clamp(10px,1.6vh,12px) 8px}
+  .sosial-btn.dua .btn-sosial svg{width:16px;height:16px}
+  .btn-sosial{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:clamp(10px,1.7vh,13px);border-radius:100px;font-size:13px;font-weight:500;
     background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line);transition:background .25s var(--ease),box-shadow .25s var(--ease)}
   .btn-sosial:hover{background:#f6f6f7;box-shadow:inset 0 0 0 1px rgba(0,0,0,.24)}
   .btn-sosial svg{width:18px;height:18px;flex:none}
   .btn-sosial[disabled]{opacity:.55;pointer-events:none}
-  .ganti{margin-top:18px;text-align:center;font-size:12.5px;color:var(--gray)}
+  .ganti{margin-top:clamp(10px,1.6vh,18px);text-align:center;font-size:12.5px;color:var(--gray)}
   .ganti .tautan{color:var(--ink);font-weight:500}
+  /* layar pendek (laptop 1366x768 dan sejenisnya): rapatkan judul dan jarak */
+  @media (max-height:780px) and (min-width:881px){
+    .shell{margin:clamp(8px,1.6vh,20px) auto}
+    .kicker{margin-bottom:8px}
+    .card .sub{font-size:12px;margin-top:6px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+    .card h2{font-size:clamp(22px,2.2vw,27px)}
+    .bs-mid h1{font-size:clamp(28px,2.8vw,38px)}
+    .bs-mid p{font-size:12px;margin-top:12px;-webkit-line-clamp:3;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
+    #form{column-gap:12px}
+  }
+  @media (max-height:700px) and (min-width:881px){
+    .bs-langkah{display:none}
+    .bs-mid p{-webkit-line-clamp:2}
+  }
+  /* layar pendek: tautan ganti mode ditiadakan, tab Masuk dan Daftar sudah menggantikannya */
+  @media (max-height:740px){
+    .ganti{display:none}
+    .tabs{margin:10px 0 10px}
+    .atau{margin:10px 0 8px}
+    .back{margin-top:10px}
+  }
   @media (max-width:880px){
-    .shell{grid-template-columns:1fr;margin:0;border-radius:0;padding:8px;min-height:100vh;box-shadow:none}
-    .brandside{min-height:0;padding:22px 22px 26px}
-    .bs-mid{margin-top:40px}
-    .bs-mid h1{font-size:32px}
+    .shell{grid-template-columns:1fr;margin:0;border-radius:0;padding:8px;min-height:100vh;box-shadow:none;
+      grid-template-rows:auto 1fr}
+    /* layar sempit: panel merek cukup satu bar tipis, sisanya untuk formulir
+       supaya seluruh halaman muat tanpa gulir */
+    .brandside{min-height:0;padding:14px 18px;justify-content:center}
+    .bs-mid{display:none}
+    .sosial-btn.dua .btn-sosial{font-size:11px;padding:11px 6px}
     .bs-mid p{display:none}
     .bs-langkah{display:none}
-    .formside{padding:30px 14px 48px}
-    .formside .lang{top:16px;right:14px}
+    .bs-top .bs-ig{display:none}
+    .formside{padding:clamp(14px,2.2vh,24px) 14px clamp(16px,2.6vh,26px)}
+    .formside .lang{top:12px;right:12px}
+    .card h2{font-size:clamp(22px,6vw,27px)}
+    /* layar sempit: keterangan dan petunjuk kata sandi ditiadakan, isinya sudah ada di placeholder */
+    .card .sub{display:none}
+    .hint,.hint.show{display:none}
+    .back{margin-top:clamp(10px,2vh,18px)}
   }
   @media (prefers-reduced-motion:reduce){ .brandside::before{animation:none} }
 </style>
@@ -283,7 +319,6 @@ setTimeout(function(){
     </div>
 
     <div class="bs-mid">
-      <span class="bs-chip"><i></i><span data-i18n="lg.chip">Gabung Catalyst Society</span></span>
       <h1 data-i18n="lg.h1">Satu akun.<br>Seluruh<br>ekosistem.</h1>
       <p data-i18n="lg.p">Catalyst Society adalah ekosistem kolaboratif yang menghubungkan investor, profesional, builder, innovator dan learner di Indonesia melalui lima channel industri dan lima program berjenjang.</p>
       <ol class="bs-langkah" id="langkah">
@@ -468,6 +503,8 @@ setTimeout(function(){
       var ok = paksa || aktif[b.dataset.penyedia];
       b.hidden = !ok; if(ok) adaSosial = true;
     });
+    var tampil = document.querySelectorAll('.btn-sosial:not([hidden])').length;
+    document.querySelector('.sosial-btn').classList.toggle('dua', tampil > 1);
     document.getElementById('sosial').hidden = !adaSosial || !(mode === 'masuk' || mode === 'daftar');
   }
   document.querySelectorAll('.btn-sosial').forEach(function(b){
