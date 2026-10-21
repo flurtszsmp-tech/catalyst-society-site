@@ -8,8 +8,10 @@ const { default: worker } = await import(new URL('_worker.mjs', dir));
 rmSync(new URL('_worker.mjs', dir));
 
 const md = readFileSync(new URL('../assets/cs/pengetahuan.md', dir), 'utf8');
+const mdPassport = readFileSync(new URL('../assets/cs/pengetahuan-passport.md', dir), 'utf8');
 let kirimanGemini = null;
 globalThis.fetch = async (url, opt) => {
+  if (String(url).includes('pengetahuan-passport.md')) return new Response(mdPassport);
   if (String(url).includes('pengetahuan.md')) return new Response(md);
   kirimanGemini = { url: String(url), opt, body: JSON.parse(opt.body) };
   return Response.json({ candidates: [{ content: { parts: [{ text: 'Catalyst Society adalah platform terintegrasi.' }] } }] });
@@ -36,4 +38,12 @@ assert.equal(opsi.status, 204);
 let terakhir;
 for (let i = 0; i < 13; i++) terakhir = await minta({ pesan: [{ peran: 'user', teks: 'spam' }] }, undefined, '9.9.9.9');
 assert.equal(terakhir.status, 429, 'batas per menit per IP');
+// ruang passport memakai panduan dan aturan sendiri
+await minta({ ruang: 'passport', pesan: [{ peran: 'user', teks: 'Cara gabung komunitas?' }] }, undefined, '4.4.4.4');
+const sisP = kirimanGemini.body.systemInstruction.parts[0].text;
+assert.ok(sisP.includes('asisten Catalyst Passport'), 'aturan passport dipakai');
+assert.ok(sisP.includes('Tujuh tahap Journey'), 'panduan passport ikut terkirim');
+assert.ok(!sisP.includes('Komunitas mitra (19 komunitas di direktori website)'), 'pengetahuan landing tidak ikut');
+await minta({ pesan: [{ peran: 'user', teks: 'Apa itu Catalyst?' }] }, undefined, '5.5.5.5');
+assert.ok(kirimanGemini.body.systemInstruction.parts[0].text.includes('asisten resmi Catalyst Society'), 'landing tetap aturan lama');
 console.log('semua uji Worker lolos');
