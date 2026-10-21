@@ -1755,17 +1755,17 @@
 <section class="band kd" id="komunitasDetail" aria-live="polite" hidden></section>
 <script src="assets/communities.js"></script>
 <script>
-/* Baris logo partner (seperti lusion.co/about): selalu bergeser pelan; gulir ke bawah
-   menggeser ke kiri, gulir ke atas ke kanan, makin cepat digulir makin cepat lalu melambat
-   halus. Tiap baris punya kelembaman sendiri, jadi tidak serempak. Hanya jalan saat terlihat.
+/* Baris logo partner: selalu bergeser pelan ke kanan (satu arah, permintaan client);
+   menggulir halaman ke mana pun hanya mempercepatnya, lalu melambat halus. Tiap baris punya kelembaman sendiri, jadi tidak serempak. Hanya jalan saat terlihat.
    Panjang satu putaran = (lebar isi + jarak antar logo) / 2, karena isi baris = dua salinan
    daftar yang sama; tanpa koreksi jarak, baris melompat setengah jarak di tiap putaran. */
 (function(){
   var uls=[].slice.call(document.querySelectorAll('.pm-row ul'));if(!uls.length)return;
   var rm=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
-  var DASAR=rm?14:38, arah=-1, dorong=0, y0=scrollY, t0=0, jalan=false, terlihat=new Set();
+  var DASAR=rm?14:38, arah=1, dorong=0,   /* selalu bergeser ke kanan (permintaan client) */
+   y0=scrollY, t0=0, jalan=false, terlihat=new Set();
   var SIFAT=[[1,1,4.2],[.82,.86,1.7],[1.12,1.1,2.6],[.9,.95,1.2]];
-  var v=uls.map(function(u,i){return -DASAR*SIFAT[i%4][0]}), x=uls.map(function(){return 0}), w=uls.map(function(){return 0});
+  var v=uls.map(function(u,i){return DASAR*SIFAT[i%4][0]}), x=uls.map(function(){return 0}), w=uls.map(function(){return 0});
   function ukur(){
     uls.forEach(function(u,i){
       var jarak=parseFloat(getComputedStyle(u).columnGap)||0, p=(u.scrollWidth+jarak)/2;
@@ -1777,7 +1777,7 @@
   }
   addEventListener('scroll',function(){
     var d=scrollY-y0;y0=scrollY;if(!d)return;
-    arah=d>0?-1:1;dorong=Math.min(dorong+Math.abs(d)*(rm?2:7),rm?120:1400);mulai();
+    dorong=Math.min(dorong+Math.abs(d)*(rm?2:7),rm?120:1400);mulai();
   },{passive:true});
   var tunda=0;addEventListener('resize',function(){clearTimeout(tunda);tunda=setTimeout(ukur,150)});
   uls.forEach(function(u){u.querySelectorAll('img').forEach(function(im){if(!im.complete)im.addEventListener('load',ukur,{once:true})})});

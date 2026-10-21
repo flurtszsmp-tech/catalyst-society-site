@@ -135,7 +135,8 @@ html.dark-theme .about-cell p{color:#b5b5b5}
 .pm-band{padding:clamp(48px,7vw,84px) 0 clamp(40px,6vw,72px)}
 .pm-band .shead{margin-bottom:clamp(30px,3.4vw,46px)}
 .pm-band .shead .kicker{font-size:clamp(14px,1.2vw,18px);letter-spacing:.2em}
-.pm-band .shead .h-md{font-size:clamp(28px,3.2vw,46px);line-height:1.08;letter-spacing:-.02em;margin-top:12px}
+.pm-band .shead .h-md{font-size:clamp(20px,2vw,28px);line-height:1.2;letter-spacing:-.015em;margin-top:10px;max-width:none}
+@media (min-width:720px){.pm-band .shead .h-md{white-space:nowrap}}
 /* Corporate Partners langsung menyambung Community Partners, tanpa jarak dua kali lipat */
 .pm-band + .pm-band{padding-top:clamp(8px,1.6vw,20px)}
 .pm-band:has(+ .pm-band){padding-bottom:clamp(20px,3vw,40px)}

@@ -111,6 +111,13 @@
   .hint{font-size:11px;color:var(--gray);margin-top:0;max-height:0;opacity:0;overflow:hidden;
     transition:max-height .38s var(--ease),opacity .28s var(--ease),margin-top .38s var(--ease)}
   .hint.show{max-height:40px;opacity:1;margin-top:6px}
+  /* tautan kecil di bawah kata sandi: lupa kata sandi, masuk lewat link email */
+  .aksi-kecil{display:flex;justify-content:space-between;gap:12px;margin:-4px 0 6px;font-size:12px}
+  .aksi-kecil[hidden]{display:none}
+  .tautan{background:none;border:0;padding:4px 0;color:var(--gray);font:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  .tautan:hover{color:var(--black)}
+  .balik{display:block;margin:14px auto 0;font-size:12px}
+  .balik[hidden]{display:none}
 
   .submit{width:100%;padding:14px;border-radius:100px;background:var(--black);color:#fff;
     font-size:13px;letter-spacing:.02em;margin-top:8px;
@@ -260,15 +267,20 @@ setTimeout(function(){
           </select>
         </div>
 
-        <div class="field">
+        <div class="field anim show" id="fEmail">
           <label for="email" data-i18n="lg.email">Email atau username</label>
           <input id="email" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="nama@email.com" required>
         </div>
 
-        <div class="field">
+        <div class="field anim show" id="fSandi">
           <label for="sandi" data-i18n="lg.sandi">Kata sandi</label>
           <input id="sandi" type="password" autocomplete="current-password" placeholder="Minimal 6 karakter" data-i18n-ph="lg.sandiPh" required>
           <p class="hint" id="hintSandi" data-i18n="lg.hint">Gunakan minimal 6 karakter.</p>
+        </div>
+
+        <div class="aksi-kecil" id="aksiMasuk" hidden>
+          <button type="button" class="tautan" id="btnLupa" data-i18n="lg.lupa">Lupa kata sandi?</button>
+          <button type="button" class="tautan" id="btnLink" data-i18n="lg.pakaiLink">Masuk lewat link email</button>
         </div>
 
         <button class="submit" id="kirim" type="submit">
@@ -278,6 +290,7 @@ setTimeout(function(){
       </form>
 
       <div class="msg" id="pesan" role="status" aria-live="polite"></div>
+      <button type="button" class="tautan balik" id="btnBalik" hidden data-i18n="lg.balik">Masuk dengan kata sandi</button>
 
       <a class="back" href="index.html">
         <svg viewBox="0 0 24 24" style="transform:rotate(180deg)"><use href="#i-arrow"/></svg>
@@ -323,10 +336,19 @@ setTimeout(function(){
   }
   addEventListener('resize', geserPil);
 
+  /* Mode: masuk, daftar, lupa (kirim link atur ulang), link (masuk lewat link email),
+     sandiBaru (setelah membuka link atur ulang). Tiga mode terakhir hanya ada bila Supabase aktif. */
+  var JUDUL = { masuk: 'lg.masuk', daftar: 'lg.daftar', lupa: 'lg.lupa', link: 'lg.link', sandiBaru: 'lg.baru' };
+  var KIRIM = { masuk: 'lg.kirim.masuk', daftar: 'lg.kirim.daftar', lupa: 'lg.kirim.lupa', link: 'lg.kirim.link', sandiBaru: 'lg.kirim.baru' };
   function setMode(m, langsung){
     if(m === mode && !langsung) return;
     mode = m;
-    var daftar = m === 'daftar';
+    var daftar = m === 'daftar', khusus = m === 'lupa' || m === 'link' || m === 'sandiBaru';
+    tabs.hidden = khusus;
+    document.getElementById('fEmail').classList.toggle('show', m !== 'sandiBaru');
+    document.getElementById('fSandi').classList.toggle('show', m !== 'lupa' && m !== 'link');
+    document.getElementById('aksiMasuk').hidden = DEMO || m !== 'masuk';
+    document.getElementById('btnBalik').hidden = !(m === 'lupa' || m === 'link');
 
     /* pil penanda dan warna label tab */
     document.getElementById('tabs').dataset.mode = m;
@@ -337,15 +359,15 @@ setTimeout(function(){
     /* field opsional membuka/menutup dengan tinggi teranimasi */
     document.getElementById('fNama').classList.toggle('show', daftar);
     document.getElementById('fChannel').classList.toggle('show', daftar);
-    document.getElementById('hintSandi').classList.toggle('show', daftar);
-    document.getElementById('sandi').setAttribute('autocomplete', daftar ? 'new-password' : 'current-password');
+    document.getElementById('hintSandi').classList.toggle('show', daftar || m === 'sandiBaru');
+    document.getElementById('sandi').setAttribute('autocomplete', daftar || m === 'sandiBaru' ? 'new-password' : 'current-password');
     if(DEMO) pesanDemo(); else pesan.className = 'msg';
 
     /* teks ditukar saat tak terlihat supaya tidak terlihat berkedip */
     var tulis = function(){
-      document.getElementById('judul').textContent = T(daftar ? 'lg.daftar.judul' : 'lg.masuk.judul');
-      document.getElementById('sub').textContent   = T(daftar ? 'lg.daftar.sub' : 'lg.masuk.sub');
-      document.getElementById('labelKirim').textContent = T(daftar ? 'lg.kirim.daftar' : 'lg.kirim.masuk');
+      document.getElementById('judul').textContent = T(JUDUL[m] + '.judul');
+      document.getElementById('sub').textContent   = T(JUDUL[m] + '.sub');
+      document.getElementById('labelKirim').textContent = T(KIRIM[m]);
     };
 
     if(langsung){ tulis(); return; }
@@ -355,12 +377,19 @@ setTimeout(function(){
 
   document.getElementById('tabMasuk').addEventListener('click', function(){ setMode('masuk'); });
   document.getElementById('tabDaftar').addEventListener('click', function(){ setMode('daftar'); });
+  document.getElementById('btnLupa').addEventListener('click', function(){ setMode('lupa'); });
+  document.getElementById('btnLink').addEventListener('click', function(){ setMode('link'); });
+  document.getElementById('btnBalik').addEventListener('click', function(){ setMode('masuk'); });
 
   /* Sudah punya sesi aktif: langsung ke aplikasi */
   if(DEMO && CATALYST.demoAktif()) location.href = '/bp/passport/';
+  var MODE_URL = new URLSearchParams(location.search).get('mode');
+  var GALAT_URL = new URLSearchParams(location.hash.slice(1)).get('error_code');
   if(CATALYST.db){
+    /* link atur ulang kata sandi membuka sesi pemulihan: tampilkan form kata sandi baru */
+    CATALYST.db.auth.onAuthStateChange(function(ev){ if(ev === 'PASSWORD_RECOVERY') setMode('sandiBaru'); });
     CATALYST.db.auth.getSession().then(function(r){
-      if(r.data.session) location.href = '/bp/passport/';
+      if(r.data.session && MODE_URL !== 'sandi-baru') location.href = '/bp/passport/';
     });
   }
 
@@ -370,6 +399,40 @@ setTimeout(function(){
     var email = document.getElementById('email').value.trim();
     var sandi = document.getElementById('sandi').value;
     var nama  = document.getElementById('nama').value.trim();
+
+    if(!DEMO && (mode === 'lupa' || mode === 'link' || mode === 'sandiBaru')){
+      if(mode !== 'sandiBaru' && email.indexOf('@') < 0){ tampilPesan(T('lg.emailValid'), 'err'); return; }
+      if(mode === 'sandiBaru' && sandi.length < 6){ tampilPesan(T('lg.sandiMin'), 'err'); return; }
+      kirim.disabled = true;
+      document.getElementById('labelKirim').textContent = T('lg.proses');
+      try{
+        var asal = location.origin + '/login.html';
+        if(mode === 'lupa'){
+          var r1 = await CATALYST.db.auth.resetPasswordForEmail(email, { redirectTo: asal + '?mode=sandi-baru' });
+          if(r1.error) throw r1.error;
+          tampilPesan(T('lg.lupaOk'), 'ok');
+        } else if(mode === 'link'){
+          var r2 = await CATALYST.db.auth.signInWithOtp({ email: email, options: { shouldCreateUser: false, emailRedirectTo: asal + '?mode=masuk-link' } });
+          if(r2.error) throw r2.error;
+          tampilPesan(T('lg.linkOk'), 'ok');
+        } else {
+          var r3 = await CATALYST.db.auth.updateUser({ password: sandi });
+          if(r3.error) throw r3.error;
+          location.href = '/bp/passport/';
+          return;
+        }
+      } catch(err){
+        var m2 = (err && err.message) || T('lg.errUmum');
+        if(/signups not allowed|user not found/i.test(m2)) m2 = T('lg.errBelumDaftar');
+        if(/rate limit|too many|security purposes/i.test(m2)) m2 = T('lg.errBatas');
+        if(/should be different/i.test(m2)) m2 = T('lg.errSandiSama');
+        tampilPesan(m2, 'err');
+      } finally {
+        kirim.disabled = false;
+        document.getElementById('labelKirim').textContent = T(KIRIM[mode]);
+      }
+      return;
+    }
 
     if(!email || !sandi){ tampilPesan(T('lg.errIsi'), 'err'); return; }
 
@@ -418,15 +481,17 @@ setTimeout(function(){
       tampilPesan(m, 'err');
     } finally {
       kirim.disabled = false;
-      document.getElementById('labelKirim').textContent = T(mode === 'daftar' ? 'lg.kirim.daftar' : 'lg.kirim.masuk');
+      document.getElementById('labelKirim').textContent = T(KIRIM[mode]);
     }
   });
 
   /* mode awal dipasang tanpa animasi supaya tidak ada kedipan saat halaman dibuka */
   PI.apply();
   document.title = T('lg.title');
-  if(new URLSearchParams(location.search).get('mode') === 'daftar') setMode('daftar', true);
+  if(MODE_URL === 'daftar') setMode('daftar', true);
+  else if(MODE_URL === 'sandi-baru' && !DEMO) setMode('sandiBaru', true);
   else setMode('masuk', true);
+  if(GALAT_URL) tampilPesan(T('lg.errLinkKedaluwarsa'), 'err');
 
   /* ganti bahasa tanpa memuat ulang supaya isian formulir tidak hilang */
   PI.pasangPemilih(document.getElementById('langMenu'), function(){

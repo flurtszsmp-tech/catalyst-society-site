@@ -105,7 +105,25 @@ window.PI18N = (function () {
       'lg.errUmum':'Terjadi kesalahan.',
       'lg.errKredensial':'Email atau kata sandi salah.',
       'lg.errTerdaftar':'Email ini sudah terdaftar. Silakan masuk.',
-      'lg.errKonfirmasi':'Email belum dikonfirmasi. Cek kotak masuk Anda.'
+      'lg.errKonfirmasi':'Email belum dikonfirmasi. Cek kotak masuk Anda.',
+      'lg.lupa':'Lupa kata sandi?',
+      'lg.pakaiLink':'Masuk lewat link email',
+      'lg.balik':'Masuk dengan kata sandi',
+      'lg.lupa.judul':'Atur ulang kata sandi.',
+      'lg.lupa.sub':'Masukkan email akun Anda. Kami kirim link untuk membuat kata sandi baru.',
+      'lg.kirim.lupa':'Kirim link atur ulang',
+      'lg.lupaOk':'Link atur ulang sudah dikirim. Cek kotak masuk atau folder spam Anda.',
+      'lg.link.judul':'Masuk tanpa kata sandi.',
+      'lg.link.sub':'Masukkan email akun Anda. Kami kirim link untuk langsung masuk.',
+      'lg.kirim.link':'Kirim link masuk',
+      'lg.linkOk':'Link masuk sudah dikirim ke email Anda. Buka email itu di perangkat ini.',
+      'lg.baru.judul':'Buat kata sandi baru.',
+      'lg.baru.sub':'Minimal 6 karakter. Setelah disimpan, Anda langsung masuk.',
+      'lg.kirim.baru':'Simpan kata sandi',
+      'lg.errBelumDaftar':'Email ini belum terdaftar. Silakan daftar dulu.',
+      'lg.errBatas':'Terlalu sering meminta email. Coba lagi beberapa menit lagi.',
+      'lg.errLinkKedaluwarsa':'Link sudah kedaluwarsa atau sudah dipakai. Silakan minta link baru.',
+      'lg.errSandiSama':'Kata sandi baru harus berbeda dari yang lama.'
     },
 
     en: {
@@ -199,7 +217,25 @@ window.PI18N = (function () {
       'lg.errUmum':'Something went wrong.',
       'lg.errKredensial':'Wrong email or password.',
       'lg.errTerdaftar':'This email is already registered. Please sign in.',
-      'lg.errKonfirmasi':'Email not confirmed. Check your inbox.'
+      'lg.errKonfirmasi':'Email not confirmed. Check your inbox.',
+      'lg.lupa':'Forgot password?',
+      'lg.pakaiLink':'Sign in with an email link',
+      'lg.balik':'Sign in with password',
+      'lg.lupa.judul':'Reset your password.',
+      'lg.lupa.sub':'Enter your account email. We will send a link to create a new password.',
+      'lg.kirim.lupa':'Send reset link',
+      'lg.lupaOk':'Reset link sent. Check your inbox or spam folder.',
+      'lg.link.judul':'Sign in without a password.',
+      'lg.link.sub':'Enter your account email. We will send a link to sign you in.',
+      'lg.kirim.link':'Send sign in link',
+      'lg.linkOk':'Sign in link sent to your email. Open it on this device.',
+      'lg.baru.judul':'Create a new password.',
+      'lg.baru.sub':'At least 6 characters. You will be signed in once it is saved.',
+      'lg.kirim.baru':'Save password',
+      'lg.errBelumDaftar':'This email is not registered yet. Please sign up first.',
+      'lg.errBatas':'Too many email requests. Try again in a few minutes.',
+      'lg.errLinkKedaluwarsa':'This link has expired or was already used. Please request a new one.',
+      'lg.errSandiSama':'The new password must be different from the old one.'
     },
 
     zh: {
@@ -293,7 +329,25 @@ window.PI18N = (function () {
       'lg.errUmum':'出现错误。',
       'lg.errKredensial':'邮箱或密码错误。',
       'lg.errTerdaftar':'该邮箱已注册，请直接登录。',
-      'lg.errKonfirmasi':'邮箱尚未确认，请查看收件箱。'
+      'lg.errKonfirmasi':'邮箱尚未确认，请查看收件箱。',
+      'lg.lupa':'忘记密码？',
+      'lg.pakaiLink':'通过邮件链接登录',
+      'lg.balik':'使用密码登录',
+      'lg.lupa.judul':'重置密码。',
+      'lg.lupa.sub':'输入账户邮箱，我们会发送设置新密码的链接。',
+      'lg.kirim.lupa':'发送重置链接',
+      'lg.lupaOk':'重置链接已发送，请查看收件箱或垃圾邮件。',
+      'lg.link.judul':'无需密码登录。',
+      'lg.link.sub':'输入账户邮箱，我们会发送直接登录的链接。',
+      'lg.kirim.link':'发送登录链接',
+      'lg.linkOk':'登录链接已发送到你的邮箱，请在本设备上打开。',
+      'lg.baru.judul':'设置新密码。',
+      'lg.baru.sub':'至少 6 个字符，保存后即自动登录。',
+      'lg.kirim.baru':'保存密码',
+      'lg.errBelumDaftar':'该邮箱尚未注册，请先注册。',
+      'lg.errBatas':'请求邮件过于频繁，请几分钟后再试。',
+      'lg.errLinkKedaluwarsa':'链接已过期或已被使用，请重新获取。',
+      'lg.errSandiSama':'新密码必须与旧密码不同。'
     }
   };
 
