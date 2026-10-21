@@ -296,7 +296,6 @@
   /* Foto industri dan foto Summit menepi pelan mengikuti gulir, memberi
      kesan lapisan, bukan gambar diam yang menempel di belakang teks. */
   .ind .ind-card img{transform:translate3d(-50%,calc((var(--maju,.5) - .5) * 34px),0) scale(1.08)}
-  .summit .summit-media img{transform:translate3d(0,calc((var(--maju,.5) - .5) * -50px),0) scale(1.1)}
   /* gambar dibuka seperti tirai, bukan sekadar meredup */
   /* sudut membulat ikut dibawa di dalam clip-path, kalau tidak sudutnya
      berubah tajam selama tirai gambar masih bergerak */
@@ -958,8 +957,13 @@
   .summit h2{margin:20px 0 18px;max-width:16ch}
   .summit .lead{color:#b7b7b7;margin-bottom:60px}
   .summit-stat{display:flex;flex-wrap:wrap;gap:clamp(30px,6vw,90px);align-items:flex-end}
-  .summit-stat .big{font-family:var(--display);font-weight:400;line-height:.9;letter-spacing:-.03em;
+  /* Teks bayangan menahan lebar sebesar angka akhir, angka berjalan ditumpuk di atasnya.
+     Tanpa itu, angka yang tumbuh dari Rp0 mendorong keterangan di sebelahnya tiap bingkai. */
+  .summit-stat .big{position:relative;font-variant-numeric:tabular-nums;
+    font-family:var(--display);font-weight:400;line-height:.9;letter-spacing:-.03em;
     font-size:clamp(52px,10vw,150px);color:#fff}
+  .big-tahan{visibility:hidden}
+  .big-n{position:absolute;left:0;top:0;white-space:nowrap}
   .summit-stat .sm{max-width:240px}
   .summit-stat .sm b{display:block;font-family:var(--display);font-size:16px;color:#fff;margin-bottom:6px}
   .summit-stat .sm span{font-size:12.5px;color:#9a9a9a}
@@ -1896,7 +1900,7 @@
       <p class="lead" data-i18n="sum.desc">Kolaborasi terbesar dalam ekosistem: builders, mentor, dan venture capital di satu ruangan. Best Project Innovation membawa pulang pendanaan tahap awal.</p>
     </div>
     <div class="summit-stat rv">
-      <div class="big" data-count="100000000" data-prefix="Rp">Rp0</div>
+      <div class="big" data-count="100000000" data-prefix="Rp"><span class="big-tahan" aria-hidden="true">Rp100.000.000</span><span class="big-n">Rp0</span></div>
       <div class="sm">
         <b>Best Project Innovation</b>
         <span data-i18n="sum.note">Pendanaan tahap awal dari Venture Capital, diserahkan langsung di panggung Summit.</span>
@@ -2379,7 +2383,6 @@
   lacak('.prob-media', 'lewat');
   lacak('.shead', 'lewat');
   lacak('.ind', 'lewat');
-  lacak('.summit', 'lewat');
 
   function jepit(n){ return n < 0 ? 0 : n > 1 ? 1 : n; }
 
@@ -2551,12 +2554,13 @@
       ents.forEach(function(e){
         if(!e.isIntersecting) return;
         cio.disconnect();
+        var out = cEl.querySelector('.big-n') || cEl;
         var end = +cEl.dataset.count, pre = cEl.dataset.prefix||'', t0=null, dur=rm?0:1700;
         function fmt(n){ return pre + Math.round(n).toLocaleString('id-ID'); }
         function step(ts){
           if(!t0) t0=ts;
           var p = Math.min((ts-t0)/dur,1);
-          cEl.textContent = fmt((1-Math.pow(1-p,3))*end);
+          out.textContent = fmt((1-Math.pow(1-p,3))*end);
           if(p<1) requestAnimationFrame(step);
         }
         requestAnimationFrame(step);
