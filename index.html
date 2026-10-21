@@ -1755,55 +1755,30 @@
 <section class="band kd" id="komunitasDetail" aria-live="polite" hidden></section>
 <script src="assets/communities.js"></script>
 <script>
-/* Baris logo partner: selalu bergeser pelan ke kanan (satu arah, permintaan client);
-   menggulir halaman ke mana pun hanya mempercepatnya, lalu melambat halus. Tiap baris punya kelembaman sendiri, jadi tidak serempak. Hanya jalan saat terlihat.
-   Panjang satu putaran = (lebar isi + jarak antar logo) / 2, karena isi baris = dua salinan
+/* Baris logo partner: bergeser ke kanan dengan kecepatan tetap, tanpa reaksi apa pun
+   terhadap gulir (permintaan client). Geraknya animasi CSS yang dijalankan kartu grafis,
+   jadi tetap rata walau halaman sedang sibuk (gulir, WebGL). Skrip ini hanya mengukur
+   panjang satu putaran = (lebar isi + jarak antar logo) / 2, karena isi baris = dua salinan
    daftar yang sama; tanpa koreksi jarak, baris melompat setengah jarak di tiap putaran. */
 (function(){
   var uls=[].slice.call(document.querySelectorAll('.pm-row ul'));if(!uls.length)return;
   var rm=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
-  var DASAR=rm?14:38, arah=1, dorong=0,   /* selalu bergeser ke kanan (permintaan client) */
-   y0=scrollY, t0=0, jalan=false, terlihat=new Set();
-  var SIFAT=[[1,1,4.2],[.82,.86,1.7],[1.12,1.1,2.6],[.9,.95,1.2]];
-  var v=uls.map(function(u,i){return DASAR*SIFAT[i%4][0]}), x=uls.map(function(){return 0}), w=uls.map(function(){return 0});
+  var LAJU=rm?16:40;                       /* piksel per detik, sama untuk semua baris */
   function ukur(){
     uls.forEach(function(u,i){
       var jarak=parseFloat(getComputedStyle(u).columnGap)||0, p=(u.scrollWidth+jarak)/2;
       if(!p)return;
-      if(!w[i]) x[i]=-p*(i%2?.37:0);          /* posisi awal hanya sekali; ukur ulang tidak menggeser baris */
-      else x[i]=((x[i]%p)-p)%p;
-      w[i]=p;
+      var lama=p/LAJU;
+      u.style.setProperty('--geser', p.toFixed(2)+'px');
+      u.style.animationDuration=lama.toFixed(2)+'s';
+      u.style.animationDelay=(i%2?-lama*.37:0).toFixed(2)+'s';   /* baris genap mulai di titik lain */
+      u.classList.add('pm-jalan');
     });
   }
-  addEventListener('scroll',function(){
-    var d=scrollY-y0;y0=scrollY;if(!d)return;
-    dorong=Math.min(dorong+Math.abs(d)*(rm?2:7),rm?120:1400);mulai();
-  },{passive:true});
   var tunda=0;addEventListener('resize',function(){clearTimeout(tunda);tunda=setTimeout(ukur,150)});
   uls.forEach(function(u){u.querySelectorAll('img').forEach(function(im){if(!im.complete)im.addEventListener('load',ukur,{once:true})})});
-  function bingkai(t){
-    if(!terlihat.size||document.hidden){jalan=false;return}
-    var dt=t0?Math.min((t-t0)/1000,.05):.016;t0=t;
-    dorong*=Math.pow(.06,dt);
-    for(var i=0;i<uls.length;i++){
-      if(!w[i])continue;
-      var f=SIFAT[i%4];
-      v[i]+=(arah*(DASAR*f[0]+dorong*f[1])-v[i])*Math.min(1,dt*f[2]);
-      x[i]+=v[i]*dt;
-      while(x[i]<=-w[i])x[i]+=w[i];
-      while(x[i]>0)x[i]-=w[i];
-      uls[i].style.transform='translate3d('+x[i].toFixed(2)+'px,0,0)';
-    }
-    requestAnimationFrame(bingkai);
-  }
-  function mulai(){if(!jalan&&terlihat.size&&!document.hidden){jalan=true;t0=0;requestAnimationFrame(bingkai)}}
   ukur();
   addEventListener('load',ukur);
-  document.addEventListener('visibilitychange',mulai);
-  if('IntersectionObserver' in window){
-    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)terlihat.add(e.target);else terlihat.delete(e.target)});mulai()});
-    document.querySelectorAll('.pm').forEach(function(p){io.observe(p)});
-  }else{document.querySelectorAll('.pm').forEach(function(p){terlihat.add(p)});mulai()}
 })();
 </script>
 

@@ -470,3 +470,7 @@ html.dark-theme #founders:is(.fd-v-a,.fd-v-c) .fd-nama b{color:#fff}
   #founders.fd-v-b .fd-nama{grid-template-columns:1fr;gap:0}
 }
 
+
+/* logo partner: geser ke kanan dengan kecepatan tetap (panjang dan durasi diisi skrip di index.html) */
+.pm-row ul.pm-jalan{animation-name:pmKanan;animation-timing-function:linear;animation-iteration-count:infinite;will-change:transform}
+@keyframes pmKanan{from{transform:translate3d(calc(-1 * var(--geser)),0,0)}to{transform:translate3d(0,0,0)}}
