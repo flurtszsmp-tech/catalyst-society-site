@@ -3,6 +3,7 @@
    dipakai di server (halaman publik) maupun di browser (dasbor).
    =========================================================== */
 import { SUPABASE_URL } from '@/lib/env';
+import { STAGE_RULES } from '@/lib/repo/journey-rules';
 import { STAGES, type PointEvent, type Stage } from '@/lib/types';
 
 const BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
@@ -26,20 +27,15 @@ export function stageName(s: Stage): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-/** Posisi tahap dari 0 sampai 5. Nilai asing dianggap tahap pertama. */
+/** Posisi tahap dari 0 sampai 6. Nilai asing dianggap tahap pertama. */
 export function stageIndex(s: Stage): number {
   return Math.max(0, STAGES.indexOf(s));
 }
 
 /** Keterangan bawaan untuk tahap yang belum punya catatan journey. */
-export const STAGE_DETAIL: Record<Stage, string> = {
-  explorer: 'Bergabung dengan Catalyst Society',
-  connector: 'Bergabung ke tiga komunitas',
-  builder: 'Membuat projek pertama',
-  challenger: 'Menuntaskan bootcamp',
-  contributor: 'Membantu lima projek',
-  innovator: 'Dampak dan skala',
-};
+export const STAGE_DETAIL: Record<Stage, string> = Object.fromEntries(
+  STAGES.map((s) => [s, STAGE_RULES[s].summary]),
+) as Record<Stage, string>;
 
 export interface SeriesPoint {
   label: string;

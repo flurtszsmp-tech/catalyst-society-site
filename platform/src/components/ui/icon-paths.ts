@@ -104,6 +104,13 @@ ICON_PATHS['info'] = '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.0
 ICON_PATHS['calendar'] = '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>';
 ICON_PATHS['user-plus'] = '<circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0M19 8v6M16 11h6"/>';
 ICON_PATHS['user-check'] = '<circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0M15.5 11.5l2 2 4-4"/>';
+ICON_PATHS['j-founder'] = '<path d="M4 17.5 3 8l5 4 4-7 4 7 5-4-1 9.5z"/><path d="M5 21h14"/>';
+ICON_PATHS['b-crown'] = '<path d="M4 17.5 3 8l5 4 4-7 4 7 5-4-1 9.5z"/><path d="M5 21h14"/>';
+ICON_PATHS['clock'] = '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>';
+ICON_PATHS['filter'] = '<path d="M4 5h16l-6.5 8v5.5L10.5 20v-7z"/>';
+ICON_PATHS['external'] = '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>';
+ICON_PATHS['trophy'] = '<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7M10 17h4"/>';
+ICON_PATHS['shield-check'] = '<path d="M12 3 5 6v5c0 4.4 3 8.3 7 10 4-1.7 7-5.6 7-10V6z"/><path d="m9 12 2 2 4-4"/>';
 
 /** Ikon yang dicat penuh, bukan digores. */
 export const FILLED_ICONS = new Set<string>(["spark4","bolt","verified"]);

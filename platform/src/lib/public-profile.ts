@@ -28,7 +28,7 @@ export const getPublicBundle = cache(async (slug: string): Promise<PassportBundl
       profile: d.profile,
       journey: d.journey,
       badges: d.badges,
-      communities: d.communities,
+      communities: d.memberships.filter((m) => m.status === 'verified').map((m) => m.slug),
       projects: d.projects,
       certificates: d.certificates,
       followers: d.followers.length,
@@ -47,7 +47,7 @@ export const getPublicBundle = cache(async (slug: string): Promise<PassportBundl
   const [journey, badges, coms, projects, certs, followers, following] = await Promise.all([
     db.from('journey_events').select('stage, title, detail, occurred_at').eq('user_id', id).order('occurred_at'),
     db.from('user_badges').select('earned_at, badges(code, name, description, icon)').eq('user_id', id).order('earned_at'),
-    db.from('community_members').select('community_slug').eq('user_id', id),
+    db.from('community_members').select('community_slug').eq('user_id', id).eq('status', 'verified'),
     db.from('projects').select('*').eq('user_id', id).order('started_on', { ascending: false, nullsFirst: false }),
     db.from('certificates').select('*').eq('user_id', id).order('issued_on', { ascending: false, nullsFirst: false }),
     db.from('connections').select('*', { count: 'exact', head: true }).eq('following_id', id),

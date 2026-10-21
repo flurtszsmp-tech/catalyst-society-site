@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { usePassport } from '@/components/passport/PassportProvider';
 import { useToast } from '@/components/ui/Toast';
 import { ValueStrip } from '../cards/RailCards';
+import { CelebrationProvider } from '../journey/Celebration';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 
@@ -26,8 +27,20 @@ export function PassportShell({ children }: { children: ReactNode }) {
   const burger = useRef<HTMLElement | null>(null);
   // Di bawah 1040px sidebar menjadi laci.
   const [laci, setLaci] = useState(false);
+  // Menu Verifikasi hanya untuk tim Catalyst. Database tetap yang menolak
+  // pemeriksaan dari orang lain; ini hanya menyembunyikan menunya.
+  const [staff, setStaff] = useState(false);
 
   const tutup = useCallback(() => setOpen(false), []);
+
+  useEffect(() => {
+    if (!profile) return;
+    let hidup = true;
+    repo.isStaff().then((v) => hidup && setStaff(v), () => {});
+    return () => {
+      hidup = false;
+    };
+  }, [repo, profile?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Laci ditutup setiap kali halaman berganti.
   useEffect(() => {
@@ -115,12 +128,12 @@ export function PassportShell({ children }: { children: ReactNode }) {
       </div>
     );
   } else {
-    isi = children;
+    isi = <CelebrationProvider>{children}</CelebrationProvider>;
   }
 
   return (
     <div className="pass-shell">
-      <Sidebar ref={side} open={open} onNavigate={tutup} onSignOut={onSignOut} signingOut={keluar} />
+      <Sidebar ref={side} open={open} onNavigate={tutup} onSignOut={onSignOut} signingOut={keluar} staff={staff} />
       <div className={`pass-scrim${open ? ' on' : ''}`} aria-hidden onClick={tutup} />
       <div className="pass-work" ref={work}>
         <Topbar profile={profile} demo={repo.mode === 'demo'} menuOpen={open} onMenu={() => setOpen((o) => !o)} />

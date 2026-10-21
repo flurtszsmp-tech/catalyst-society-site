@@ -64,7 +64,7 @@ Catatan: Passport diterbitkan sebagai halaman statis (tanpa server), jadi pemeri
 | Project ref | `ydhoxefcntwayjkslzje` |
 | API URL | https://ydhoxefcntwayjkslzje.supabase.co |
 | Region | Singapore (ap-southeast-1) |
-| Skema | `platform/supabase/migrations/0001_init.sql` sudah dijalankan |
+| Skema | `0001_init.sql` dan `0002_journey_v2.sql` sudah dijalankan |
 
 Kunci `anon` memang tampil di sumber halaman. Yang menjaga data bukan
 kerahasiaan kunci itu, melainkan Row Level Security di database. Kunci
@@ -110,3 +110,48 @@ Pengaturan Auth tidak bisa diubah lewat berkas di repo ini.
   `private.handle_new_user`.
 - Tamu yang membuka halaman Passport diarahkan ke `/login.html` dengan
   parameter `next`, lalu dikembalikan ke halaman yang dituju setelah masuk.
+
+## Journey, poin, dan verifikasi (migrasi 0002)
+
+`platform/supabase/migrations/0002_journey_v2.sql` menambahkan:
+
+- **Catalyst ID berurutan**: `CP-00001`, `CP-00002`, dan seterusnya menurut
+  urutan daftar, dari sequence `private.catalyst_no_seq`.
+- **Tujuh tahap Journey berurutan**: Explorer, Connector (5 komunitas
+  terverifikasi dan mengikuti 5 orang), Challenger (sertifikat dan 1 sesi
+  bootcamp), Innovator (projek atau komunitas yang pernah dibangun),
+  Contributor (Catalyst Finder), Builder (Catalyst Labs), Founder (bisnis
+  bervaluasi di atas Rp100 juta). Tahap hanya naik.
+- **Poin CATA terpisah dari tahap** dan hanya untuk hal yang sudah diperiksa:
+  daftar +10, profil lengkap +20, komunitas terverifikasi +5 (maks. 10),
+  projek pertama +15, sertifikat terverifikasi +25 (maks. 10), naik tahap
+  +25 sampai +300. Mengikuti orang dan menekan Gabung tidak memberi poin.
+- **Verifikasi tim**: keanggotaan komunitas (dengan bukti), sertifikat, dan
+  pengajuan tahap (`journey_claims`) menunggu pemeriksaan di halaman
+  Passport › Verifikasi.
+
+### Anggota tim pemeriksa
+
+Hanya anggota `private.staff` yang melihat menu Verifikasi dan bisa memanggil
+`staff_review_*`. Pemilik (CP-00001) sudah terdaftar. Menambah anggota lain
+dari SQL Editor:
+
+```sql
+insert into private.staff (user_id)
+select id from auth.users where email = 'nama@catalystsociety.id';
+```
+
+### Cadangan data lama
+
+Saat 0002 dijalankan, poin, lencana, dan journey lama dihitung ulang dengan
+aturan baru. Salinan keadaan sebelumnya ada di `private.backup_v1_*` bila
+suatu saat perlu dibandingkan.
+
+### Uji database
+
+```bash
+cd platform && npm run test:db
+```
+
+Menjalankan uji RLS (0001) dan uji Journey v2 (0001 + 0002 di atas data lama)
+di PGlite, tanpa menyentuh project Supabase.

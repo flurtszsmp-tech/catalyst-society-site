@@ -190,3 +190,117 @@
 @keyframes ps2-grow{from{transform:scaleY(0)}}
 @keyframes ps2-draw{to{stroke-dashoffset:0}}
 @keyframes ps2-fade{from{opacity:0}}
+
+/* ===========================================================
+   Journey v2, Temukan orang, verifikasi komunitas, dan antrean tim.
+   =========================================================== */
+
+/* ---------- status pengajuan ---------- */
+.jr-st{white-space:nowrap}
+.jr-st.is-pending{border-style:dashed}
+.jr-st.is-approved{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.jr-st.is-rejected{color:#b42318;border-color:rgba(180,35,24,.35)}
+html.dark-theme .jr-st.is-rejected{color:#ff8a80;border-color:rgba(255,138,128,.35)}
+.jr-st.is-none{color:var(--muted)}
+.jr-note{font-size:11.5px;color:#b42318;line-height:1.5}
+html.dark-theme .jr-note{color:#ff8a80}
+
+/* ---------- tujuh tahap ---------- */
+.jr-stages{grid-template-columns:repeat(7,minmax(0,1fr))}
+@media (max-width:1100px){.jr-stages{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:640px){.jr-stages{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.jr-stages .ps2-stage{padding:0}
+.jr-stages .ps2-stage:not(:has(.jr-stage-btn)){padding:14px}
+.jr-stage-btn{display:flex;flex-direction:column;gap:6px;width:100%;height:100%;padding:14px;text-align:left;
+  font:inherit;color:inherit;background:none;border:0;cursor:pointer;border-radius:inherit;
+  transition:background .25s var(--ease)}
+.jr-stage-btn:hover{background:rgba(0,0,0,.03)}
+html.dark-theme .jr-stage-btn:hover{background:rgba(255,255,255,.04)}
+.jr-stage-btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.jr-open{margin-top:auto;font-size:10.5px;color:var(--muted);display:inline-flex;gap:4px;align-items:center}
+.jr-stage-btn:hover .jr-open{color:var(--ink)}
+.ps2-stage.is-exclusive{background:linear-gradient(160deg,transparent 40%,rgba(201,169,97,.10))}
+
+/* ---------- tujuan berikutnya ---------- */
+.jr-goal h3{font-family:var(--display);font-weight:400;font-size:20px;line-height:1.25;margin-top:2px}
+.jr-goal>p{font-size:13px;line-height:1.6;margin-top:6px}
+.jr-reqs{list-style:none;display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.jr-req{display:flex;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px}
+.jr-req.is-done{border-color:var(--ink)}
+.jr-req-mark{flex:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);
+  display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.jr-req.is-done .jr-req-mark{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.jr-req-mark svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.2}
+.jr-req-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.jr-req-top{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.jr-req-top b{font-size:13px;font-weight:500}
+.jr-req-count{font-size:12px;color:var(--muted)}
+.jr-req-hint{font-size:11.5px;color:var(--muted)}
+.jr-req-act{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ---------- tentang journey ---------- */
+.jr-about{display:grid;gap:10px;font-size:13px;line-height:1.7;color:var(--pass-ink-dim,var(--muted));max-width:84ch}
+.jr-about b{color:var(--ink);font-weight:500}
+.jr-detail{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:16px}
+.jr-detail>li{position:relative;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;padding:14px;border:1px solid var(--line);border-radius:12px}
+.jr-detail>li.is-exclusive{border-color:rgba(201,169,97,.55);background:linear-gradient(160deg,transparent 40%,rgba(201,169,97,.08))}
+.jr-n{position:absolute;top:12px;right:14px;font-size:11px;color:var(--muted)}
+.jr-ico{width:24px;height:24px;color:var(--ink);grid-row:span 2}
+.jr-detail b{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-weight:500;font-size:13.5px}
+.jr-detail p{font-size:12px;line-height:1.6;color:var(--muted);margin-top:4px}
+.jr-detail ul{margin:8px 0 0 16px;font-size:12px;line-height:1.6}
+.jr-detail em{font-style:normal;color:var(--muted)}
+.jr-detail small{display:block;margin-top:8px;font-size:11px;color:var(--ink)}
+.jr-detail>li>div{grid-column:2}
+
+/* ---------- pengajuan & poin ---------- */
+.jr-claims>li{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.jr-claims>li>span:first-child{display:flex;flex-direction:column;gap:3px;min-width:0}
+.jr-claims small{font-size:12px;color:var(--muted);line-height:1.5}
+.jr-claim-side{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none}
+.jr-earn>li{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;line-height:1.5}
+.jr-earn b{white-space:nowrap;font-weight:500}
+
+/* ---------- temukan orang ---------- */
+.cn-grid{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+@media (max-width:980px){.cn-grid{grid-template-columns:minmax(0,1fr)}}
+.cn-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 10px}
+@media (max-width:560px){.cn-filters{grid-template-columns:minmax(0,1fr)}}
+.cn-select{display:flex;flex-direction:column;gap:4px;min-width:0}
+.cn-select span{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cn-select select{width:100%;padding:9px 30px 9px 11px;border-radius:10px;border:1px solid var(--line);background:var(--bg);
+  color:var(--ink);font:inherit;font-size:12.5px;appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7a7a' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat:no-repeat;background-position:right 10px center}
+.cn-select select:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
+.cn-chips{margin-bottom:12px}
+.cn-reset{font-size:12px;color:var(--muted);text-decoration:underline;text-underline-offset:3px;padding:6px 4px}
+.cn-reset:hover{color:var(--ink)}
+.cn-people .ps2-person>span{min-width:0}
+.cn-meta{display:flex!important;flex-wrap:wrap;gap:5px;margin-top:6px}
+.cn-tag{font-size:10.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--d-gray);white-space:nowrap}
+.cn-tag.is-shared{border-color:var(--ink);color:var(--ink)}
+.cn-pts{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;color:var(--ink)}
+.cn-pts svg{width:11px;height:11px;fill:currentColor}
+
+/* ---------- komunitas ---------- */
+.cm-item .ps2-comm-txt small{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.cm-proof{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:22ch}
+.cm-act{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+
+/* ---------- antrean tim ---------- */
+.rv-list>li{display:grid;grid-template-columns:minmax(150px,200px) minmax(0,1fr) auto;gap:14px;align-items:start}
+@media (max-width:760px){.rv-list>li{grid-template-columns:minmax(0,1fr)}}
+.rv-who{display:flex;gap:10px;align-items:center;min-width:0}
+.rv-who span{display:flex;flex-direction:column;min-width:0}
+.rv-who b{font-size:12.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rv-who small{font-size:11px;color:var(--muted)}
+.rv-body{display:flex;flex-direction:column;gap:4px;min-width:0}
+.rv-body b{font-size:13px;font-weight:500;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.rv-body p{font-size:12.5px;line-height:1.6;color:var(--d-gray);word-break:break-word}
+.rv-body small{font-size:11px;color:var(--muted)}
+.rv-body .ps2-link svg{width:12px;height:12px;vertical-align:-1px}
+.rv-links{display:flex;gap:12px;flex-wrap:wrap}
+.rv-act{display:flex;gap:6px}
+.jr-claim-inline{display:inline-flex;gap:8px;align-items:center;margin-left:8px;vertical-align:middle}
+.jr-claim-inline .ps2-link{font-size:12px}

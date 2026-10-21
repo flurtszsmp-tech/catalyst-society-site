@@ -61,7 +61,7 @@ export function PassportProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [repo, router, toast]);
+  }, [repo, toast]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect

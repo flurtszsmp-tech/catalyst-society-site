@@ -4,6 +4,7 @@
    =========================================================== */
 import Image from 'next/image';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import { Icon } from '@/components/ui/Icon';
 import type { Certificate, EarnedBadge, PointEvent, Profile } from '@/lib/types';
 import { certificateImageSrc } from '@/lib/url';
@@ -100,10 +101,20 @@ const BADGE_ICON: Record<string, string> = {
   rocket: 'b-rocket',
   badge: 'b-badge',
   cube: 'b-cube',
+  crown: 'b-crown',
 };
 
-export function BadgesCard({ badges, owner = false }: { badges: EarnedBadge[]; owner?: boolean }) {
-  if (!owner && badges.length === 0) return null;
+export function BadgesCard({
+  badges,
+  owner = false,
+  footer,
+}: {
+  badges: EarnedBadge[];
+  owner?: boolean;
+  /** Isi di bawah lencana, misalnya tombol Lihat CV. */
+  footer?: ReactNode;
+}) {
+  if (!owner && badges.length === 0 && !footer) return null;
   // Lencana terbaru dibuat padat, menandai capaian paling akhir.
   const terbaru = badges.reduce<EarnedBadge | null>((a, b) => (!a || b.earnedAt > a.earnedAt ? b : a), null);
 
@@ -114,7 +125,7 @@ export function BadgesCard({ badges, owner = false }: { badges: EarnedBadge[]; o
         <span className="pass-all">{badges.length} diraih</span>
       </div>
       {badges.length === 0 ? (
-        <p className="pass-muted">Belum ada lencana. Lengkapi profil dan gabung komunitas untuk mendapatkannya.</p>
+        <p className="pass-muted">Belum ada lencana. Lengkapi profil dan ajukan komunitas Anda untuk mendapatkannya.</p>
       ) : (
         <ul className="pass-badges">
           {badges.map((b) => (
@@ -128,6 +139,7 @@ export function BadgesCard({ badges, owner = false }: { badges: EarnedBadge[]; o
           ))}
         </ul>
       )}
+      {footer && <div className="pass-badges-foot">{footer}</div>}
     </section>
   );
 }
@@ -167,11 +179,13 @@ export function CertificatesCard({ certificates, owner = false }: { certificates
                 <div className="meta">
                   <b>{c.title}</b>
                   <span>{c.issuer}</span>
-                  {c.isVerified && (
+                  {c.isVerified ? (
                     <span className="pass-cert-ok">
                       <Icon name="check" />
                       Terverifikasi
                     </span>
+                  ) : (
+                    <span className="pass-cert-wait">Belum terverifikasi</span>
                   )}
                 </div>
               </li>

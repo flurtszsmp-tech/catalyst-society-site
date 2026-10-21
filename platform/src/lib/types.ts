@@ -8,21 +8,28 @@
 
 export type Localized = { id: string; en: string; zh: string };
 
+/**
+ * Tujuh tahap Journey, berurutan. Sama dengan private.recompute_journey di
+ * supabase/migrations/0002_journey_v2.sql: tiap tahap mensyaratkan tahap
+ * sebelumnya, dan tahap hanya naik.
+ */
 export type Stage =
   | 'explorer'
   | 'connector'
-  | 'builder'
   | 'challenger'
+  | 'innovator'
   | 'contributor'
-  | 'innovator';
+  | 'builder'
+  | 'founder';
 
 export const STAGES: Stage[] = [
   'explorer',
   'connector',
-  'builder',
   'challenger',
-  'contributor',
   'innovator',
+  'contributor',
+  'builder',
+  'founder',
 ];
 
 export type Channel = 'investments' | 'ai' | 'business' | 'builder' | 'impact';
@@ -69,6 +76,8 @@ export interface Profile {
   avatarUrl: string | null;
   channel: Channel | null;
   journeyStage: Stage;
+  /** Tahap terakhir yang sudah dirayakan pop up ucapan di layar pemiliknya. */
+  journeySeenStage: Stage;
   cataPoints: number;
   isVerified: boolean;
   isPublic: boolean;
@@ -131,6 +140,9 @@ export interface Certificate {
   credentialUrl: string | null;
   imagePath: string | null;
   isVerified: boolean;
+  /** Catatan tim Catalyst saat sertifikat diperiksa. */
+  reviewNote: string | null;
+  reviewedAt: string | null;
   createdAt: string;
 }
 
@@ -173,6 +185,87 @@ export interface ProfileSummary {
   avatarUrl: string | null;
   isVerified: boolean;
   journeyStage: Stage;
+  channel?: Channel | null;
+  cataPoints?: number;
+  skills?: string[];
+  roles?: string[];
+}
+
+/** Saringan halaman Temukan orang. Kosong berarti tidak disaring. */
+export interface PeopleFilter {
+  query: string;
+  channel: Channel | null;
+  stage: Stage | null;
+  /** Hanya orang yang punya setidaknya satu lencana yang sama dengan saya. */
+  sameBadges: boolean;
+  /** Hanya orang dengan setidaknya satu keahlian yang sama dengan saya. */
+  sameSkills: boolean;
+  /** Hanya orang dengan setidaknya satu peran yang sama dengan saya. */
+  sameRoles: boolean;
+  /** Sembunyikan orang yang sudah saya ikuti. */
+  hideFollowing: boolean;
+  sort: 'points_desc' | 'points_asc' | 'newest';
+}
+
+export const DEFAULT_PEOPLE_FILTER: PeopleFilter = {
+  query: '',
+  channel: null,
+  stage: null,
+  sameBadges: false,
+  sameSkills: false,
+  sameRoles: false,
+  hideFollowing: true,
+  sort: 'points_desc',
+};
+
+/* ---------- verifikasi ---------- */
+
+export type MembershipStatus = 'pending' | 'verified' | 'rejected';
+
+/** Keanggotaan komunitas milik sendiri, lengkap dengan status pemeriksaan tim. */
+export interface Membership {
+  slug: string;
+  status: MembershipStatus;
+  /** Bukti keanggotaan: username, tautan profil, atau nomor anggota. */
+  proof: string | null;
+  reviewNote: string | null;
+  joinedAt: string;
+}
+
+/** Tahap yang syaratnya berada di luar Passport dan diperiksa tim Catalyst. */
+export type ClaimKind = 'bootcamp' | 'finder' | 'labs' | 'founder';
+
+export type ClaimStatus = 'pending' | 'approved' | 'rejected';
+
+export interface JourneyClaim {
+  id: string;
+  kind: ClaimKind;
+  detail: string;
+  url: string | null;
+  /** Valuasi bisnis dalam rupiah, hanya untuk klaim Founder. */
+  valuation: number | null;
+  status: ClaimStatus;
+  reviewNote: string | null;
+  createdAt: string;
+}
+
+export type ClaimInput = Pick<JourneyClaim, 'kind' | 'detail' | 'url' | 'valuation'>;
+
+/** Angka mentah untuk syarat tiap tahap, dibaca dari data milik sendiri. */
+export interface JourneyProgress {
+  verifiedCommunities: number;
+  pendingCommunities: number;
+  following: number;
+  certificates: number;
+  projects: number;
+  claims: JourneyClaim[];
+}
+
+/** Satu antrean pemeriksaan untuk tim Catalyst. */
+export interface ReviewQueue {
+  memberships: { person: ProfileSummary; membership: Membership }[];
+  certificates: { person: ProfileSummary; certificate: Certificate }[];
+  claims: { person: ProfileSummary; claim: JourneyClaim }[];
 }
 
 export interface DailyCount {

@@ -519,3 +519,173 @@ html.dark-theme .pass-toast{background:#fff;color:#000}
   .pass-search{padding:9px 13px}
   .pass-value{flex:1 1 100%}
 }
+
+/* ===========================================================
+   Revisi Journey v2: About Me interaktif, lencana ringkas, tahap
+   Founder, dan perbaikan kartu bagikan.
+   =========================================================== */
+
+/* ---------- bagikan: judul dan anak judul tidak lagi bertumpuk ---------- */
+.pass-share-sub{margin-top:5px;margin-bottom:14px}
+
+/* ---------- tentang: kartu tautan ---------- */
+.pass-about .pass-links{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:10px;margin-top:16px}
+.pass-about .pass-links>li{min-width:0}
+.pass-about .pass-link{position:relative;display:flex;align-items:center;gap:11px;width:100%;
+  padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--pass-surface);
+  color:var(--ink);overflow:hidden;isolation:isolate;
+  transition:transform .32s var(--ease),border-color .25s var(--ease),box-shadow .32s var(--ease)}
+/* Kilau tipis menyapu kartu saat disentuh. */
+.pass-about .pass-link::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(110deg,transparent 30%,rgba(0,0,0,.045) 50%,transparent 70%);
+  transform:translateX(-110%);transition:transform .7s var(--ease)}
+html.dark-theme .pass-about .pass-link::after{background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.07) 50%,transparent 70%)}
+.pass-about .pass-link:hover{transform:translateY(-2px);border-color:var(--ink);
+  box-shadow:0 14px 26px -18px rgba(0,0,0,.45)}
+.pass-about .pass-link:hover::after{transform:translateX(110%)}
+.pass-about .pass-link:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.pass-link-ico{flex:none;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  background:var(--paper);color:var(--ink);transition:background .3s var(--ease),color .3s var(--ease),transform .4s var(--ease)}
+.pass-about .pass-link .pass-link-ico svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.5}
+.pass-about .pass-link:hover .pass-link-ico{transform:rotate(-6deg) scale(1.06);color:#fff;background:var(--brand,var(--black))}
+html.dark-theme .pass-about .pass-link:hover .pass-link-ico{color:var(--brand-ink,#000);background:var(--brand,#fff)}
+.pass-link-txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.pass-link-txt b{font-size:12px;font-weight:500}
+.pass-link-txt small{font-size:10.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}
+.pass-about .pass-link svg.pass-link-go{flex:none;width:13px;height:13px;stroke:var(--muted);fill:none;stroke-width:1.6;
+  opacity:0;transform:translate(-4px,4px);transition:.3s var(--ease)}
+.pass-about .pass-link:hover svg.pass-link-go{opacity:1;transform:none;stroke:var(--ink)}
+/* Warna merek hanya muncul saat disentuh, supaya kartu tetap tenang. */
+.pass-link.is-linkedin{--brand:#0a66c2}
+.pass-link.is-instagram{--brand:linear-gradient(135deg,#f58529,#dd2a7b 50%,#8134af)}
+.pass-link.is-twitter,.pass-link.is-tiktok{--brand:#000;--brand-ink:#fff}
+.pass-link.is-youtube{--brand:#e62117}
+.pass-link.is-github{--brand:#24292f;--brand-ink:#fff}
+.pass-link.is-facebook{--brand:#1877f2}
+.pass-link.is-telegram{--brand:#229ed9}
+@media (prefers-reduced-motion:reduce){
+  .pass-about .pass-link,.pass-about .pass-link::after,.pass-link-ico,.pass-about .pass-link svg.pass-link-go{transition:none}
+  .pass-about .pass-link:hover{transform:none}
+  .pass-about .pass-link:hover .pass-link-ico{transform:none}
+}
+
+/* ---------- lencana: lebih ringkas ---------- */
+.pass-badges{grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:10px 4px}
+.pass-badge{gap:5px}
+.pass-hex{width:34px;height:38px}
+.pass-hex svg.ico{width:14px;height:14px}
+.pass-badge span{font-size:9px;line-height:1.25}
+.pass-badges-foot{margin-top:14px;padding-top:13px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
+.pass-badges-foot .ui-btn{flex:1;justify-content:center}
+
+/* ---------- sertifikat belum terverifikasi ---------- */
+.pass-cert .meta .pass-cert-wait{display:block;margin-top:6px;font-size:9.5px;color:var(--muted)!important;font-style:italic}
+
+/* ---------- tahap journey ---------- */
+.pass-step.founder{border-style:dashed}
+.pass-step.founder.done{border-style:solid;border-color:var(--ink);
+  background:linear-gradient(160deg,var(--pass-surface),var(--paper))}
+button.pass-step{font:inherit;text-align:left;cursor:pointer;color:inherit;
+  transition:transform .25s var(--ease),border-color .25s var(--ease),box-shadow .25s var(--ease)}
+button.pass-step.can-open:hover{transform:translateY(-2px);border-color:var(--ink);box-shadow:0 12px 22px -18px rgba(0,0,0,.5)}
+button.pass-step.can-open:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* ---------- ucapan naik tahap ---------- */
+.cel{border:0;padding:0;background:transparent;max-width:min(440px,calc(100vw - 32px));width:100%;
+  margin:auto;overflow:visible;color:#fff}
+.cel::backdrop{background:rgba(6,6,8,.72);backdrop-filter:blur(8px)}
+.cel[open]{animation:cel-masuk .55s var(--ease-out) both}
+@keyframes cel-masuk{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}
+.cel-in{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;padding:6px 0 4px}
+.cel-kicker{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#d6d6d6}
+.cel-in.fresh .cel-kicker{font-size:15px;letter-spacing:.3em;color:#fff}
+
+.cel-card{position:relative;width:100%;aspect-ratio:4/5;border-radius:22px;overflow:hidden;
+  padding:22px 22px 18px;display:flex;flex-direction:column;align-items:center;
+  background:radial-gradient(120% 80% at 50% 30%,#2a2a2a 0%,#0b0b0b 62%,#050505 100%);
+  box-shadow:0 40px 80px -30px rgba(0,0,0,.8),inset 0 0 0 1px rgba(255,255,255,.08)}
+.cel-card-top{width:100%;display:flex;align-items:center;justify-content:space-between}
+.cel-brand{display:flex;align-items:center;gap:9px}
+.cel-brand svg{width:26px;height:26px;fill:#fff}
+.cel-brand span{display:flex;flex-direction:column;line-height:1.05}
+.cel-brand b{font-size:12px;letter-spacing:.14em}
+.cel-brand small{font-size:8.5px;letter-spacing:.34em;color:#9a9a9a}
+.cel-id{font-size:11px;letter-spacing:.12em;color:#9a9a9a;font-family:var(--mono,ui-monospace,monospace)}
+
+.cel-medal{position:relative;margin-top:auto;width:132px;height:132px;display:flex;align-items:center;justify-content:center}
+.cel-ring{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(255,255,255,.14)}
+.cel-ring.r2{inset:-26px;border-color:rgba(255,255,255,.07)}
+.cel-in.fresh .cel-ring{animation:cel-denyut 2.4s var(--ease) infinite}
+.cel-in.fresh .cel-ring.r2{animation-delay:.4s}
+@keyframes cel-denyut{0%{transform:scale(.9);opacity:0}30%{opacity:1}100%{transform:scale(1.18);opacity:0}}
+.cel-disc{position:relative;width:96px;height:96px;border-radius:50%;background:#fff;color:#000;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 0 8px rgba(255,255,255,.06),0 0 60px rgba(255,255,255,.25)}
+.cel-in.fresh .cel-disc{animation:cel-medali .9s var(--ease-out) .15s both}
+@keyframes cel-medali{from{transform:scale(.4) rotate(-25deg);opacity:0}to{transform:none;opacity:1}}
+.cel-disc svg{width:46px;height:46px;stroke:currentColor;fill:none;stroke-width:1.3}
+
+.cel-unlock{margin-top:22px;font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:#9a9a9a}
+.cel-stage{font-family:var(--display);font-weight:300;font-size:46px;line-height:1.05;margin-top:6px;letter-spacing:-.01em}
+.cel-sum{font-size:12px;color:#c9c9c9;margin-top:6px;text-align:center}
+
+.cel-streak{list-style:none;display:flex;gap:9px;margin-top:18px}
+.cel-streak li{width:16px;height:16px;border-radius:50%;border:1.5px solid #4a4a4a;display:flex;align-items:center;justify-content:center}
+.cel-streak li.on{background:#fff;border-color:#fff;color:#000}
+.cel-streak li.now{width:22px;height:22px;margin-top:-3px;box-shadow:0 0 0 4px rgba(255,255,255,.12)}
+.cel-streak svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2.4}
+.cel-in.fresh .cel-streak li.on{animation:cel-titik .4s var(--ease-out) both}
+.cel-in.fresh .cel-streak li:nth-child(2){animation-delay:.25s}
+.cel-in.fresh .cel-streak li:nth-child(3){animation-delay:.32s}
+.cel-in.fresh .cel-streak li:nth-child(4){animation-delay:.39s}
+.cel-in.fresh .cel-streak li:nth-child(5){animation-delay:.46s}
+.cel-in.fresh .cel-streak li:nth-child(6){animation-delay:.53s}
+.cel-in.fresh .cel-streak li:nth-child(7){animation-delay:.6s}
+@keyframes cel-titik{from{transform:scale(0)}to{transform:none}}
+
+.cel-card-foot{margin-top:auto;width:100%;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);
+  display:flex;justify-content:space-between;gap:12px}
+.cel-card-foot span{display:flex;flex-direction:column;min-width:0}
+.cel-card-foot span.end{text-align:right;align-items:flex-end}
+.cel-card-foot b{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cel-card-foot small{font-size:9.5px;color:#9a9a9a;margin-top:2px}
+
+.cel-card.is-founder{background:radial-gradient(120% 80% at 50% 30%,#3a3324 0%,#120f0a 62%,#050505 100%)}
+.cel-card.is-founder .cel-disc{background:linear-gradient(140deg,#f5e7c2,#c9a961);box-shadow:0 0 0 8px rgba(201,169,97,.14),0 0 70px rgba(201,169,97,.4)}
+
+.cel-reward{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:#fff;
+  padding:7px 14px;border-radius:100px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16)}
+.cel-reward svg{width:13px;height:13px;fill:currentColor}
+.cel-act{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:100%}
+.cel-act .ui-btn-ghost{color:#fff;border-color:rgba(255,255,255,.28)}
+.cel-act .ui-btn-ghost:hover{border-color:#fff;background:rgba(255,255,255,.08)}
+.cel-act .ui-btn-primary{background:#fff;color:#000;border-color:#fff}
+
+/* Serpihan perayaan yang menyebar dari tengah kartu. */
+.cel-burst{position:absolute;left:50%;top:44%;width:0;height:0;pointer-events:none;z-index:2}
+.cel-burst i{position:absolute;width:7px;height:12px;border-radius:2px;background:#fff;opacity:0;
+  --a:calc(var(--k) * 20deg);
+  animation:cel-serpih 1.3s var(--ease-out) calc(.2s + var(--k) * .015s) both}
+.cel-burst i:nth-child(3n){background:#c9c9c9;width:5px;height:5px;border-radius:50%}
+.cel-burst i:nth-child(4n){background:#8a8a8a}
+@keyframes cel-serpih{
+  0%{opacity:1;transform:rotate(var(--a)) translateY(0) rotate(0)}
+  100%{opacity:0;transform:rotate(var(--a)) translateY(-230px) rotate(320deg)}
+}
+@media (prefers-reduced-motion:reduce){
+  .cel[open],.cel-in.fresh .cel-ring,.cel-in.fresh .cel-disc,.cel-in.fresh .cel-streak li.on,.cel-burst i{animation:none}
+  .cel-burst{display:none}
+}
+@media (max-width:420px){
+  .cel-stage{font-size:38px}
+  .cel-medal{width:110px;height:110px}
+  .cel-disc{width:82px;height:82px}
+}
+.pass-cv-priv{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-left:2px}
+
+/* Tujuh tahap: pembungkus tidak boleh menyusut di bawah lebar kartunya,
+   supaya kartu tidak bertumpuk; barisnya digulir mendatar bila sempit. */
+.pass-step-wrap{flex:1 0 140px}
+.pass-step-wrap:first-child{flex:1 0 120px}
+.pass-step{min-width:98px}
+.pass-join{flex-basis:20px}

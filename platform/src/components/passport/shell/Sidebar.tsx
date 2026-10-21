@@ -44,9 +44,11 @@ interface Props {
   onNavigate: () => void;
   onSignOut: () => void;
   signingOut: boolean;
+  /** Anggota tim Catalyst melihat menu Verifikasi. */
+  staff?: boolean;
 }
 
-export const Sidebar = forwardRef<HTMLElement, Props>(function Sidebar({ open, onNavigate, onSignOut, signingOut }, ref) {
+export const Sidebar = forwardRef<HTMLElement, Props>(function Sidebar({ open, onNavigate, onSignOut, signingOut, staff = false }, ref) {
   const path = usePathname() ?? '/passport';
   const navRef = useRef<HTMLElement>(null);
   const pilRef = useRef<HTMLSpanElement>(null);
@@ -134,6 +136,13 @@ export const Sidebar = forwardRef<HTMLElement, Props>(function Sidebar({ open, o
           {daftar(GROWTH)}
         </div>
 
+        {staff && (
+          <div className="pass-panel">
+            <div className="pass-grp">Tim Catalyst</div>
+            {daftar([{ href: '/passport/review', label: 'Verifikasi', icon: 'shield-check' }])}
+          </div>
+        )}
+
         <div className="pass-panel pass-panel-foot">
           <ul>
             <li>
@@ -151,6 +160,15 @@ export const Sidebar = forwardRef<HTMLElement, Props>(function Sidebar({ open, o
               <a href="https://www.instagram.com/catalystsociety.id/" target="_blank" rel="noopener noreferrer">
                 <Icon name="ig" />
                 <span translate="no">catalystsociety.id</span>
+              </a>
+            </li>
+            <li>
+              {/* Kembali ke situs utama tanpa keluar: sesi tetap tersimpan di
+                  browser, jadi Passport terbuka lagi tanpa masuk ulang. <a>
+                  biasa, bukan Link, karena beranda berada di luar basePath /bp. */}
+              <a href="/" onClick={onNavigate}>
+                <Icon name="home" />
+                Beranda Catalyst
               </a>
             </li>
             <li>

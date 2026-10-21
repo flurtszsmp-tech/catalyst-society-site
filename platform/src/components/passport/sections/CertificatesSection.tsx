@@ -97,7 +97,7 @@ export function CertificatesSection() {
     <div className="ps2">
       <PageHead
         title="Sertifikat"
-        lead="Sertifikat dari program Catalyst tercatat otomatis dan terverifikasi. Anda juga bisa menambahkan sertifikat lain; yang ini ditandai belum diverifikasi."
+        lead="Sertifikat dari program Catalyst tercatat otomatis dan terverifikasi. Sertifikat lain yang Anda tambahkan diperiksa tim Catalyst; yang sudah diterima memberi +25 poin CATA dan tidak bisa diubah lagi."
       >
         {!loading && !error && (
           <button
@@ -211,9 +211,12 @@ function CertItem({ c, onEdit, onDelete }: { c: Certificate; onEdit: () => void;
               Terverifikasi
             </span>
           ) : (
-            <span className="ps2-pill ps2-pill-muted">Ditambahkan sendiri, belum diverifikasi</span>
+            <span className={`ps2-pill jr-st ${c.reviewedAt ? 'is-rejected' : 'is-pending'}`}>
+              {c.reviewedAt ? 'Ditolak tim, perbaiki lalu simpan ulang' : 'Belum terverifikasi · menunggu tim'}
+            </span>
           )}
         </div>
+        {!verified && c.reviewNote && <p className="jr-note">Catatan tim: {c.reviewNote}</p>}
         <h3 id={`ps2-cert-${c.id}`} tabIndex={-1}>
           {c.title}
         </h3>

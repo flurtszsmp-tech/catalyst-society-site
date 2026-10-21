@@ -8,7 +8,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Icon } from '@/components/ui/Icon';
 import { findCommunity } from '@/lib/data/communities';
-import { STAGES, type JourneyEvent, type LinkKey, type Profile, type Project } from '@/lib/types';
+import { STAGES, type JourneyEvent, type LinkKey, type Profile, type Project, type Stage } from '@/lib/types';
 import { safeHref } from '@/lib/url';
 import { STAGE_DETAIL, bulanTahun, localAsset, stageIndex, stageName } from './format';
 
@@ -27,40 +27,62 @@ const SOSIAL: { key: LinkKey; label: string; icon: string }[] = [
   { key: 'portfolio', label: 'Portfolio', icon: 'globe' },
 ];
 
-/** Kanal yang selalu tampil di dasbor pemilik, terisi maupun belum, seperti desain awal. */
-const INTI: LinkKey[] = ['linkedin', 'instagram', 'twitter', 'youtube', 'portfolio'];
+/**
+ * Teks kecil di bawah nama kanal: @username untuk media sosial, nama
+ * domain untuk situs. Hanya untuk tampilan; tautannya tetap href asli.
+ */
+function alamatSingkat(href: string, key: LinkKey): string {
+  try {
+    const u = new URL(href);
+    const host = u.hostname.replace(/^www\./, '');
+    const bagian = u.pathname.split('/').filter(Boolean);
+    const sosial: LinkKey[] = ['instagram', 'twitter', 'tiktok', 'github', 'telegram', 'youtube', 'facebook'];
+    if (sosial.includes(key) && bagian.length) {
+      const nama = decodeURIComponent(bagian[bagian.length - 1]).replace(/^@/, '');
+      return `@${nama}`.slice(0, 32);
+    }
+    if (key === 'linkedin' && bagian.length >= 2) return `in/${decodeURIComponent(bagian[1])}`.slice(0, 32);
+    return (host + (bagian.length ? `/${bagian.join('/')}` : '')).slice(0, 32);
+  } catch {
+    return '';
+  }
+}
 
-export function AboutCard({ profile: p, owner = false }: { profile: Profile; owner?: boolean }) {
-  const chips = SOSIAL.flatMap((s) => {
+/**
+ * Tentang dan tautan sosial. Kanal yang belum diisi tidak ditampilkan sama
+ * sekali, juga di dasbor pemilik; kartunya hilang bila keduanya kosong.
+ */
+export function AboutCard({ profile: p }: { profile: Profile; owner?: boolean }) {
+  const tautan = SOSIAL.flatMap((s) => {
     const href = safeHref(p.links[s.key]);
-    if (href) {
-      return [
-        <a key={s.key} className="pass-link" href={href} target="_blank" rel="noopener noreferrer me">
-          <Icon name={s.icon} />
-          {s.label}
-        </a>,
-      ];
-    }
-    // Pemilik melihat kanal inti yang belum diisi sebagai ajakan melengkapi;
-    // pengunjung tidak melihat tautan kosong sama sekali.
-    if (owner && INTI.includes(s.key)) {
-      return [
-        <Link key={s.key} className="pass-link kosong" href="/passport/profile#tautan" title="Belum diisi">
-          <Icon name={s.icon} />
-          {s.label}
-        </Link>,
-      ];
-    }
-    return [];
+    return href ? [{ ...s, href, sub: alamatSingkat(href, s.key) }] : [];
   });
 
-  if (!p.about && chips.length === 0) return null;
+  if (!p.about?.trim() && tautan.length === 0) return null;
 
   return (
     <section className="pass-card pass-about" aria-labelledby="pass-about-h">
       <h2 id="pass-about-h">About Me</h2>
-      {p.about && <p>{p.about}</p>}
-      {chips.length > 0 && <div className="pass-links">{chips}</div>}
+      {p.about?.trim() && <p>{p.about}</p>}
+      {tautan.length > 0 && (
+        <ul className="pass-links">
+          {tautan.map((t) => (
+            <li key={t.key}>
+              <a className={`pass-link is-${t.key}`} href={t.href} target="_blank" rel="noopener noreferrer me">
+                <span className="pass-link-ico">
+                  <Icon name={t.icon} />
+                </span>
+                <span className="pass-link-txt">
+                  <b>{t.label}</b>
+                  {t.sub && <small>{t.sub}</small>}
+                </span>
+                <Icon name="external" className="pass-link-go" />
+                <span className="sr-only"> (membuka tab baru)</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }
@@ -74,9 +96,21 @@ const JOURNEY_ICON: Record<string, string> = {
   challenger: 'j-challenger',
   contributor: 'j-contributor',
   innovator: 'j-innovator',
+  founder: 'j-founder',
 };
 
-export function JourneyCard({ profile, journey, owner = false }: { profile: Profile; journey: JourneyEvent[]; owner?: boolean }) {
+export function JourneyCard({
+  profile,
+  journey,
+  owner = false,
+  onOpenStage,
+}: {
+  profile: Profile;
+  journey: JourneyEvent[];
+  owner?: boolean;
+  /** Pemilik bisa membuka lagi kartu ucapan untuk tahap yang sudah dilewati. */
+  onOpenStage?: (s: Stage) => void;
+}) {
   const kini = stageIndex(profile.journeyStage);
   const peta = new Map(journey.map((j) => [j.stage, j]));
   // Tujuan berikutnya satu tahap di depan; di tahap terakhir, tahap itu sendiri.
@@ -104,16 +138,38 @@ export function JourneyCard({ profile, journey, owner = false }: { profile: Prof
                   <Icon name="check" />
                 </span>
               )}
-              <div className={`pass-step${next ? ' next' : ''}${lewat ? ' done' : ''}`} aria-current={i === kini ? 'step' : undefined}>
-                <Icon name={JOURNEY_ICON[s]} className="ico" />
-                <b>{j?.title ?? stageName(s)}</b>
-                <span>{j?.detail ?? STAGE_DETAIL[s]}</span>
-                {next ? (
-                  <span className="goal">Next Goal</span>
+              {(() => {
+                const isi = (
+                  <>
+                    <Icon name={JOURNEY_ICON[s]} className="ico" />
+                    <b>{j?.title ?? stageName(s)}</b>
+                    <span>{j?.detail ?? STAGE_DETAIL[s]}</span>
+                    {next ? (
+                      <span className="goal">Next Goal</span>
+                    ) : (
+                      <em>{lewat && j ? bulanTahun(j.occurredAt) : lewat ? '' : s === 'founder' ? 'Eksklusif' : 'Belum'}</em>
+                    )}
+                  </>
+                );
+                const kelas = `pass-step${next ? ' next' : ''}${lewat ? ' done' : ''}${s === 'founder' ? ' founder' : ''}`;
+                // Tahap yang sudah dilewati bisa diklik pemiliknya untuk membuka
+                // kartu ucapan lagi, misalnya untuk diunggah ke media sosial.
+                return owner && lewat && onOpenStage ? (
+                  <button
+                    type="button"
+                    className={`${kelas} can-open`}
+                    aria-current={i === kini ? 'step' : undefined}
+                    onClick={() => onOpenStage(s)}
+                    title={`Buka kartu ${stageName(s)}`}
+                  >
+                    {isi}
+                  </button>
                 ) : (
-                  <em>{lewat && j ? bulanTahun(j.occurredAt) : lewat ? '' : 'Belum'}</em>
-                )}
-              </div>
+                  <div className={kelas} aria-current={i === kini ? 'step' : undefined}>
+                    {isi}
+                  </div>
+                );
+              })()}
             </li>
           );
         })}
@@ -197,7 +253,7 @@ export function ProjectsCard({ projects, owner = false }: { projects: Project[];
       </div>
       {projects.length === 0 ? (
         <p className="pass-muted">
-          Belum ada projek. Projek pertama menaikkan tahap journey ke Builder.
+          Belum ada projek. Projek atau komunitas yang pernah Anda bangun adalah syarat tahap Innovator.
         </p>
       ) : (
         <ul className="pass-proj-list">

@@ -15,9 +15,14 @@ import type {
   Badge,
   Certificate,
   CertificateInput,
+  ClaimInput,
   DailyCount,
   EarnedBadge,
+  JourneyClaim,
   JourneyEvent,
+  JourneyProgress,
+  Membership,
+  PeopleFilter,
   PointEvent,
   Profile,
   ProfilePatch,
@@ -25,9 +30,23 @@ import type {
   PassportBundle,
   Project,
   ProjectInput,
+  ReviewQueue,
   SessionUser,
+  Stage,
 } from '@/lib/types';
-import { PROFILE_COLS, SUMMARY_COLS, toCertificate, toJourney, toProfile, toProject, toSummary } from './mappers';
+import {
+  CLAIM_COLS,
+  MEMBERSHIP_COLS,
+  PROFILE_COLS,
+  SUMMARY_COLS,
+  toCertificate,
+  toClaim,
+  toJourney,
+  toMembership,
+  toProfile,
+  toProject,
+  toSummary,
+} from './mappers';
 import { LIMITS, RepoError, SLUG_PATTERN, assertFile, cvDisplayName, type PassportRepo } from './types';
 
 type Row = Record<string, unknown>;
@@ -41,7 +60,8 @@ function fail(e: PostgrestError | Error | null | unknown, fallback: string): nev
   let msg = fallback;
   if (code === '23505') msg = 'Data itu sudah dipakai. Coba nilai lain.';
   else if (code === '23514') msg = err.message?.startsWith('Batas') ? err.message : 'Isian tidak memenuhi aturan. Periksa panjang teks dan format tautan.';
-  else if (code === '42501') msg = 'Anda tidak punya izin untuk tindakan ini.';
+  else if (code === '42501') msg = err.message?.startsWith('Hanya tim') ? err.message : 'Anda tidak punya izin untuk tindakan ini.';
+  else if (code === 'P0002' && err.message) msg = err.message;
   else if (code === 'PGRST301' || code === '401') msg = 'Sesi Anda habis. Silakan masuk lagi.';
   else if (err?.message && /fetch|network/i.test(err.message)) msg = 'Tidak bisa terhubung ke server. Periksa koneksi internet.';
   throw new RepoError(msg, e);
@@ -254,16 +274,119 @@ export class SupabaseRepo implements PassportRepo {
     return (data ?? []).map((r: Row) => ({ delta: r.delta as number, reason: r.reason as string, createdAt: r.created_at as string }));
   }
 
+  async getJourneyProgress(): Promise<JourneyProgress> {
+    const id = await this.me();
+    const hitung = (t: string, kolom: string, extra?: [string, string]) => {
+      let r = this.db.from(t).select('*', { count: 'exact', head: true }).eq(kolom, id);
+      if (extra) r = r.eq(extra[0], extra[1]);
+      return r;
+    };
+    const [kom, tunggu, ikut, cert, proj, claims] = await Promise.all([
+      hitung('community_members', 'user_id', ['status', 'verified']),
+      hitung('community_members', 'user_id', ['status', 'pending']),
+      hitung('connections', 'follower_id'),
+      hitung('certificates', 'user_id'),
+      hitung('projects', 'user_id'),
+      this.listMyClaims(),
+    ]);
+    const salah = [kom, tunggu, ikut, cert, proj].find((r) => r.error)?.error;
+    if (salah) fail(salah, 'Gagal memuat kemajuan journey.');
+    return {
+      verifiedCommunities: kom.count ?? 0,
+      pendingCommunities: tunggu.count ?? 0,
+      following: ikut.count ?? 0,
+      certificates: cert.count ?? 0,
+      projects: proj.count ?? 0,
+      claims,
+    };
+  }
+
+  async listMyClaims(): Promise<JourneyClaim[]> {
+    const id = await this.me();
+    const { data, error } = await this.db
+      .from('journey_claims')
+      .select(CLAIM_COLS)
+      .eq('user_id', id)
+      .order('created_at', { ascending: false });
+    if (error) fail(error, 'Gagal memuat pengajuan tahap.');
+    return (data ?? []).map(toClaim);
+  }
+
+  async submitClaim(input: ClaimInput): Promise<JourneyClaim> {
+    const row: Row = {
+      kind: input.kind,
+      detail: input.detail.trim(),
+      url: input.url?.trim() || null,
+      valuation: input.kind === 'founder' ? input.valuation : null,
+    };
+    const { data, error } = await this.db.from('journey_claims').insert(row).select(CLAIM_COLS).single();
+    if (error) {
+      if (error.code === '23505') throw new RepoError('Pengajuan untuk tahap ini masih diperiksa atau sudah diterima.', error);
+      if (error.code === '23514') {
+        throw new RepoError(
+          input.kind === 'founder'
+            ? 'Valuasi bisnis harus di atas Rp100.000.000, dan keterangan minimal 10 karakter.'
+            : 'Keterangan minimal 10 karakter dan tautan harus diawali http:// atau https://.',
+          error,
+        );
+      }
+      fail(error, 'Gagal mengirim pengajuan.');
+    }
+    return toClaim(data);
+  }
+
+  async cancelClaim(id: string): Promise<void> {
+    const { error } = await this.db.from('journey_claims').delete().eq('id', id).eq('status', 'pending');
+    if (error) fail(error, 'Gagal membatalkan pengajuan.');
+  }
+
+  async markJourneySeen(stage: Stage): Promise<void> {
+    const id = await this.me();
+    const { error } = await this.db.from('profiles').update({ journey_seen_stage: stage }).eq('id', id);
+    if (error) fail(error, 'Gagal menyimpan.');
+  }
+
   // ---------- komunitas ----------
   async listCommunities(userId: string): Promise<string[]> {
-    const { data, error } = await this.db.from('community_members').select('community_slug').eq('user_id', userId);
+    // Disaring eksplisit: pemilik juga boleh membaca keanggotaan yang masih
+    // menunggu, tetapi kartu profil hanya menampilkan yang sudah diterima.
+    const { data, error } = await this.db
+      .from('community_members')
+      .select('community_slug')
+      .eq('user_id', userId)
+      .eq('status', 'verified');
     if (error) fail(error, 'Gagal memuat komunitas.');
     return (data ?? []).map((r: Row) => r.community_slug as string);
   }
 
-  async joinCommunity(slug: string): Promise<void> {
-    const { error } = await this.db.from('community_members').insert({ community_slug: slug });
-    if (error && error.code !== '23505') fail(error, 'Gagal bergabung ke komunitas.');
+  async listMyMemberships(): Promise<Membership[]> {
+    const id = await this.me();
+    const { data, error } = await this.db
+      .from('community_members')
+      .select(MEMBERSHIP_COLS)
+      .eq('user_id', id)
+      .order('joined_at', { ascending: false });
+    if (error) fail(error, 'Gagal memuat komunitas.');
+    return (data ?? []).map(toMembership);
+  }
+
+  async joinCommunity(slug: string, proof: string): Promise<void> {
+    const bukti = proof.trim().slice(0, 300);
+    if (bukti.length < 3) throw new RepoError('Isi bukti keanggotaan, misalnya username atau tautan profil Anda di komunitas itu.');
+    const { error } = await this.db.from('community_members').insert({ community_slug: slug, proof: bukti });
+    if (error && error.code !== '23505') fail(error, 'Gagal mengajukan keanggotaan.');
+  }
+
+  async updateMembershipProof(slug: string, proof: string): Promise<void> {
+    const id = await this.me();
+    const bukti = proof.trim().slice(0, 300);
+    if (bukti.length < 3) throw new RepoError('Bukti keanggotaan minimal 3 karakter.');
+    const { error } = await this.db
+      .from('community_members')
+      .update({ proof: bukti })
+      .eq('user_id', id)
+      .eq('community_slug', slug);
+    if (error) fail(error, 'Gagal menyimpan bukti.');
   }
 
   async leaveCommunity(slug: string): Promise<void> {
@@ -428,6 +551,125 @@ export class SupabaseRepo implements PassportRepo {
     const { data, error } = await req.order('cata_points', { ascending: false });
     if (error) fail(error, 'Gagal mencari profil.');
     return (data ?? []).map(toSummary);
+  }
+
+  async searchPeople(f: PeopleFilter): Promise<ProfileSummary[]> {
+    const id = await this.me();
+    const saya = await this.getMyProfile();
+    const q = f.query.trim().slice(0, 60).replace(/[%_\\]/g, (m) => `\\${m}`).replace(/[,()]/g, ' ');
+
+    let req = this.db.from('profiles').select(SUMMARY_COLS).eq('is_public', true).neq('id', id).limit(48);
+    if (q) req = req.or(`full_name.ilike.%${q}%,headline.ilike.%${q}%`);
+    if (f.channel) req = req.eq('channel', f.channel);
+    if (f.stage) req = req.eq('journey_stage', f.stage);
+    // Saringan "serupa" tanpa isian sendiri tidak berarti apa-apa; daftar
+    // kosong lebih jujur daripada diam-diam mengabaikan saringannya.
+    if (f.sameSkills) {
+      if (!saya?.skills.length) return [];
+      req = req.overlaps('skills', saya.skills);
+    }
+    if (f.sameRoles) {
+      if (!saya?.roles.length) return [];
+      req = req.overlaps('roles', saya.roles);
+    }
+    if (f.sameBadges) {
+      const mine = await this.listEarnedBadges(id);
+      if (!mine.length) return [];
+      const { data: rows, error } = await this.db
+        .from('user_badges')
+        .select('user_id')
+        .in('badge_code', mine.map((b) => b.code))
+        .neq('user_id', id)
+        .limit(1000);
+      if (error) fail(error, 'Gagal mencari profil.');
+      const ids = [...new Set((rows ?? []).map((r: Row) => r.user_id as string))];
+      if (!ids.length) return [];
+      req = req.in('id', ids.slice(0, 300));
+    }
+    if (f.hideFollowing) {
+      const { data: ikut, error } = await this.db.from('connections').select('following_id').eq('follower_id', id);
+      if (error) fail(error, 'Gagal mencari profil.');
+      const ids = (ikut ?? []).map((r: Row) => r.following_id as string);
+      if (ids.length) req = req.not('id', 'in', `(${ids.join(',')})`);
+    }
+    req =
+      f.sort === 'newest'
+        ? req.order('created_at', { ascending: false })
+        : req.order('cata_points', { ascending: f.sort === 'points_asc' });
+    const { data, error } = await req;
+    if (error) fail(error, 'Gagal mencari profil.');
+    return (data ?? []).map(toSummary);
+  }
+
+  // ---------- tim Catalyst ----------
+  async isStaff(): Promise<boolean> {
+    const { data, error } = await this.db.rpc('is_staff');
+    if (error) return false;
+    return data === true;
+  }
+
+  async getReviewQueue(): Promise<ReviewQueue> {
+    const orang = `profiles(${SUMMARY_COLS})`;
+    const [m, c, k] = await Promise.all([
+      this.db
+        .from('community_members')
+        .select(`user_id, ${MEMBERSHIP_COLS}, ${orang}`)
+        .eq('status', 'pending')
+        .order('joined_at')
+        .limit(200),
+      this.db
+        .from('certificates')
+        .select(`*, ${orang}`)
+        .eq('is_verified', false)
+        .eq('source', 'self')
+        .is('reviewed_at', null)
+        .order('created_at')
+        .limit(200),
+      this.db
+        .from('journey_claims')
+        .select(`user_id, ${CLAIM_COLS}, ${orang}`)
+        .eq('status', 'pending')
+        .order('created_at')
+        .limit(200),
+    ]);
+    const salah = m.error ?? c.error ?? k.error;
+    if (salah) fail(salah, 'Gagal memuat antrean pemeriksaan.');
+    const orangDari = (r: Row) => (r.profiles ? toSummary(r.profiles as Row) : null);
+    const baris = (d: unknown) => (d ?? []) as Row[];
+    return {
+      memberships: baris(m.data).flatMap((r) => {
+        const person = orangDari(r);
+        return person ? [{ person, membership: toMembership(r) }] : [];
+      }),
+      certificates: baris(c.data).flatMap((r) => {
+        const person = orangDari(r);
+        return person ? [{ person, certificate: toCertificate(r) }] : [];
+      }),
+      claims: baris(k.data).flatMap((r) => {
+        const person = orangDari(r);
+        return person ? [{ person, claim: toClaim(r) }] : [];
+      }),
+    };
+  }
+
+  async reviewMembership(userId: string, slug: string, approve: boolean, note?: string): Promise<void> {
+    const { error } = await this.db.rpc('staff_review_membership', {
+      p_user: userId,
+      p_slug: slug,
+      p_approve: approve,
+      p_note: note ?? null,
+    });
+    if (error) fail(error, 'Gagal menyimpan pemeriksaan.');
+  }
+
+  async reviewCertificate(id: string, approve: boolean, note?: string): Promise<void> {
+    const { error } = await this.db.rpc('staff_review_certificate', { p_id: id, p_approve: approve, p_note: note ?? null });
+    if (error) fail(error, 'Gagal menyimpan pemeriksaan.');
+  }
+
+  async reviewClaim(id: string, approve: boolean, note?: string): Promise<void> {
+    const { error } = await this.db.rpc('staff_review_claim', { p_id: id, p_approve: approve, p_note: note ?? null });
+    if (error) fail(error, 'Gagal menyimpan pemeriksaan.');
   }
 
   // ---------- analitik ----------

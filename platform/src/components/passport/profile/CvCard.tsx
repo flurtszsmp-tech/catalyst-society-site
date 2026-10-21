@@ -142,7 +142,7 @@ export function CvCard({ profile }: { profile: Profile }) {
   }
 
   return (
-    <section className="pf-card" aria-labelledby="pf-cv-h">
+    <section className="pf-card" id="cv" aria-labelledby="pf-cv-h">
       <div className="pf-card-head">
         <div>
           <h2 id="pf-cv-h">CV / Resume</h2>

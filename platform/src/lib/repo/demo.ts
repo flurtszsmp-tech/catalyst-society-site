@@ -3,29 +3,36 @@
 /* ===========================================================
    DemoRepo — seluruh Passport di localStorage, tanpa server.
 
-   Aturan hadiahnya meniru private.award() di SQL persis: tiap alasan
-   hanya sekali, tahap journey hanya naik, dan lencana Certified tidak
-   diberikan untuk sertifikat yang ditambahkan sendiri. Dengan begitu
-   mode demo berperilaku sama dengan produksi, bukan versi yang lebih
-   murah hati.
+   Aturannya meniru supabase/migrations/0002_journey_v2.sql persis: tiap
+   alasan poin hanya sekali, tahap journey berurutan dan hanya naik, poin
+   tidak memengaruhi tahap, dan keanggotaan komunitas menunggu pemeriksaan
+   tim sebelum dihitung. Mode demo tidak punya tim pemeriksa, jadi
+   pengajuan baru tetap berstatus menunggu.
    =========================================================== */
 import { BADGE_CATALOG, DEMO_USER_ID, SAMPLE_PEOPLE, buildDemoSeed, type DemoState } from '@/lib/data/demo-seed';
+import { findCommunity } from '@/lib/data/communities';
 import {
   STAGES,
   type Certificate,
   type CertificateInput,
+  type ClaimInput,
   type DailyCount,
+  type JourneyClaim,
+  type JourneyProgress,
+  type PeopleFilter,
   type Profile,
   type ProfilePatch,
   type ProfileSummary,
   type Project,
   type ProjectInput,
+  type ReviewQueue,
   type Stage,
 } from '@/lib/types';
 import { safeHref } from '@/lib/url';
 import { LIMITS, RepoError, SLUG_PATTERN, assertFile, cvDisplayName, type PassportRepo } from './types';
+import { STAGE_RULES, targetStage } from './journey-rules';
 
-const KEY = 'catalyst-passport-demo-v2';
+const KEY = 'catalyst-passport-demo-v3';
 
 function load(): DemoState {
   const seed = buildDemoSeed();
@@ -33,7 +40,7 @@ function load(): DemoState {
     const raw = localStorage.getItem(KEY);
     if (!raw) return seed;
     const saved = JSON.parse(raw) as Partial<DemoState>;
-    if (saved.version !== 2 || !saved.profile) return seed;
+    if (saved.version !== 3 || !saved.profile) return seed;
     // Gabung per bidang profil, supaya bidang baru dari seed tidak hilang
     // tertimpa objek lama yang tersimpan.
     return { ...seed, ...saved, profile: { ...seed.profile, ...saved.profile } } as DemoState;
@@ -76,29 +83,68 @@ export class DemoRepo implements PassportRepo {
     }
   }
 
-  private award(reason: string, delta: number, badge?: string, stage?: Stage, title?: string, detail?: string): void {
+  /* ---------- poin, lencana, tahap: sama dengan private.* di SQL ---------- */
+
+  private givePoints(reason: string, delta: number): void {
     if (this.s.points.some((p) => p.reason === reason)) return;
-    const now = new Date().toISOString();
-    this.s.points.push({ delta, reason, createdAt: now });
+    this.s.points.push({ delta, reason, createdAt: new Date().toISOString() });
     this.s.profile.cataPoints += delta;
-    if (badge && !this.s.badges.some((b) => b.code === badge)) {
-      const b = BADGE_CATALOG.find((x) => x.code === badge);
-      if (b) this.s.badges.push({ ...b, earnedAt: now });
+  }
+
+  private giveBadge(code: string): void {
+    if (this.s.badges.some((b) => b.code === code)) return;
+    const b = BADGE_CATALOG.find((x) => x.code === code);
+    if (b) this.s.badges.push({ ...b, earnedAt: new Date().toISOString() });
+  }
+
+  private progress(): JourneyProgress {
+    return {
+      verifiedCommunities: this.s.memberships.filter((m) => m.status === 'verified').length,
+      pendingCommunities: this.s.memberships.filter((m) => m.status === 'pending').length,
+      following: this.s.following.length,
+      certificates: this.s.certificates.length,
+      projects: this.s.projects.length,
+      claims: structuredClone(this.s.claims),
+    };
+  }
+
+  private recompute(): void {
+    const pr = this.progress();
+    const kanal = new Set(
+      this.s.memberships.filter((m) => m.status === 'verified').map((m) => findCommunity(m.slug)?.channel).filter(Boolean),
+    );
+    if (pr.verifiedCommunities >= 1) this.giveBadge('first_community');
+    if (pr.verifiedCommunities >= 5) this.giveBadge('community_explorer');
+    if (kanal.size >= 3) this.giveBadge('ecosystem_native');
+    if (pr.projects >= 1) {
+      this.giveBadge('first_project');
+      this.givePoints('first_project', 15);
     }
-    if (stage) {
-      if (!this.s.journey.some((j) => j.stage === stage)) {
-        this.s.journey.push({ stage, title: title ?? stage, detail: detail ?? null, occurredAt: now });
+
+    const kini = STAGES.indexOf(this.s.profile.journeyStage);
+    const target = STAGES.indexOf(targetStage(pr));
+    for (let i = kini + 1; i <= target; i++) {
+      const st = STAGES[i];
+      if (!this.s.journey.some((j) => j.stage === st)) {
+        this.s.journey.push({
+          stage: st,
+          title: STAGE_RULES[st].name,
+          detail: STAGE_RULES[st].summary,
+          occurredAt: new Date().toISOString(),
+        });
       }
-      if (STAGES.indexOf(stage) > STAGES.indexOf(this.s.profile.journeyStage)) {
-        this.s.profile.journeyStage = stage;
-      }
+      this.givePoints(`stage:${st}`, STAGE_RULES[st].points);
     }
+    if (target > kini) this.s.profile.journeyStage = STAGES[target];
+    const akhir = Math.max(kini, target);
+    if (akhir >= STAGES.indexOf('builder')) this.giveBadge('builder');
+    if (akhir >= STAGES.indexOf('founder')) this.giveBadge('founder');
   }
 
   private checkProfileComplete(): void {
     const p = this.s.profile;
     if ((p.avatarPath || p.avatarUrl) && p.headline?.trim() && p.about?.trim() && p.skills.length >= 3) {
-      this.award('profile_complete', 30);
+      this.givePoints('profile_complete', 20);
     }
   }
 
@@ -189,24 +235,80 @@ export class DemoRepo implements PassportRepo {
   async listMyPointEvents() {
     return structuredClone(this.s.points);
   }
+  async getJourneyProgress() {
+    return this.progress();
+  }
+  async listMyClaims() {
+    return structuredClone(this.s.claims);
+  }
+
+  async submitClaim(input: ClaimInput): Promise<JourneyClaim> {
+    const detail = input.detail.trim();
+    if (detail.length < 10) throw new RepoError('Keterangan minimal 10 karakter.');
+    if (input.url && !safeHref(input.url)) throw new RepoError('Tautan bukti harus diawali http:// atau https://.');
+    if (input.kind === 'founder' && !(input.valuation && input.valuation > 100_000_000)) {
+      throw new RepoError('Valuasi bisnis harus di atas Rp100.000.000.');
+    }
+    if (this.s.claims.some((c) => c.kind === input.kind && c.status !== 'rejected')) {
+      throw new RepoError('Pengajuan untuk tahap ini masih diperiksa atau sudah diterima.');
+    }
+    const c: JourneyClaim = {
+      id: uid('cl'),
+      kind: input.kind,
+      detail,
+      url: input.url?.trim() || null,
+      valuation: input.kind === 'founder' ? input.valuation : null,
+      status: 'pending',
+      reviewNote: null,
+      createdAt: new Date().toISOString(),
+    };
+    this.s.claims.unshift(c);
+    this.save();
+    return structuredClone(c);
+  }
+
+  async cancelClaim(id: string) {
+    this.s.claims = this.s.claims.filter((c) => !(c.id === id && c.status === 'pending'));
+    this.save();
+  }
+
+  async markJourneySeen(stage: Stage) {
+    this.s.profile.journeySeenStage = stage;
+    this.save();
+  }
 
   // ---------- komunitas ----------
   async listCommunities(userId: string) {
-    return this.mine(userId) ? [...this.s.communities] : [];
+    return this.mine(userId) ? this.s.memberships.filter((m) => m.status === 'verified').map((m) => m.slug) : [];
   }
 
-  async joinCommunity(slug: string) {
-    if (this.s.communities.includes(slug)) return;
-    this.s.communities.push(slug);
-    const n = this.s.communities.length;
-    if (n >= 1) this.award('first_community', 20, 'first_community');
-    if (n >= 3) this.award('connector', 30, undefined, 'connector', 'Connector', 'Bergabung ke tiga komunitas');
-    if (n >= 5) this.award('community_explorer', 20, 'community_explorer');
+  async listMyMemberships() {
+    return structuredClone(this.s.memberships);
+  }
+
+  async joinCommunity(slug: string, proof: string) {
+    const bukti = proof.trim().slice(0, 300);
+    if (bukti.length < 3) throw new RepoError('Isi bukti keanggotaan, misalnya username atau tautan profil Anda di komunitas itu.');
+    if (this.s.memberships.some((m) => m.slug === slug)) return;
+    this.s.memberships.unshift({ slug, status: 'pending', proof: bukti, reviewNote: null, joinedAt: new Date().toISOString() });
+    this.save();
+  }
+
+  async updateMembershipProof(slug: string, proof: string) {
+    const bukti = proof.trim().slice(0, 300);
+    if (bukti.length < 3) throw new RepoError('Bukti keanggotaan minimal 3 karakter.');
+    const m = this.s.memberships.find((x) => x.slug === slug);
+    if (!m || m.status === 'verified') return;
+    m.proof = bukti;
+    if (m.status === 'rejected') {
+      m.status = 'pending';
+      m.reviewNote = null;
+    }
     this.save();
   }
 
   async leaveCommunity(slug: string) {
-    this.s.communities = this.s.communities.filter((c) => c !== slug);
+    this.s.memberships = this.s.memberships.filter((m) => m.slug !== slug);
     this.save();
   }
 
@@ -228,8 +330,7 @@ export class DemoRepo implements PassportRepo {
     if (this.s.projects.length >= 50) throw new RepoError('Batas 50 projek per profil tercapai.');
     const p: Project = { ...input, id: uid('pr'), userId: DEMO_USER_ID, createdAt: new Date().toISOString() };
     this.s.projects.push(p);
-    this.award('first_project', 50, 'first_project', 'builder', 'Builder', 'Membuat projek pertama');
-    this.award('builder_badge', 0, 'builder');
+    this.recompute();
     this.save();
     return structuredClone(p);
   }
@@ -276,9 +377,12 @@ export class DemoRepo implements PassportRepo {
       source: 'self',
       imagePath,
       isVerified: false,
+      reviewNote: null,
+      reviewedAt: null,
       createdAt: new Date().toISOString(),
     };
     this.s.certificates.push(c);
+    this.recompute();
     this.save();
     return structuredClone(c);
   }
@@ -289,6 +393,7 @@ export class DemoRepo implements PassportRepo {
     if (i < 0) throw new RepoError('Sertifikat tidak ditemukan.');
     const cur = this.s.certificates[i];
     if (cur.source !== 'self') throw new RepoError('Sertifikat terbitan Catalyst tidak bisa diubah.');
+    if (cur.isVerified) throw new RepoError('Sertifikat yang sudah diverifikasi tidak bisa diubah.');
     let imagePath = cur.imagePath;
     if (image === null) imagePath = null;
     else if (image) {
@@ -325,6 +430,7 @@ export class DemoRepo implements PassportRepo {
   async follow(profileId: string) {
     if (profileId === DEMO_USER_ID) throw new RepoError('Anda tidak bisa mengikuti diri sendiri.');
     if (!this.s.following.includes(profileId)) this.s.following.push(profileId);
+    this.recompute();
     this.save();
   }
   async unfollow(profileId: string) {
@@ -337,6 +443,48 @@ export class DemoRepo implements PassportRepo {
     return SAMPLE_PEOPLE.filter(
       (p) => p.fullName.toLowerCase().includes(q) || (p.headline ?? '').toLowerCase().includes(q),
     );
+  }
+
+  async searchPeople(f: PeopleFilter) {
+    const saya = this.s.profile;
+    const q = f.query.trim().toLowerCase();
+    const sama = (a: string[] | undefined, b: string[]) => {
+      const set = new Set(b.map((x) => x.toLowerCase()));
+      return (a ?? []).some((x) => set.has(x.toLowerCase()));
+    };
+    // Orang contoh tidak punya data lencana; anggap lencananya mengikuti tahapnya.
+    const punyaLencanaSama = (p: ProfileSummary) => STAGES.indexOf(p.journeyStage) >= 1 && this.s.badges.length > 0;
+    let out = SAMPLE_PEOPLE.filter((p) => {
+      if (q && !p.fullName.toLowerCase().includes(q) && !(p.headline ?? '').toLowerCase().includes(q)) return false;
+      if (f.channel && p.channel !== f.channel) return false;
+      if (f.stage && p.journeyStage !== f.stage) return false;
+      if (f.sameSkills && !sama(p.skills, saya.skills)) return false;
+      if (f.sameRoles && !sama(p.roles, saya.roles)) return false;
+      if (f.sameBadges && !punyaLencanaSama(p)) return false;
+      if (f.hideFollowing && this.s.following.includes(p.id)) return false;
+      return true;
+    });
+    out = [...out].sort((a, b) =>
+      f.sort === 'newest' ? b.slug.localeCompare(a.slug) : ((f.sort === 'points_asc' ? 1 : -1) * ((a.cataPoints ?? 0) - (b.cataPoints ?? 0))),
+    );
+    return structuredClone(out);
+  }
+
+  // ---------- tim Catalyst ----------
+  async isStaff() {
+    return false;
+  }
+  async getReviewQueue(): Promise<ReviewQueue> {
+    return { memberships: [], certificates: [], claims: [] };
+  }
+  async reviewMembership(): Promise<void> {
+    throw new RepoError('Pemeriksaan hanya tersedia saat Passport tersambung ke Supabase.');
+  }
+  async reviewCertificate(): Promise<void> {
+    throw new RepoError('Pemeriksaan hanya tersedia saat Passport tersambung ke Supabase.');
+  }
+  async reviewClaim(): Promise<void> {
+    throw new RepoError('Pemeriksaan hanya tersedia saat Passport tersambung ke Supabase.');
   }
 
   // ---------- analitik ----------
@@ -359,8 +507,16 @@ export class DemoRepo implements PassportRepo {
   async getPublicBundle(slug: string) {
     if (slug.toLowerCase() !== this.s.profile.slug.toLowerCase()) return null;
     const s = structuredClone(this.s);
-    return { profile: s.profile, journey: s.journey, badges: s.badges, communities: s.communities, projects: s.projects,
-      certificates: s.certificates, followers: s.followers.length, following: s.following.length };
+    return {
+      profile: s.profile,
+      journey: s.journey,
+      badges: s.badges,
+      communities: s.memberships.filter((m) => m.status === 'verified').map((m) => m.slug),
+      projects: s.projects,
+      certificates: s.certificates,
+      followers: s.followers.length,
+      following: s.following.length,
+    };
   }
 
   // ---------- akun ----------

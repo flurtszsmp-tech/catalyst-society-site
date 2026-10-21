@@ -5,6 +5,8 @@ import { AboutCard, CommunitiesCard, JourneyCard, ProjectsCard } from '@/compone
 import { HeroCard } from '@/components/passport/cards/HeroCard';
 import { BadgesCard, CertificatesCard, PointsCard } from '@/components/passport/cards/RailCards';
 import { ShareCard } from '@/components/passport/cards/ShareCard';
+import { CvLink } from '@/components/passport/cards/CvLink';
+import { useCelebration } from '@/components/passport/journey/Celebration';
 import { usePassport } from '@/components/passport/PassportProvider';
 import { SITE_URL } from '@/lib/env';
 import type { Certificate, EarnedBadge, JourneyEvent, PointEvent, Project } from '@/lib/types';
@@ -20,6 +22,7 @@ interface Data {
 
 export default function PassportHome() {
   const { repo, profile, user } = usePassport();
+  const { openStage } = useCelebration();
   const [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [origin, setOrigin] = useState(SITE_URL);
@@ -91,14 +94,14 @@ export default function PassportHome() {
       <div className="pass-col">
         <HeroCard profile={profile} communities={data.communities.length} badges={data.badges.length} owner shareUrl={shareUrl} />
         <AboutCard profile={profile} owner />
-        <JourneyCard profile={profile} journey={data.journey} owner />
+        <JourneyCard profile={profile} journey={data.journey} owner onOpenStage={openStage} />
         <CommunitiesCard slugs={data.communities} owner />
         <ProjectsCard projects={data.projects} owner />
       </div>
       <div className="pass-col">
         <ShareCard url={shareUrl} name={profile.fullName} />
         <PointsCard profile={profile} events={data.points} owner />
-        <BadgesCard badges={data.badges} owner />
+        <BadgesCard badges={data.badges} owner footer={<CvLink profile={profile} owner />} />
         <CertificatesCard certificates={data.certificates} owner />
       </div>
     </div>

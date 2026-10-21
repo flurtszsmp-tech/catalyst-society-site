@@ -2,9 +2,14 @@ import type {
   Badge,
   Certificate,
   CertificateInput,
+  ClaimInput,
   DailyCount,
   EarnedBadge,
+  JourneyClaim,
   JourneyEvent,
+  JourneyProgress,
+  Membership,
+  PeopleFilter,
   PointEvent,
   Profile,
   ProfilePatch,
@@ -12,7 +17,9 @@ import type {
   Project,
   PassportBundle,
   ProjectInput,
+  ReviewQueue,
   SessionUser,
+  Stage,
 } from '@/lib/types';
 
 /**
@@ -54,11 +61,25 @@ export interface PassportRepo {
   listAllBadges(): Promise<Badge[]>;
   /** Riwayat poin milik sendiri, terbaru di akhir. */
   listMyPointEvents(): Promise<PointEvent[]>;
+  /** Angka syarat tiap tahap Journey milik sendiri. */
+  getJourneyProgress(): Promise<JourneyProgress>;
+  /** Klaim tahap yang diperiksa tim: bootcamp, Finder, Labs, Founder. */
+  listMyClaims(): Promise<JourneyClaim[]>;
+  submitClaim(input: ClaimInput): Promise<JourneyClaim>;
+  /** Hanya klaim yang masih menunggu. */
+  cancelClaim(id: string): Promise<void>;
+  /** Menandai pop up ucapan untuk tahap ini sudah dilihat. */
+  markJourneySeen(stage: Stage): Promise<void>;
 
   // ---------- komunitas ----------
-  /** Slug komunitas yang diikuti userId. */
+  /** Slug komunitas terverifikasi milik userId. Ini yang tampil di profil. */
   listCommunities(userId: string): Promise<string[]>;
-  joinCommunity(slug: string): Promise<void>;
+  /** Seluruh keanggotaan milik sendiri, termasuk yang menunggu atau ditolak. */
+  listMyMemberships(): Promise<Membership[]>;
+  /** Bergabung berarti mengajukan: tim memeriksa bukti sebelum diterima. */
+  joinCommunity(slug: string, proof: string): Promise<void>;
+  /** Mengganti bukti. Keanggotaan yang ditolak kembali masuk antrean. */
+  updateMembershipProof(slug: string, proof: string): Promise<void>;
   leaveCommunity(slug: string): Promise<void>;
 
   // ---------- projek ----------
@@ -83,6 +104,8 @@ export interface PassportRepo {
   unfollow(profileId: string): Promise<void>;
   /** Cari profil publik berdasarkan nama atau headline. */
   searchProfiles(query: string): Promise<ProfileSummary[]>;
+  /** Temukan orang dengan saringan industri, lencana, keahlian, peran, dan urutan poin. */
+  searchPeople(filter: PeopleFilter): Promise<ProfileSummary[]>;
 
   // ---------- analitik ----------
   /** Kunjungan profil per hari untuk `days` hari terakhir, termasuk hari kosong. */
@@ -98,6 +121,15 @@ export interface PassportRepo {
    * null berarti tidak ada atau tidak boleh dilihat; keduanya diperlakukan sama.
    */
   getPublicBundle(slug: string): Promise<PassportBundle | null>;
+
+  // ---------- tim Catalyst ----------
+  /** true bila pengguna yang masuk anggota tim pemeriksa. */
+  isStaff(): Promise<boolean>;
+  /** Semua yang menunggu pemeriksaan. Hanya terbaca tim. */
+  getReviewQueue(): Promise<ReviewQueue>;
+  reviewMembership(userId: string, slug: string, approve: boolean, note?: string): Promise<void>;
+  reviewCertificate(id: string, approve: boolean, note?: string): Promise<void>;
+  reviewClaim(id: string, approve: boolean, note?: string): Promise<void>;
 
   // ---------- akun ----------
   /** Kata sandi baru untuk akun email, minimal 8 karakter. Akun Google tidak memakainya. */

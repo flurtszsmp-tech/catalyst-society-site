@@ -48,7 +48,6 @@ export default function PublicProfile() {
               </span>
             </a>
             <div className="pass-public-act">
-              {p && cv && <CvButton id={p.id} cvFileName={cv} />}
               <a href="/login.html?mode=daftar" className="ui-btn ui-btn-primary">
                 Buat Passport Anda
               </a>
@@ -88,7 +87,7 @@ export default function PublicProfile() {
               </div>
               <div className="pass-col">
                 <PointsCard profile={p} events={[]} />
-                <BadgesCard badges={b.badges} />
+                <BadgesCard badges={b.badges} footer={cv ? <CvButton id={p.id} cvFileName={cv} /> : undefined} />
                 <CertificatesCard certificates={b.certificates} />
               </div>
             </main>
