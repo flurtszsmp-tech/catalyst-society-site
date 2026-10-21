@@ -44,11 +44,11 @@ interface Props {
   onNavigate: () => void;
   onSignOut: () => void;
   signingOut: boolean;
-  /** Anggota tim Catalyst melihat menu Verifikasi. */
-  staff?: boolean;
+  /** Membuka jendela kirim masukan. */
+  onFeedback: () => void;
 }
 
-export const Sidebar = forwardRef<HTMLElement, Props>(function Sidebar({ open, onNavigate, onSignOut, signingOut, staff = false }, ref) {
+export const Sidebar = forwardRef<HTMLElement, Props>(function Sidebar({ open, onNavigate, onSignOut, signingOut, onFeedback }, ref) {
   const path = usePathname() ?? '/passport';
   const navRef = useRef<HTMLElement>(null);
   const pilRef = useRef<HTMLSpanElement>(null);
@@ -136,12 +136,6 @@ export const Sidebar = forwardRef<HTMLElement, Props>(function Sidebar({ open, o
           {daftar(GROWTH)}
         </div>
 
-        {staff && (
-          <div className="pass-panel">
-            <div className="pass-grp">Tim Catalyst</div>
-            {daftar([{ href: '/passport/review', label: 'Verifikasi', icon: 'shield-check' }])}
-          </div>
-        )}
 
         <div className="pass-panel pass-panel-foot">
           <ul>
@@ -161,6 +155,12 @@ export const Sidebar = forwardRef<HTMLElement, Props>(function Sidebar({ open, o
                 <Icon name="ig" />
                 <span translate="no">catalystsociety.id</span>
               </a>
+            </li>
+            <li>
+              <button type="button" onClick={onFeedback}>
+                <Icon name="chat" />
+                Kirim masukan
+              </button>
             </li>
             <li>
               {/* Kembali ke situs utama tanpa keluar: sesi tetap tersimpan di

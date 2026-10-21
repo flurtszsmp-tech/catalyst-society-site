@@ -44,6 +44,8 @@ export interface DemoState {
   /** Keanggotaan beserta status pemeriksaannya. */
   memberships: Membership[];
   claims: JourneyClaim[];
+  /** Tautan CV, misalnya Google Drive. */
+  cvLink?: string | null;
   projects: Project[];
   certificates: Certificate[];
   points: PointEvent[];
@@ -159,7 +161,6 @@ export function buildDemoSeed(now = new Date()): DemoState {
       terima('gensmart', 4),
       terima('isp', 4),
       terima('aico', 3),
-      { slug: 'mekari', status: 'pending', proof: 'bagas@catalystsociety.id', reviewNote: null, joinedAt: iso(now) },
     ],
     claims: [],
     projects: [

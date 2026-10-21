@@ -34,6 +34,10 @@ export interface StageRule {
   /** Hadiah di luar poin. */
   perk?: string;
   exclusive?: boolean;
+  /** Langkah praktis untuk memenuhi syarat, ditampilkan berurutan. */
+  steps: string[];
+  /** Siapa yang memastikan syaratnya terpenuhi. */
+  verifier: 'otomatis' | 'tim';
 }
 
 export const STAGE_RULES: Record<Stage, StageRule> = {
@@ -43,17 +47,25 @@ export const STAGE_RULES: Record<Stage, StageRule> = {
     about: 'Titik awal setiap anggota. Catalyst Passport Anda dibuat dan Catalyst ID diterbitkan.',
     requirements: [{ key: 'signup', label: 'Membuat Catalyst Passport' }],
     points: 0,
+    steps: ['Daftar di catalystsociety.id.', 'Lengkapi foto, headline, tentang, dan tiga keahlian untuk +20 poin CATA.'],
+    verifier: 'otomatis',
   },
   connector: {
     name: 'Connector',
     summary: 'Lima komunitas dan lima koneksi',
     about:
-      'Anda mulai membangun jaringan: aktif di komunitas mitra dan terhubung dengan sesama anggota. Keanggotaan komunitas diperiksa tim Catalyst supaya tidak ada yang sekadar menekan tombol Gabung.',
+      'Anda mulai membangun jaringan: aktif di komunitas mitra dan terhubung dengan sesama anggota Catalyst Society.',
     requirements: [
       { key: 'communities', label: 'Komunitas terverifikasi', target: 5, unit: 'komunitas', href: '/passport/communities', cta: 'Buka Komunitas' },
       { key: 'following', label: 'Koneksi yang Anda ikuti', target: 5, unit: 'orang', href: '/passport/connections', cta: 'Temukan orang' },
     ],
     points: 25,
+    steps: [
+      'Buka menu Communities dan tambahkan lima komunitas yang Anda ikuti. Grup komunitasnya langsung terbuka.',
+      'Buka Connections, gunakan saringan untuk menemukan orang dengan minat serupa, lalu ikuti lima orang.',
+      'Tahap Connector terbuka otomatis begitu kedua syarat terpenuhi.',
+    ],
+    verifier: 'otomatis',
   },
   challenger: {
     name: 'Challenger',
@@ -64,6 +76,12 @@ export const STAGE_RULES: Record<Stage, StageRule> = {
       { key: 'bootcamp', label: 'Satu sesi bootcamp selesai', claim: 'bootcamp' },
     ],
     points: 50,
+    steps: [
+      'Tambahkan setidaknya satu sertifikat di menu Certificates. Sertifikat dengan ID kredensial atau tautan bukti langsung terverifikasi.',
+      'Selesaikan satu sesi bootcamp Catalyst.',
+      'Ajukan verifikasi bootcamp di halaman ini dengan nama bootcamp, batch, dan tanggal sesinya.',
+    ],
+    verifier: 'tim',
   },
   innovator: {
     name: 'Innovator',
@@ -73,6 +91,12 @@ export const STAGE_RULES: Record<Stage, StageRule> = {
       { key: 'projects', label: 'Projek atau komunitas yang pernah dibangun', target: 1, unit: 'projek', href: '/passport/projects', cta: 'Tambah projek' },
     ],
     points: 75,
+    steps: [
+      'Buka menu Projects dan tambahkan projek, produk, atau komunitas yang pernah Anda bangun.',
+      'Sertakan peran Anda, periode, dan tautan bila ada, supaya profil publik Anda lebih meyakinkan.',
+      'Tahap Innovator terbuka otomatis sesudah tahap Challenger tercapai.',
+    ],
+    verifier: 'otomatis',
   },
   contributor: {
     name: 'Contributor',
@@ -80,6 +104,12 @@ export const STAGE_RULES: Record<Stage, StageRule> = {
     about: 'Anda ikut membantu projek orang lain melalui Catalyst Finder, sebagai kolaborator, mentor, atau relawan.',
     requirements: [{ key: 'finder', label: 'Kontribusi di Catalyst Finder', claim: 'finder' }],
     points: 100,
+    steps: [
+      'Temukan projek yang membutuhkan bantuan di Catalyst Finder.',
+      'Berkontribusi sebagai kolaborator, mentor, atau relawan.',
+      'Ajukan verifikasi dengan nama projek, peran, dan hasil kontribusi Anda.',
+    ],
+    verifier: 'tim',
   },
   builder: {
     name: 'Builder',
@@ -87,6 +117,11 @@ export const STAGE_RULES: Record<Stage, StageRule> = {
     about: 'Anda membangun projek sendiri bersama Catalyst Labs, dari ide sampai berjalan.',
     requirements: [{ key: 'labs', label: 'Projek di Catalyst Labs', claim: 'labs' }],
     points: 150,
+    steps: [
+      'Ikuti program Catalyst Labs dan bangun projek Anda sendiri.',
+      'Ajukan verifikasi dengan nama projek, masalah yang diselesaikan, dan tahap projek saat ini.',
+    ],
+    verifier: 'tim',
   },
   founder: {
     name: 'Founder',
@@ -97,34 +132,59 @@ export const STAGE_RULES: Record<Stage, StageRule> = {
     points: 300,
     perk: 'Merchandise eksklusif Catalyst',
     exclusive: true,
+    steps: [
+      'Siapkan data bisnis: nama, bidang usaha, dan dasar valuasi.',
+      'Ajukan verifikasi Founder dengan valuasi di atas Rp100.000.000 beserta dokumen pendukung.',
+      'Tim Catalyst menghubungi Anda untuk verifikasi lanjutan dan pengiriman merchandise eksklusif.',
+    ],
+    verifier: 'tim',
   },
 };
 
 /** Keterangan pengajuan per jenis, untuk formulir dan antrean tim. */
-export const CLAIM_INFO: Record<ClaimKind, { stage: Stage; title: string; hint: string; urlLabel: string }> = {
+export interface ClaimGuide {
+  stage: Stage;
+  title: string;
+  hint: string;
+  urlLabel: string;
+  /** Hal yang perlu disiapkan sebelum mengajukan. */
+  checklist: string[];
+  /** Contoh keterangan yang baik. */
+  example: string;
+}
+
+export const CLAIM_INFO: Record<ClaimKind, ClaimGuide> = {
   bootcamp: {
     stage: 'challenger',
     title: 'Sesi bootcamp',
     hint: 'Nama bootcamp, batch, dan tanggal sesi yang Anda selesaikan.',
     urlLabel: 'Tautan sertifikat atau bukti kehadiran (opsional)',
+    checklist: ['Nama bootcamp dan batch', 'Tanggal sesi yang diselesaikan', 'Sertifikat atau bukti kehadiran, bila ada'],
+    example: 'Catalyst Bootcamp AI for Everyone, batch 3, sesi 12 Oktober 2026. Menyelesaikan seluruh materi dan tugas akhir.',
   },
   finder: {
     stage: 'contributor',
     title: 'Kontribusi di Catalyst Finder',
     hint: 'Projek yang Anda bantu, peran Anda, dan apa yang Anda kerjakan.',
     urlLabel: 'Tautan projek di Catalyst Finder (opsional)',
+    checklist: ['Nama projek yang dibantu', 'Peran Anda di projek', 'Hasil atau dampak kontribusi'],
+    example: 'Membantu projek EcoMicrogrid sebagai relawan developer selama dua bulan: membangun dasbor pemantauan daya.',
   },
   labs: {
     stage: 'builder',
     title: 'Projek di Catalyst Labs',
     hint: 'Nama projek, masalah yang diselesaikan, dan tahap projek saat ini.',
     urlLabel: 'Tautan projek atau demo (opsional)',
+    checklist: ['Nama projek di Catalyst Labs', 'Masalah yang diselesaikan', 'Tahap projek saat ini (ide, prototipe, berjalan)'],
+    example: 'Membangun aplikasi pencatatan keuangan UMKM di Catalyst Labs batch 2, saat ini prototipe dengan 40 pengguna uji.',
   },
   founder: {
     stage: 'founder',
     title: 'Verifikasi Founder',
     hint: 'Nama bisnis, bidang usaha, dan dasar valuasi (laporan keuangan, putaran pendanaan, atau penilaian).',
     urlLabel: 'Tautan situs bisnis atau dokumen pendukung (opsional)',
+    checklist: ['Nama bisnis dan bidang usaha', 'Valuasi bisnis di atas Rp100.000.000', 'Dasar valuasi: laporan keuangan, putaran pendanaan, atau penilaian independen'],
+    example: 'PT Contoh Kopi Nusantara, kedai kopi dengan 3 cabang di Jakarta. Valuasi dari putaran angel Agustus 2026.',
   },
 };
 

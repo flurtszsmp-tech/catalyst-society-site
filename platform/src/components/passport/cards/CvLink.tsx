@@ -1,58 +1,50 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { CvPreviewButton } from '@/components/passport/cv/CvViewer';
 import { usePassport } from '@/components/passport/PassportProvider';
 import { Icon } from '@/components/ui/Icon';
-import { useToast } from '@/components/ui/Toast';
 import type { Profile } from '@/lib/types';
 
 /**
- * Tombol CV di bawah kartu Badges pada dasbor pemilik. Tanpa CV, tombolnya
- * menjadi ajakan mengunggah. Tautan bertanda tangan dibuat saat diklik
- * karena kedaluwarsa dalam 10 menit.
+ * CV di bawah kartu Badges pada dasbor pemilik. Tanpa CV, tombolnya menjadi
+ * ajakan menambahkan; dengan CV, membuka pratinjau tanpa mengunduh.
  */
 export function CvLink({ profile }: { profile: Profile; owner?: boolean }) {
   const { repo } = usePassport();
-  const toast = useToast();
-  const [sibuk, setSibuk] = useState(false);
+  const [link, setLink] = useState<string | null | undefined>(undefined);
 
-  if (!profile.cvFileName) {
+  useEffect(() => {
+    let hidup = true;
+    repo.getCvLink(profile.id).then((u) => hidup && setLink(u), () => hidup && setLink(null));
+    return () => {
+      hidup = false;
+    };
+  }, [repo, profile.id]);
+
+  const load = useCallback(() => repo.getCvUrl(profile), [repo, profile]);
+
+  if (link === undefined) return null;
+  if (!link && !profile.cvFileName) {
     return (
-      <Link className="ui-btn ui-btn-ghost pass-cv-btn" href="/passport/profile#cv">
-        <Icon name="upload" />
-        Unggah CV
+      <Link className="cvb cvb-empty" href="/passport/profile#cv">
+        <span className="cvb-ico" aria-hidden>
+          <Icon name="plus" />
+        </span>
+        <span className="cvb-txt">
+          <b>Tambahkan CV</b>
+          <small>Unggah PDF atau tautkan Google Drive</small>
+        </span>
       </Link>
     );
   }
-
-  async function buka() {
-    setSibuk(true);
-    // Jendela dibuka sinkron supaya tidak diblokir penghalang pop-up.
-    const w = window.open('', '_blank');
-    if (w) w.opener = null;
-    try {
-      const url = await repo.getCvUrl(profile);
-      if (!url) {
-        w?.close();
-        toast('CV tidak bisa dibuka.', 'error');
-        return;
-      }
-      if (w) w.location.href = url;
-      else window.location.href = url;
-    } catch {
-      w?.close();
-      toast('Gagal membuka CV.', 'error');
-    } finally {
-      setSibuk(false);
-    }
-  }
-
   return (
-    <button type="button" className="ui-btn ui-btn-ghost pass-cv-btn" onClick={() => void buka()} disabled={sibuk}>
-      <Icon name="doc" />
-      {sibuk ? 'Membuka…' : 'Lihat CV'}
-      {profile.cvVisibility === 'private' && <small className="pass-cv-priv">privat</small>}
-    </button>
+    <CvPreviewButton
+      name={profile.fullName}
+      sub={link ? `${/drive\.google\.com|docs\.google\.com/.test(link) ? 'Google Drive' : 'Tautan CV'} · pratinjau` : `${profile.cvFileName} · pratinjau`}
+      load={load}
+      privat={profile.cvVisibility === 'private'}
+    />
   );
 }

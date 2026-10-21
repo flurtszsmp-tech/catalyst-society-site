@@ -261,11 +261,51 @@ export interface JourneyProgress {
   claims: JourneyClaim[];
 }
 
-/** Satu antrean pemeriksaan untuk tim Catalyst. */
+/** Antrean pemeriksaan admin: hanya pengajuan tahap Journey. */
 export interface ReviewQueue {
-  memberships: { person: ProfileSummary; membership: Membership }[];
-  certificates: { person: ProfileSummary; certificate: Certificate }[];
   claims: { person: ProfileSummary; claim: JourneyClaim }[];
+}
+
+/* ---------- masukan dan admin ---------- */
+
+export type FeedbackKind = 'saran' | 'masalah' | 'pertanyaan' | 'lainnya';
+export type FeedbackStatus = 'baru' | 'dibaca' | 'selesai';
+
+export interface Feedback {
+  id: number;
+  userId: string | null;
+  kind: FeedbackKind;
+  message: string;
+  page: string | null;
+  status: FeedbackStatus;
+  createdAt: string;
+}
+
+/** Data akun yang aman dibaca admin. Kata sandi dan token tidak pernah ikut. */
+export interface AdminAccount {
+  id: string;
+  email: string | null;
+  provider: string;
+  createdAt: string;
+  lastSignInAt: string | null;
+  emailConfirmed: boolean;
+}
+
+export interface AdminActivity {
+  kind: string;
+  userId: string | null;
+  detail: string;
+  at: string;
+}
+
+/** Semua yang dibutuhkan panel detail satu pengguna di dashboard admin. */
+export interface AdminUserDetail {
+  bundle: PassportBundle;
+  points: PointEvent[];
+  claims: JourneyClaim[];
+  feedback: Feedback[];
+  views30d: number;
+  cvLink: string | null;
 }
 
 export interface DailyCount {

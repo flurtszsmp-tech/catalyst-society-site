@@ -31,3 +31,10 @@ export const isSupabaseConfigured =
 
 /** Alamat publik situs, dipakai untuk tautan berbagi dan redirect OAuth. */
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? '').replace(/\/+$/, '');
+
+/**
+ * Akun admin Catalyst. Hanya dipakai untuk mengarahkan tampilan; hak admin
+ * sebenarnya diputuskan database (public.is_staff), yang juga mensyaratkan
+ * email akun ini sudah terkonfirmasi.
+ */
+export const ADMIN_EMAIL = 'info@catalystsociety.id';

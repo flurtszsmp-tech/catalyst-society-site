@@ -4,23 +4,14 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Icon } from '@/components/ui/Icon';
 import { getRepo } from '@/lib/repo';
-import type { MembershipStatus } from '@/lib/types';
 import { useCommunityCopy } from './copy';
 
-type Keadaan = { tahap: 'muat' } | { tahap: 'tamu' } | { tahap: 'siap'; status: MembershipStatus | null };
-
-const LABEL: Record<MembershipStatus, string> = {
-  pending: 'Menunggu verifikasi tim',
-  verified: 'Terverifikasi di Passport Anda',
-  rejected: 'Pengajuan ditolak, perbaiki buktinya di Passport',
-};
+type Keadaan = { tahap: 'muat' } | { tahap: 'tamu' } | { tahap: 'siap'; tersimpan: boolean };
 
 /**
- * Tombol "Tambahkan ke Passport" di halaman detail komunitas.
- *
- * Bergabung kini berarti mengajukan dengan bukti keanggotaan, jadi tombol
- * ini membawa ke halaman Komunitas di Passport yang membuka formulirnya.
- * Tamu diarahkan ke /login.html dengan next= ke halaman itu.
+ * Tombol "Tambahkan ke Passport" di halaman detail komunitas. Membawa ke
+ * halaman Komunitas di Passport, yang menambahkan komunitas ini lewat
+ * ?gabung=. Tamu diarahkan ke /login.html dengan next= ke halaman itu.
  */
 export function PassportAction({ slug }: { slug: string }) {
   const k = useCommunityCopy();
@@ -38,8 +29,8 @@ export function PassportAction({ slug }: { slug: string }) {
           setSt({ tahap: 'tamu' });
           return;
         }
-        const milik = await repo.listMyMemberships();
-        if (hidup) setSt({ tahap: 'siap', status: milik.find((m) => m.slug === slug)?.status ?? null });
+        const milik = await repo.listCommunities(user.id);
+        if (hidup) setSt({ tahap: 'siap', tersimpan: milik.includes(slug) });
       } catch {
         if (hidup) setSt({ tahap: 'tamu' });
       }
@@ -63,16 +54,14 @@ export function PassportAction({ slug }: { slug: string }) {
     );
   }
 
-  const status = st.tahap === 'siap' ? st.status : null;
+  const tersimpan = st.tahap === 'siap' && st.tersimpan;
   return (
     <>
-      <Link className="btn ghost com-pp" href={status ? '/passport/communities' : tujuan} aria-disabled={st.tahap === 'muat' || undefined}>
-        <Icon name={status === 'verified' ? 'check' : status ? 'clock' : 'plus'} />
-        {status ? 'Lihat di Passport' : k.passportTambah}
+      <Link className="btn ghost com-pp" href={tersimpan ? '/passport/communities' : tujuan} aria-disabled={st.tahap === 'muat' || undefined}>
+        <Icon name={tersimpan ? 'check' : 'plus'} />
+        {tersimpan ? 'Ada di Passport Anda' : k.passportTambah}
       </Link>
-      <p className="com-pp-status" role="status" aria-live="polite">
-        {status ? LABEL[status] : ''}
-      </p>
+      <p className="com-pp-status" role="status" aria-live="polite" />
     </>
   );
 }

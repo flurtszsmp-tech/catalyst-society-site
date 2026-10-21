@@ -6,6 +6,8 @@ import { usePassport } from '@/components/passport/PassportProvider';
 import { useToast } from '@/components/ui/Toast';
 import { ValueStrip } from '../cards/RailCards';
 import { CelebrationProvider } from '../journey/Celebration';
+import { FeedbackDialog } from './FeedbackDialog';
+import { ADMIN_EMAIL } from '@/lib/env';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 
@@ -17,7 +19,7 @@ import { Topbar } from './Topbar';
  * yang perlu menangani keadaan "belum dimuat" sendiri.
  */
 export function PassportShell({ children }: { children: ReactNode }) {
-  const { profile, loading, error, reload, signOut, repo } = usePassport();
+  const { profile, loading, error, reload, signOut, repo, user } = usePassport();
   const toast = useToast();
   const path = usePathname();
   const [open, setOpen] = useState(false);
@@ -27,20 +29,9 @@ export function PassportShell({ children }: { children: ReactNode }) {
   const burger = useRef<HTMLElement | null>(null);
   // Di bawah 1040px sidebar menjadi laci.
   const [laci, setLaci] = useState(false);
-  // Menu Verifikasi hanya untuk tim Catalyst. Database tetap yang menolak
-  // pemeriksaan dari orang lain; ini hanya menyembunyikan menunya.
-  const [staff, setStaff] = useState(false);
+  const [masukan, setMasukan] = useState(false);
 
   const tutup = useCallback(() => setOpen(false), []);
-
-  useEffect(() => {
-    if (!profile) return;
-    let hidup = true;
-    repo.isStaff().then((v) => hidup && setStaff(v), () => {});
-    return () => {
-      hidup = false;
-    };
-  }, [repo, profile?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Laci ditutup setiap kali halaman berganti.
   useEffect(() => {
@@ -114,6 +105,17 @@ export function PassportShell({ children }: { children: ReactNode }) {
         </button>
       </div>
     );
+  } else if (!profile && user?.email?.toLowerCase() === ADMIN_EMAIL) {
+    // Akun admin sengaja tidak punya Passport; tempatnya di dashboard admin.
+    isi = (
+      <div className="ui-empty pass-state" role="status">
+        <b>Ini akun admin Catalyst</b>
+        <p>Akun admin tidak memiliki Catalyst Passport. Buka dashboard admin untuk memantau anggota.</p>
+        <a className="ui-btn ui-btn-primary" href="/bp/admin/">
+          Buka dashboard admin
+        </a>
+      </div>
+    );
   } else if (!profile) {
     isi = (
       <div className="ui-empty pass-state" role="alert">
@@ -133,7 +135,18 @@ export function PassportShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="pass-shell">
-      <Sidebar ref={side} open={open} onNavigate={tutup} onSignOut={onSignOut} signingOut={keluar} staff={staff} />
+      <Sidebar
+        ref={side}
+        open={open}
+        onNavigate={tutup}
+        onSignOut={onSignOut}
+        signingOut={keluar}
+        onFeedback={() => {
+          setOpen(false);
+          setMasukan(true);
+        }}
+      />
+      {masukan && <FeedbackDialog onClose={() => setMasukan(false)} />}
       <div className={`pass-scrim${open ? ' on' : ''}`} aria-hidden onClick={tutup} />
       <div className="pass-work" ref={work}>
         <Topbar profile={profile} demo={repo.mode === 'demo'} menuOpen={open} onMenu={() => setOpen((o) => !o)} />

@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { Icon } from '@/components/ui/Icon';
-import { useToast } from '@/components/ui/Toast';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { CvPreviewButton } from '@/components/passport/cv/CvViewer';
 import { getRepo } from '@/lib/repo';
+import type { Profile } from '@/lib/types';
 
 /**
  * Mencatat satu kunjungan. Sengaja di browser, bukan saat render server,
@@ -21,43 +21,32 @@ export function ViewRecorder({ slug }: { slug: string }) {
 }
 
 /**
- * Tombol CV di profil publik. Tautan bertanda tangan dibuat saat
- * diklik, bukan saat halaman dimuat, karena tautan itu kedaluwarsa
- * dalam 10 menit dan RLS storage yang memutuskan boleh tidaknya.
+ * CV di profil publik, di bawah kartu Badges. Tautan CV (misalnya Google
+ * Drive) atau PDF yang diunggah dibuka sebagai pratinjau, tidak diunduh.
+ * RLS yang memutuskan apakah pengunjung boleh membacanya; bila tidak,
+ * tombolnya tidak tampil sama sekali.
  */
-export function CvButton({ id, cvFileName }: { id: string; cvFileName: string }) {
-  const toast = useToast();
-  const [sibuk, setSibuk] = useState(false);
+export function PublicCv({ profile }: { profile: Pick<Profile, 'id' | 'fullName' | 'cvFileName' | 'cvVisibility'> }) {
+  const [link, setLink] = useState<string | null | undefined>(undefined);
+  useEffect(() => {
+    let hidup = true;
+    getRepo()
+      .getCvLink(profile.id)
+      .then((u) => hidup && setLink(u), () => hidup && setLink(null));
+    return () => {
+      hidup = false;
+    };
+  }, [profile.id]);
+  const load = useCallback(() => getRepo().getCvUrl(profile), [profile]);
 
-  async function buka() {
-    setSibuk(true);
-    // Jendela dibuka dulu secara sinkron supaya tidak diblokir penghalang
-    // pop-up. Bukan dengan fitur 'noopener': dengan itu window.open selalu
-    // mengembalikan null dan tautan tidak bisa diarahkan. opener diputus
-    // manual supaya halaman CV tidak bisa menyentuh halaman ini.
-    const w = window.open('', '_blank');
-    if (w) w.opener = null;
-    try {
-      const url = await getRepo().getCvUrl({ id, cvFileName });
-      if (!url) {
-        w?.close();
-        toast('CV ini tidak tersedia.', 'error');
-        return;
-      }
-      if (w) w.location.href = url;
-      else window.location.href = url;
-    } catch {
-      w?.close();
-      toast('Gagal membuka CV.', 'error');
-    } finally {
-      setSibuk(false);
-    }
-  }
-
+  if (link === undefined) return null;
+  const adaBerkas = !!profile.cvFileName && profile.cvVisibility === 'public';
+  if (!link && !adaBerkas) return null;
   return (
-    <button type="button" className="ui-btn ui-btn-ghost pass-cv-btn" onClick={buka} disabled={sibuk}>
-      <Icon name="doc" />
-      {sibuk ? 'Membuka…' : 'Lihat CV'}
-    </button>
+    <CvPreviewButton
+      name={profile.fullName}
+      sub={link && /drive\.google\.com|docs\.google\.com/.test(link) ? 'Google Drive · pratinjau' : 'Pratinjau tanpa mengunduh'}
+      load={load}
+    />
   );
 }

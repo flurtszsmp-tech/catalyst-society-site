@@ -2,28 +2,24 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { usePassport } from '@/components/passport/PassportProvider';
 import { Icon } from '@/components/ui/Icon';
 import { useToast } from '@/components/ui/Toast';
 import { CHANNELS } from '@/lib/data/communities';
 import { DEFAULT_PEOPLE_FILTER, STAGES, type Channel, type PeopleFilter, type ProfileSummary, type Stage } from '@/lib/types';
 import { SLUG_PATTERN } from '@/lib/repo/types';
-import { Card, EmptyState, ErrorState, PageHead, PersonAvatar, SessionGate, Skeleton, errMsg, fmtNumber, useLoad } from './common';
+import { EmptyState, ErrorState, PageHead, PersonAvatar, SessionGate, Skeleton, errMsg, fmtNumber, useLoad } from './common';
 import { STAGE_INFO } from './labels';
 
-type Tab = 'following' | 'followers';
-const TABS: { key: Tab; label: string }[] = [
-  { key: 'following', label: 'Mengikuti' },
-  { key: 'followers', label: 'Pengikut' },
-];
+type Tab = 'discover' | 'following' | 'followers';
 
 const DEBOUNCE_MS = 300;
 
 const SORT: { key: PeopleFilter['sort']; label: string }[] = [
-  { key: 'points_desc', label: 'Poin CATA tertinggi' },
-  { key: 'points_asc', label: 'Poin CATA terendah' },
-  { key: 'newest', label: 'Anggota terbaru' },
+  { key: 'points_desc', label: 'Poin tertinggi' },
+  { key: 'points_asc', label: 'Poin terendah' },
+  { key: 'newest', label: 'Terbaru' },
 ];
 
 const CHANNEL_LABEL = new Map<string, string>(CHANNELS.map((c) => [c.key, c.label.id]));
@@ -34,7 +30,6 @@ interface Lists {
 }
 
 interface SearchState {
-  /** Kunci saringan yang dijawab oleh list/error; null berarti belum ada jawaban. */
   key: string | null;
   list: ProfileSummary[] | null;
   error: string | null;
@@ -58,8 +53,9 @@ export function ConnectionsSection() {
   );
   const lists = useLoad(load);
 
-  const [tab, setTab] = useState<Tab>('following');
+  const [tab, setTab] = useState<Tab>('discover');
   const [pending, setPending] = useState<string | null>(null);
+  const [panel, setPanel] = useState(false);
 
   // ?q= mengisi kolom pencarian, misalnya dari pencarian di bilah atas.
   const qParam = (params.get('q') ?? '').slice(0, 60);
@@ -68,6 +64,7 @@ export function ConnectionsSection() {
   if (qParam !== qLalu) {
     setQLalu(qParam);
     setFilter((f) => ({ ...f, query: qParam }));
+    setTab('discover');
   }
   const ubah = <K extends keyof PeopleFilter>(k: K, v: PeopleFilter[K]) => setFilter((f) => ({ ...f, [k]: v }));
 
@@ -81,12 +78,8 @@ export function ConnectionsSection() {
     const f = JSON.parse(wanted) as PeopleFilter;
     const t = setTimeout(() => {
       repo.searchPeople(f).then(
-        (list) => {
-          if (alive) setSearch({ key: wanted, list, error: null });
-        },
-        (e: unknown) => {
-          if (alive) setSearch({ key: wanted, list: null, error: errMsg(e, 'Gagal mencari profil.') });
-        },
+        (list) => alive && setSearch({ key: wanted, list, error: null }),
+        (e: unknown) => alive && setSearch({ key: wanted, list: null, error: errMsg(e, 'Gagal mencari profil.') }),
       );
     }, DEBOUNCE_MS);
     return () => {
@@ -97,6 +90,7 @@ export function ConnectionsSection() {
 
   const searching = search.key !== wanted || (!search.list && !search.error);
   const followingIds = useMemo(() => new Set((lists.data?.following ?? []).map((p) => p.id)), [lists.data]);
+  const followerIds = useMemo(() => new Set((lists.data?.followers ?? []).map((p) => p.id)), [lists.data]);
 
   const toggleFollow = async (p: ProfileSummary) => {
     if (!lists.data) return;
@@ -121,244 +115,377 @@ export function ConnectionsSection() {
     }
   };
 
-  const tabRefs = useRef<Record<Tab, HTMLButtonElement | null>>({ following: null, followers: null });
-  const onTabKey = (e: KeyboardEvent<HTMLButtonElement>) => {
-    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'Home' && e.key !== 'End') return;
-    e.preventDefault();
-    const i = TABS.findIndex((t) => t.key === tab);
-    const next =
-      e.key === 'Home' ? 0 : e.key === 'End' ? TABS.length - 1 : (i + (e.key === 'ArrowRight' ? 1 : -1) + TABS.length) % TABS.length;
-    setTab(TABS[next].key);
-    tabRefs.current[TABS[next].key]?.focus();
-  };
-
   const mySkills = useMemo(() => new Set((profile?.skills ?? []).map((s) => s.toLowerCase())), [profile?.skills]);
   const myRoles = useMemo(() => new Set((profile?.roles ?? []).map((s) => s.toLowerCase())), [profile?.roles]);
+  const shared = (p: ProfileSummary) => [
+    ...(p.skills ?? []).filter((s) => mySkills.has(s.toLowerCase())),
+    ...(p.roles ?? []).filter((s) => myRoles.has(s.toLowerCase())),
+  ];
 
-  const row = (p: ProfileSummary, detail: boolean) => (
-    <PersonRow
-      key={p.id}
-      p={p}
-      detail={detail}
-      shared={detail ? [...(p.skills ?? []).filter((s) => mySkills.has(s.toLowerCase())), ...(p.roles ?? []).filter((s) => myRoles.has(s.toLowerCase()))] : []}
-      following={followingIds.has(p.id)}
-      busy={pending === p.id}
-      disabled={!lists.data || pending !== null}
-      onToggle={() => void toggleFollow(p)}
-    />
-  );
-
-  const shown = lists.data ? lists.data[tab] : null;
   const results = search.key === wanted ? (search.list ?? []).filter((p) => p.id !== uid) : [];
-  const aktif =
-    !!filter.channel || !!filter.stage || filter.sameBadges || filter.sameSkills || filter.sameRoles || !!filter.query.trim();
-  const butuhIsian =
-    (filter.sameSkills && !(profile?.skills.length ?? 0)) || (filter.sameRoles && !(profile?.roles.length ?? 0));
+
+  /* ---------- saringan aktif sebagai pil yang bisa dilepas ---------- */
+  const pil: { key: string; label: string; off: () => void }[] = [];
+  if (filter.query.trim()) pil.push({ key: 'q', label: `“${filter.query.trim()}”`, off: () => ubah('query', '') });
+  if (filter.channel) pil.push({ key: 'ch', label: CHANNEL_LABEL.get(filter.channel) ?? filter.channel, off: () => ubah('channel', null) });
+  if (filter.stage) pil.push({ key: 'st', label: STAGE_INFO[filter.stage].name, off: () => ubah('stage', null) });
+  if (filter.sameBadges) pil.push({ key: 'b', label: 'Badges sama', off: () => ubah('sameBadges', false) });
+  if (filter.sameSkills) pil.push({ key: 'sk', label: 'Skills serupa', off: () => ubah('sameSkills', false) });
+  if (filter.sameRoles) pil.push({ key: 'r', label: 'Roles serupa', off: () => ubah('sameRoles', false) });
+  const butuhIsian = (filter.sameSkills && !(profile?.skills.length ?? 0)) || (filter.sameRoles && !(profile?.roles.length ?? 0));
+
+  const jumlah = (n: number | undefined) => (lists.data ? fmtNumber(n ?? 0) : '…');
 
   return (
     <div className="ps2">
       <PageHead title="Koneksi" lead="Temukan builders, mentor, dan investor baru di Catalyst Society, lalu bangun jaringan Anda." />
       <SessionGate loading={loading} error={error} onRetry={() => void reload()}>
-        <div className="ps2-grid-2 cn-grid">
-          <Card id="ps2-find-title" title="Temukan orang" className="cn-find">
-            <div className="ps2-search">
-              <Icon name="search" />
-              <label htmlFor="ps2-q" className="sr-only">
-                Cari nama atau headline
-              </label>
-              <input
-                id="ps2-q"
-                type="search"
-                className="ui-input"
-                placeholder="Cari nama atau headline"
-                value={filter.query}
-                maxLength={60}
-                onChange={(e) => ubah('query', e.target.value)}
-                aria-describedby="ps2-q-status"
-                autoComplete="off"
-              />
-            </div>
+        <div className="cx-tabs" role="tablist" aria-label="Koneksi">
+          {(
+            [
+              { key: 'discover', label: 'Temukan orang', icon: 'search', n: null },
+              { key: 'following', label: 'Mengikuti', icon: 'user-check', n: lists.data?.following.length },
+              { key: 'followers', label: 'Pengikut', icon: 'users', n: lists.data?.followers.length },
+            ] as const
+          ).map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              role="tab"
+              aria-selected={tab === t.key}
+              className={`cx-tab${tab === t.key ? ' on' : ''}`}
+              onClick={() => setTab(t.key)}
+            >
+              <Icon name={t.icon} />
+              {t.label}
+              {t.n !== null && <span className="cx-count">{jumlah(t.n)}</span>}
+            </button>
+          ))}
+        </div>
 
-            <div className="cn-filters" role="group" aria-label="Saringan pencarian">
-              <label className="cn-select">
-                <span>Industri</span>
-                <select value={filter.channel ?? ''} onChange={(e) => ubah('channel', (e.target.value || null) as Channel | null)}>
-                  <option value="">Semua industri</option>
-                  {profile?.channel && <option value={profile.channel}>Sama dengan saya</option>}
+        {tab === 'discover' ? (
+          <div className="cx-layout">
+            <aside className={`cx-panel${panel ? ' open' : ''}`} aria-label="Saringan">
+              <div className="cx-panel-head">
+                <b>
+                  <Icon name="filter" /> Saringan
+                </b>
+                {pil.length > 0 && (
+                  <button type="button" className="cx-reset" onClick={() => setFilter({ ...DEFAULT_PEOPLE_FILTER, hideFollowing: filter.hideFollowing })}>
+                    Atur ulang
+                  </button>
+                )}
+              </div>
+
+              <FilterGroup title="Industri">
+                <div className="cx-opts">
+                  <Opt on={!filter.channel} onClick={() => ubah('channel', null)}>
+                    Semua
+                  </Opt>
                   {CHANNELS.map((c) => (
-                    <option key={c.key} value={c.key}>
+                    <Opt key={c.key} on={filter.channel === c.key} onClick={() => ubah('channel', c.key as Channel)}>
                       {c.label.id}
-                    </option>
+                      {profile?.channel === c.key && <em>Anda</em>}
+                    </Opt>
                   ))}
-                </select>
-              </label>
-              <label className="cn-select">
-                <span>Tahap Journey</span>
-                <select value={filter.stage ?? ''} onChange={(e) => ubah('stage', (e.target.value || null) as Stage | null)}>
-                  <option value="">Semua tahap</option>
+                </div>
+              </FilterGroup>
+
+              <FilterGroup title="Tahap Journey">
+                <div className="cx-opts">
+                  <Opt on={!filter.stage} onClick={() => ubah('stage', null)}>
+                    Semua
+                  </Opt>
                   {STAGES.map((s) => (
-                    <option key={s} value={s}>
+                    <Opt key={s} on={filter.stage === s} onClick={() => ubah('stage', s as Stage)}>
                       {STAGE_INFO[s].name}
-                    </option>
+                    </Opt>
                   ))}
-                </select>
-              </label>
-              <label className="cn-select">
-                <span>Urutkan</span>
-                <select value={filter.sort} onChange={(e) => ubah('sort', e.target.value as PeopleFilter['sort'])}>
+                </div>
+              </FilterGroup>
+
+              <FilterGroup title="Kesamaan dengan saya">
+                <Switch on={filter.sameBadges} onChange={(v) => ubah('sameBadges', v)} title="Badges yang sama" sub="Punya setidaknya satu lencana seperti Anda" />
+                <Switch on={filter.sameSkills} onChange={(v) => ubah('sameSkills', v)} title="Skills serupa" sub={profile?.skills.length ? profile.skills.slice(0, 3).join(', ') : 'Isi skills Anda dulu'} />
+                <Switch on={filter.sameRoles} onChange={(v) => ubah('sameRoles', v)} title="Roles serupa" sub={profile?.roles.length ? profile.roles.slice(0, 3).join(', ') : 'Isi roles Anda dulu'} />
+              </FilterGroup>
+
+              <FilterGroup title="Tampilkan">
+                <Switch on={filter.hideFollowing} onChange={(v) => ubah('hideFollowing', v)} title="Hanya kenalan baru" sub="Sembunyikan orang yang sudah Anda ikuti" />
+              </FilterGroup>
+
+              <button type="button" className="ui-btn ui-btn-primary cx-panel-done" onClick={() => setPanel(false)}>
+                Lihat {fmtNumber(results.length)} hasil
+              </button>
+            </aside>
+
+            <section className="cx-main" aria-labelledby="cx-hasil">
+              <div className="cx-bar">
+                <div className="ps2-search cx-search">
+                  <Icon name="search" />
+                  <label htmlFor="ps2-q" className="sr-only">
+                    Cari nama atau headline
+                  </label>
+                  <input
+                    id="ps2-q"
+                    type="search"
+                    className="ui-input"
+                    placeholder="Cari nama, headline, atau peran"
+                    value={filter.query}
+                    maxLength={60}
+                    onChange={(e) => ubah('query', e.target.value)}
+                    autoComplete="off"
+                  />
+                </div>
+                <button type="button" className="ui-btn ui-btn-ghost cx-filter-btn" onClick={() => setPanel(true)} aria-expanded={panel}>
+                  <Icon name="filter" />
+                  Saringan{pil.length ? ` (${pil.length})` : ''}
+                </button>
+                <div className="cx-sort" role="radiogroup" aria-label="Urutkan">
                   {SORT.map((s) => (
-                    <option key={s.key} value={s.key}>
+                    <button key={s.key} type="button" role="radio" aria-checked={filter.sort === s.key} className={filter.sort === s.key ? 'on' : ''} onClick={() => ubah('sort', s.key)}>
                       {s.label}
-                    </option>
+                    </button>
                   ))}
-                </select>
-              </label>
-            </div>
+                </div>
+              </div>
 
-            <div className="ps2-filters cn-chips" role="group" aria-label="Kesamaan dengan saya">
-              <button type="button" className="ps2-chip" aria-pressed={filter.sameBadges} onClick={() => ubah('sameBadges', !filter.sameBadges)}>
-                Badges yang sama
-              </button>
-              <button type="button" className="ps2-chip" aria-pressed={filter.sameSkills} onClick={() => ubah('sameSkills', !filter.sameSkills)}>
-                Skills serupa
-              </button>
-              <button type="button" className="ps2-chip" aria-pressed={filter.sameRoles} onClick={() => ubah('sameRoles', !filter.sameRoles)}>
-                Roles serupa
-              </button>
-              <button type="button" className="ps2-chip" aria-pressed={filter.hideFollowing} onClick={() => ubah('hideFollowing', !filter.hideFollowing)}>
-                Hanya kenalan baru
-              </button>
-              {aktif && (
-                <button type="button" className="cn-reset" onClick={() => setFilter({ ...DEFAULT_PEOPLE_FILTER })}>
-                  Hapus saringan
-                </button>
-              )}
-            </div>
+              <div className="cx-summary">
+                <h2 id="cx-hasil">
+                  {searching ? 'Mencari…' : `${fmtNumber(results.length)} orang`}
+                  <small>{filter.hideFollowing ? 'yang belum Anda ikuti' : 'di Catalyst Society'}</small>
+                </h2>
+                {pil.length > 0 && (
+                  <ul className="cx-pills" aria-label="Saringan aktif">
+                    {pil.map((p) => (
+                      <li key={p.key}>
+                        <button type="button" onClick={p.off} aria-label={`Hapus saringan ${p.label}`}>
+                          {p.label}
+                          <Icon name="close" />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
 
-            <p id="ps2-q-status" className="sr-only" role="status" aria-live="polite">
-              {searching ? 'Mencari…' : search.error ? '' : `${results.length} profil ditemukan.`}
-            </p>
-            {butuhIsian ? (
-              <EmptyState icon="skills" title="Lengkapi skills dan roles Anda">
-                Saringan serupa membandingkan dengan skills dan roles di Passport Anda.{' '}
-                <Link className="ps2-link" href="/passport/skills">
-                  Isi sekarang
-                </Link>
-              </EmptyState>
-            ) : search.error && search.key === wanted ? (
-              <ErrorState
-                message={search.error}
-                onRetry={() => {
-                  setSearch({ key: null, list: null, error: null });
-                  setNonce((n) => n + 1);
-                }}
-              />
-            ) : searching ? (
-              <Skeleton rows={4} height={64} label="Mencari profil…" />
-            ) : results.length === 0 ? (
-              <EmptyState icon="search" title={aktif ? 'Tidak ada yang cocok' : 'Belum ada kenalan baru'}>
-                {aktif
-                  ? 'Coba longgarkan saringan atau ganti kata kunci.'
-                  : 'Anda sudah mengikuti semua profil publik. Matikan "Hanya kenalan baru" untuk melihat semuanya.'}
-              </EmptyState>
-            ) : (
-              <>
-                <p className="ps2-sub">
-                  {fmtNumber(results.length)} orang · {SORT.find((s) => s.key === filter.sort)?.label}
-                </p>
-                <ul className="ps2-list ps2-people cn-people">{results.map((p) => row(p, true))}</ul>
-              </>
-            )}
-          </Card>
+              <p className="sr-only" role="status" aria-live="polite">
+                {searching ? 'Mencari…' : search.error ? '' : `${results.length} profil ditemukan.`}
+              </p>
 
-          <Card id="ps2-conn-title" title="Jaringan saya" className="cn-mine">
-            <div className="ps2-tabs" role="tablist" aria-label="Daftar koneksi">
-              {TABS.map((t) => (
-                <button
-                  key={t.key}
-                  ref={(el) => {
-                    tabRefs.current[t.key] = el;
+              {butuhIsian ? (
+                <EmptyState icon="skills" title="Lengkapi skills dan roles Anda">
+                  Saringan serupa membandingkan dengan skills dan roles di Passport Anda.{' '}
+                  <Link className="ps2-link" href="/passport/skills">
+                    Isi sekarang
+                  </Link>
+                </EmptyState>
+              ) : search.error && search.key === wanted ? (
+                <ErrorState
+                  message={search.error}
+                  onRetry={() => {
+                    setSearch({ key: null, list: null, error: null });
+                    setNonce((n) => n + 1);
                   }}
-                  type="button"
-                  role="tab"
-                  id={`ps2-tab-${t.key}`}
-                  className="ps2-tab"
-                  aria-selected={tab === t.key}
-                  aria-controls="ps2-tabpanel"
-                  tabIndex={tab === t.key ? 0 : -1}
-                  onClick={() => setTab(t.key)}
-                  onKeyDown={onTabKey}
-                >
-                  {t.label}
-                  {lists.data && <span>{fmtNumber(lists.data[t.key].length)}</span>}
-                </button>
-              ))}
-            </div>
-            <div id="ps2-tabpanel" role="tabpanel" aria-labelledby={`ps2-tab-${tab}`}>
-              {lists.error ? (
-                <ErrorState message={lists.error} onRetry={lists.retry} />
-              ) : !shown ? (
-                <Skeleton rows={3} height={48} label="Memuat koneksi…" />
-              ) : shown.length === 0 ? (
-                <EmptyState icon="network" title={tab === 'following' ? 'Belum mengikuti siapa pun' : 'Belum ada pengikut'}>
-                  {tab === 'following'
-                    ? 'Ikuti lima orang untuk memenuhi salah satu syarat tahap Connector.'
-                    : 'Bagikan Passport publik Anda supaya orang lain bisa menemukan dan mengikuti Anda.'}
+                />
+              ) : searching ? (
+                <div className="cx-grid" aria-busy="true">
+                  {Array.from({ length: 6 }, (_, i) => (
+                    <div key={i} className="ui-skeleton cx-skel" />
+                  ))}
+                </div>
+              ) : results.length === 0 ? (
+                <EmptyState icon="search" title={pil.length ? 'Tidak ada yang cocok' : 'Belum ada kenalan baru'}>
+                  {pil.length
+                    ? 'Coba longgarkan saringan atau ganti kata kunci.'
+                    : 'Anda sudah mengikuti semua profil publik. Matikan "Hanya kenalan baru" untuk melihat semuanya.'}
                 </EmptyState>
               ) : (
-                <ul className="ps2-list ps2-people">{shown.map((p) => row(p, false))}</ul>
+                <ul className="cx-grid">
+                  {results.map((p) => (
+                    <PersonCard
+                      key={p.id}
+                      p={p}
+                      shared={shared(p)}
+                      followsYou={followerIds.has(p.id)}
+                      following={followingIds.has(p.id)}
+                      busy={pending === p.id}
+                      disabled={!lists.data || pending !== null}
+                      onToggle={() => void toggleFollow(p)}
+                    />
+                  ))}
+                </ul>
               )}
-            </div>
-          </Card>
-        </div>
+            </section>
+            {panel && <div className="cx-scrim" onClick={() => setPanel(false)} aria-hidden />}
+          </div>
+        ) : (
+          <section className="ps2-card cx-network" aria-label={tab === 'following' ? 'Orang yang Anda ikuti' : 'Pengikut Anda'}>
+            {lists.error ? (
+              <ErrorState message={lists.error} onRetry={lists.retry} />
+            ) : !lists.data ? (
+              <Skeleton rows={4} height={56} label="Memuat koneksi…" />
+            ) : lists.data[tab].length === 0 ? (
+              <EmptyState icon="network" title={tab === 'following' ? 'Belum mengikuti siapa pun' : 'Belum ada pengikut'}>
+                {tab === 'following'
+                  ? 'Ikuti lima orang untuk memenuhi salah satu syarat tahap Connector.'
+                  : 'Bagikan Passport publik Anda supaya orang lain bisa menemukan dan mengikuti Anda.'}
+              </EmptyState>
+            ) : (
+              <ul className="ps2-list ps2-people">
+                {lists.data[tab].map((p) => (
+                  <PersonRow
+                    key={p.id}
+                    p={p}
+                    following={followingIds.has(p.id)}
+                    busy={pending === p.id}
+                    disabled={pending !== null}
+                    onToggle={() => void toggleFollow(p)}
+                  />
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
       </SessionGate>
     </div>
   );
 }
 
-function PersonRow({
+/* ---------- bagian saringan ---------- */
+
+function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <fieldset className="cx-group">
+      <legend>{title}</legend>
+      {children}
+    </fieldset>
+  );
+}
+
+function Opt({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button type="button" className={`cx-opt${on ? ' on' : ''}`} aria-pressed={on} onClick={onClick}>
+      {children}
+    </button>
+  );
+}
+
+function Switch({ on, onChange, title, sub }: { on: boolean; onChange: (v: boolean) => void; title: string; sub: string }) {
+  return (
+    <button type="button" role="switch" aria-checked={on} className={`cx-switch${on ? ' on' : ''}`} onClick={() => onChange(!on)}>
+      <span className="cx-switch-txt">
+        <b>{title}</b>
+        <small>{sub}</small>
+      </span>
+      <span className="cx-knob" aria-hidden />
+    </button>
+  );
+}
+
+/* ---------- kartu orang ---------- */
+
+function profilHref(slug: string): string | null {
+  // Slug dijaga CHECK di database; diperiksa ulang karena data demo bisa diubah di perangkat.
+  return SLUG_PATTERN.test(slug) ? `/p/?u=${slug}` : null;
+}
+
+function PersonCard({
   p,
-  detail,
   shared,
+  followsYou,
   following,
   busy,
   disabled,
   onToggle,
 }: {
   p: ProfileSummary;
-  detail: boolean;
   shared: string[];
+  followsYou: boolean;
   following: boolean;
   busy: boolean;
   disabled: boolean;
   onToggle: () => void;
 }) {
-  // Slug dijaga CHECK di database; diperiksa ulang karena data demo bisa diubah di perangkat.
-  const href = SLUG_PATTERN.test(p.slug) ? `/p/?u=${p.slug}` : null;
+  const href = profilHref(p.slug);
+  return (
+    <li className={`cx-card ch-${p.channel ?? 'none'}`}>
+      <span className="cx-cover" aria-hidden />
+      <div className="cx-card-body">
+        <span className="cx-avatar">
+          <PersonAvatar person={p} size={64} />
+        </span>
+        {followsYou && <span className="cx-follows">Mengikuti Anda</span>}
+        <h3>
+          {href ? <Link href={href}>{p.fullName}</Link> : p.fullName}
+          {p.isVerified && <Icon name="verified" title="Terverifikasi" />}
+        </h3>
+        <p className="cx-headline">{p.headline || 'Anggota Catalyst Society'}</p>
+        <div className="cx-tags">
+          <span className="cx-tag">
+            <Icon name={`j-${p.journeyStage}`} />
+            {STAGE_INFO[p.journeyStage]?.name}
+          </span>
+          {p.channel && <span className="cx-tag">{CHANNEL_LABEL.get(p.channel) ?? p.channel}</span>}
+          <span className="cx-tag cx-pts">
+            <Icon name="bolt" />
+            {fmtNumber(p.cataPoints ?? 0)}
+          </span>
+        </div>
+        {shared.length > 0 && (
+          <p className="cx-shared">
+            <Icon name="link" />
+            Sama dengan Anda: {shared.slice(0, 3).join(', ')}
+          </p>
+        )}
+        <div className="cx-actions">
+          <button
+            type="button"
+            className={`ui-btn ps2-btn-sm ${following ? 'ui-btn-ghost' : 'ui-btn-primary'}`}
+            onClick={onToggle}
+            disabled={disabled}
+            aria-busy={busy || undefined}
+            aria-label={`${following ? 'Batal ikuti' : 'Ikuti'} ${p.fullName}`}
+          >
+            <Icon name={following ? 'user-check' : 'user-plus'} />
+            {busy ? 'Memproses…' : following ? 'Mengikuti' : 'Ikuti'}
+          </button>
+          {href && (
+            <Link className="ui-btn ui-btn-ghost ps2-btn-sm" href={href}>
+              Lihat profil
+            </Link>
+          )}
+        </div>
+      </div>
+    </li>
+  );
+}
+
+function PersonRow({
+  p,
+  following,
+  busy,
+  disabled,
+  onToggle,
+}: {
+  p: ProfileSummary;
+  following: boolean;
+  busy: boolean;
+  disabled: boolean;
+  onToggle: () => void;
+}) {
+  const href = profilHref(p.slug);
   const body = (
     <>
-      <PersonAvatar person={p} size={detail ? 46 : 40} />
+      <PersonAvatar person={p} size={44} />
       <span>
         <b>
           {p.fullName}
           {p.isVerified && <Icon name="verified" title="Terverifikasi" />}
         </b>
-        <small>{p.headline || STAGE_INFO[p.journeyStage]?.name}</small>
-        {detail && (
-          <span className="cn-meta">
-            <span className="cn-tag">{STAGE_INFO[p.journeyStage]?.name}</span>
-            {p.channel && <span className="cn-tag">{CHANNEL_LABEL.get(p.channel) ?? p.channel}</span>}
-            <span className="cn-pts">
-              <Icon name="bolt" />
-              {fmtNumber(p.cataPoints ?? 0)}
-            </span>
-            {shared.slice(0, 3).map((s) => (
-              <span key={s} className="cn-tag is-shared" title="Sama dengan Anda">
-                {s}
-              </span>
-            ))}
-          </span>
-        )}
+        <small>
+          {p.headline || 'Anggota Catalyst Society'} · {STAGE_INFO[p.journeyStage]?.name}
+        </small>
       </span>
     </>
   );
@@ -377,9 +504,9 @@ function PersonRow({
         onClick={onToggle}
         disabled={disabled}
         aria-busy={busy || undefined}
-        aria-label={`${following ? 'Batal ikuti' : 'Ikuti'} ${p.fullName}`}
+        aria-label={`${following ? 'Batal ikuti' : 'Ikuti balik'} ${p.fullName}`}
       >
-        {busy ? 'Memproses…' : following ? 'Batal ikuti' : 'Ikuti'}
+        {busy ? 'Memproses…' : following ? 'Mengikuti' : 'Ikuti balik'}
       </button>
     </li>
   );

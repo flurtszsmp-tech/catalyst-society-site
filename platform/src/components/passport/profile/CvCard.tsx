@@ -1,25 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { CvViewer } from '@/components/passport/cv/CvViewer';
 import { usePassport } from '@/components/passport/PassportProvider';
 import { ConfirmDialog } from '@/components/ui/Dialog';
 import { Icon } from '@/components/ui/Icon';
-import { FileButton, Toggle } from '@/components/ui/form';
+import { FileButton, TextField, Toggle } from '@/components/ui/form';
 import { useToast } from '@/components/ui/Toast';
 import { assertFile, LIMITS } from '@/lib/repo/types';
 import type { Profile } from '@/lib/types';
-import { safeHref } from '@/lib/url';
 import { errorText, useReturnFocus } from './hooks';
-
-/**
- * Tautan CV dari repo: URL bertanda tangan Supabase (https) atau, di
- * mode demo, blob: milik tab ini sendiri. Selain itu ditolak.
- */
-function cvHref(u: string | null): string | null {
-  if (!u) return null;
-  if (u.startsWith(`blob:${location.origin}/`)) return u;
-  return safeHref(u);
-}
 
 /**
  * Saklar visibilitas CV. Dipakai di halaman Profil dan Settings supaya
@@ -52,10 +42,10 @@ export function CvVisibilityToggle({ profile }: { profile: Profile }) {
       hint={
         <>
           {publik
-            ? 'Aktif: siapa pun yang membuka profil publik Anda bisa melihat dan mengunduh CV.'
+            ? 'Aktif: siapa pun yang membuka profil publik Anda bisa melihat pratinjau CV.'
             : 'Nonaktif (privat): hanya Anda yang bisa membuka CV ini.'}
           {publik && !profile.isPublic && ' Profil Anda sedang privat, jadi CV tetap tersembunyi dari orang lain.'}
-          {!profile.cvFileName && ' Belum ada CV; pengaturan ini berlaku begitu Anda mengunggahnya.'}
+          {!profile.cvFileName && ' Pengaturan ini berlaku untuk PDF yang diunggah maupun tautan CV.'}
         </>
       }
     />
@@ -66,17 +56,50 @@ export function CvCard({ profile }: { profile: Profile }) {
   const { repo, setProfile } = usePassport();
   const toast = useToast();
   const fokus = useReturnFocus();
-  const [busy, setBusy] = useState<null | 'upload' | 'remove' | 'open'>(null);
+  const [busy, setBusy] = useState<null | 'upload' | 'remove' | 'link'>(null);
   const [err, setErr] = useState<string | null>(null);
   const [tanya, setTanya] = useState(false);
-  // Bila jendela baru diblokir browser, tautan ditampilkan untuk diklik sendiri.
-  const [cadangan, setCadangan] = useState<string | null>(null);
+  const [lihatCv, setLihatCv] = useState(false);
+  const [link, setLink] = useState<string | null>(null);
+  const [isianLink, setIsianLink] = useState('');
   const demo = repo.mode === 'demo';
   const ada = !!profile.cvFileName;
 
+  useEffect(() => {
+    let hidup = true;
+    repo.getCvLink(profile.id).then(
+      (u) => {
+        if (!hidup) return;
+        setLink(u);
+        setIsianLink(u ?? '');
+      },
+      () => {},
+    );
+    return () => {
+      hidup = false;
+    };
+  }, [repo, profile.id]);
+
+  const muatCv = useCallback(() => repo.getCvUrl(profile), [repo, profile]);
+
+  async function simpanLink(hapus = false) {
+    setErr(null);
+    setBusy('link');
+    try {
+      const u = hapus ? null : isianLink.trim() || null;
+      await repo.setCvLink(u);
+      setLink(u);
+      if (hapus) setIsianLink('');
+      toast(u ? 'Tautan CV disimpan.' : 'Tautan CV dihapus.');
+    } catch (e) {
+      setErr(errorText(e, 'Gagal menyimpan tautan CV.'));
+    } finally {
+      setBusy(null);
+    }
+  }
+
   async function unggah(file: File) {
     setErr(null);
-    setCadangan(null);
     try {
       assertFile(file, LIMITS.cvTypes, LIMITS.cvBytes, 'CV');
     } catch (e) {
@@ -89,38 +112,6 @@ export function CvCard({ profile }: { profile: Profile }) {
       toast(ada ? 'CV diganti.' : 'CV terunggah.');
     } catch (e) {
       setErr(errorText(e, 'Gagal mengunggah CV.'));
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  async function lihat() {
-    setErr(null);
-    setCadangan(null);
-    // Jendela dibuka sekarang, masih di dalam klik, supaya tidak dianggap
-    // popup. Alamatnya diisi sesudah tautan bertanda tangan didapat.
-    const w = window.open('', '_blank');
-    setBusy('open');
-    try {
-      const url = cvHref(await repo.getCvUrl(profile));
-      if (!url) {
-        w?.close();
-        setErr(
-          demo
-            ? 'Isi CV mode demo sudah hilang karena halaman dimuat ulang. Unggah lagi untuk melihatnya.'
-            : 'CV tidak bisa dibuka saat ini. Coba lagi sebentar lagi.',
-        );
-        return;
-      }
-      if (w) {
-        w.opener = null;
-        w.location.href = url;
-      } else {
-        setCadangan(url);
-      }
-    } catch (e) {
-      w?.close();
-      setErr(errorText(e, 'CV tidak bisa dibuka.'));
     } finally {
       setBusy(null);
     }
@@ -146,7 +137,7 @@ export function CvCard({ profile }: { profile: Profile }) {
       <div className="pf-card-head">
         <div>
           <h2 id="pf-cv-h">CV / Resume</h2>
-          <p>PDF, maksimal 5 MB. Berguna saat melamar peluang lewat Catalyst, tetapi Passport tetap lengkap tanpanya.</p>
+          <p>Unggah PDF (maksimal 5 MB) atau tautkan CV dari Google Drive. Pengunjung melihat pratinjaunya tanpa mengunduh.</p>
         </div>
         <span className="pf-badge">Opsional — tidak wajib</span>
       </div>
@@ -169,10 +160,9 @@ export function CvCard({ profile }: { profile: Profile }) {
             <span>{profile.cvVisibility === 'public' ? 'Tampil di profil publik' : 'Privat, hanya Anda'}</span>
           </div>
           <div className="pf-btns">
-            <button type="button" className="ui-btn ui-btn-ghost" onClick={() => void lihat()} disabled={!!busy}>
+            <button type="button" className="ui-btn ui-btn-ghost" onClick={() => setLihatCv(true)} disabled={!!busy}>
               <Icon name="eye" />
-              {busy === 'open' ? 'Membuka…' : 'Lihat'}
-              <span className="sr-only"> CV (tab baru)</span>
+              Pratinjau
             </button>
             <FileButton accept="application/pdf" onFile={(f) => void unggah(f)} disabled={!!busy}>
               <Icon name="upload" />
@@ -217,15 +207,45 @@ export function CvCard({ profile }: { profile: Profile }) {
         )}
       </div>
 
-      {cadangan && (
-        <p className="ui-hint">
-          Browser memblokir tab baru.{' '}
-          <a className="pf-link-open" href={cadangan} target="_blank" rel="noopener noreferrer">
-            Buka CV di sini
-            <Icon name="arrow" />
-          </a>
-        </p>
-      )}
+      <div className="pf-sep cv-link">
+        <TextField
+          label="Tautan CV (opsional)"
+          hint={
+            link
+              ? 'Tautan ini didahulukan di atas PDF yang diunggah. Pastikan akses berbagi Google Drive disetel "Siapa saja yang memiliki link".'
+              : 'Contoh: tautan berbagi Google Drive. Setel aksesnya ke "Siapa saja yang memiliki link".'
+          }
+          type="url"
+          inputMode="url"
+          placeholder="https://drive.google.com/file/d/…"
+          value={isianLink}
+          maxLength={500}
+          onChange={(e) => setIsianLink(e.target.value)}
+        />
+        <div className="pf-btns">
+          <button
+            type="button"
+            className="ui-btn ui-btn-primary"
+            onClick={() => void simpanLink()}
+            disabled={!!busy || isianLink.trim() === (link ?? '')}
+          >
+            {busy === 'link' ? 'Menyimpan…' : 'Simpan tautan'}
+          </button>
+          {link && (
+            <>
+              <button type="button" className="ui-btn ui-btn-ghost" onClick={() => setLihatCv(true)} disabled={!!busy}>
+                <Icon name="eye" />
+                Pratinjau
+              </button>
+              <button type="button" className="ui-btn ui-btn-ghost" onClick={() => void simpanLink(true)} disabled={!!busy}>
+                <Icon name="trash" />
+                Hapus tautan
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
       {err && (
         <p className="ui-error" role="alert">
           {err}
@@ -235,6 +255,8 @@ export function CvCard({ profile }: { profile: Profile }) {
       <div className="pf-sep">
         <CvVisibilityToggle profile={profile} />
       </div>
+
+      {lihatCv && <CvViewer name={profile.cvFileName ?? profile.fullName} load={muatCv} onClose={() => setLihatCv(false)} />}
 
       {tanya && (
         <ConfirmDialog

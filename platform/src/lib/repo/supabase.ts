@@ -12,10 +12,16 @@
 import type { PostgrestError, SupabaseClient } from '@supabase/supabase-js';
 import { getBrowserSupabase } from '@/lib/supabase/client';
 import type {
+  AdminAccount,
+  AdminActivity,
+  AdminUserDetail,
   Badge,
   Certificate,
   CertificateInput,
   ClaimInput,
+  Feedback,
+  FeedbackKind,
+  FeedbackStatus,
   DailyCount,
   EarnedBadge,
   JourneyClaim,
@@ -200,23 +206,38 @@ export class SupabaseRepo implements PassportRepo {
   }
 
   async getCvUrl(profile: Pick<Profile, 'id' | 'cvFileName'>): Promise<string | null> {
+    // Tautan CV (misalnya Google Drive) didahulukan karena itu pilihan
+    // terbaru pemiliknya; RLS tabel cv_links yang memutuskan boleh tidaknya.
+    const link = await this.getCvLink(profile.id);
+    if (link) return link;
     if (!profile.cvFileName) return null;
-    // Bucket cvs privat. Tautan bertanda tangan berlaku 10 menit; RLS
-    // storage yang memutuskan apakah peminta boleh membacanya.
-    // Nama unduhan dibersihkan dan selalu berakhiran .pdf. cv_file_name
-    // diisi pemilik profil; tanpa ini pengunjung bisa menerima berkas
-    // bernama "CV.hta" atau "CV.exe" dari domain yang mereka percaya.
-    const nama =
-      profile.cvFileName
-        .replace(/\.pdf$/i, '')
-        .replace(/[^A-Za-z0-9 ._-]+/g, '')
-        .replace(/^[.\s]+|[.\s]+$/g, '')
-        .slice(0, 80) || 'CV';
-    const { data, error } = await this.db.storage.from('cvs').createSignedUrl(`${profile.id}/cv.pdf`, 600, {
-      download: `${nama}.pdf`,
-    });
+    // Bucket cvs privat. Tautan bertanda tangan berlaku 10 menit dan RLS
+    // storage yang memutuskan apakah peminta boleh membacanya. Tanpa opsi
+    // download, browser menampilkan PDF di tempat, bukan mengunduhnya.
+    const { data, error } = await this.db.storage.from('cvs').createSignedUrl(`${profile.id}/cv.pdf`, 600);
     if (error) return null;
     return data.signedUrl;
+  }
+
+  async getCvLink(userId: string): Promise<string | null> {
+    const { data, error } = await this.db.from('cv_links').select('url').eq('user_id', userId).maybeSingle();
+    if (error || !data) return null;
+    return (data.url as string) ?? null;
+  }
+
+  async setCvLink(url: string | null): Promise<void> {
+    const id = await this.me();
+    if (!url) {
+      const { error } = await this.db.from('cv_links').delete().eq('user_id', id);
+      if (error) fail(error, 'Gagal menghapus tautan CV.');
+      return;
+    }
+    const u = url.trim();
+    if (!/^https:\/\/[^\s<>"'`]+$/i.test(u)) throw new RepoError('Tautan CV harus diawali https://, misalnya tautan berbagi Google Drive.');
+    const { error } = await this.db
+      .from('cv_links')
+      .upsert({ user_id: id, url: u, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+    if (error) fail(error, 'Gagal menyimpan tautan CV.');
   }
 
   private async setColumn(col: 'avatar_path' | 'cv_file_name', value: string | null): Promise<Profile> {
@@ -370,23 +391,9 @@ export class SupabaseRepo implements PassportRepo {
     return (data ?? []).map(toMembership);
   }
 
-  async joinCommunity(slug: string, proof: string): Promise<void> {
-    const bukti = proof.trim().slice(0, 300);
-    if (bukti.length < 3) throw new RepoError('Isi bukti keanggotaan, misalnya username atau tautan profil Anda di komunitas itu.');
-    const { error } = await this.db.from('community_members').insert({ community_slug: slug, proof: bukti });
-    if (error && error.code !== '23505') fail(error, 'Gagal mengajukan keanggotaan.');
-  }
-
-  async updateMembershipProof(slug: string, proof: string): Promise<void> {
-    const id = await this.me();
-    const bukti = proof.trim().slice(0, 300);
-    if (bukti.length < 3) throw new RepoError('Bukti keanggotaan minimal 3 karakter.');
-    const { error } = await this.db
-      .from('community_members')
-      .update({ proof: bukti })
-      .eq('user_id', id)
-      .eq('community_slug', slug);
-    if (error) fail(error, 'Gagal menyimpan bukti.');
+  async joinCommunity(slug: string): Promise<void> {
+    const { error } = await this.db.from('community_members').insert({ community_slug: slug });
+    if (error && error.code !== '23505') fail(error, 'Gagal menambahkan komunitas.');
   }
 
   async leaveCommunity(slug: string): Promise<void> {
@@ -601,7 +608,15 @@ export class SupabaseRepo implements PassportRepo {
     return (data ?? []).map(toSummary);
   }
 
-  // ---------- tim Catalyst ----------
+  // ---------- masukan ----------
+  async sendFeedback(kind: FeedbackKind, message: string, page: string): Promise<void> {
+    const isi = message.trim();
+    if (isi.length < 5) throw new RepoError('Tulis masukan minimal 5 karakter.');
+    const { error } = await this.db.from('feedback').insert({ kind, message: isi.slice(0, 2000), page: page.slice(0, 200) });
+    if (error) fail(error, 'Gagal mengirim masukan.');
+  }
+
+  // ---------- admin ----------
   async isStaff(): Promise<boolean> {
     const { data, error } = await this.db.rpc('is_staff');
     if (error) return false;
@@ -609,67 +624,101 @@ export class SupabaseRepo implements PassportRepo {
   }
 
   async getReviewQueue(): Promise<ReviewQueue> {
-    const orang = `profiles(${SUMMARY_COLS})`;
-    const [m, c, k] = await Promise.all([
-      this.db
-        .from('community_members')
-        .select(`user_id, ${MEMBERSHIP_COLS}, ${orang}`)
-        .eq('status', 'pending')
-        .order('joined_at')
-        .limit(200),
-      this.db
-        .from('certificates')
-        .select(`*, ${orang}`)
-        .eq('is_verified', false)
-        .eq('source', 'self')
-        .is('reviewed_at', null)
-        .order('created_at')
-        .limit(200),
-      this.db
-        .from('journey_claims')
-        .select(`user_id, ${CLAIM_COLS}, ${orang}`)
-        .eq('status', 'pending')
-        .order('created_at')
-        .limit(200),
-    ]);
-    const salah = m.error ?? c.error ?? k.error;
-    if (salah) fail(salah, 'Gagal memuat antrean pemeriksaan.');
-    const orangDari = (r: Row) => (r.profiles ? toSummary(r.profiles as Row) : null);
-    const baris = (d: unknown) => (d ?? []) as Row[];
+    const { data, error } = await this.db
+      .from('journey_claims')
+      .select(`user_id, ${CLAIM_COLS}, profiles(${SUMMARY_COLS})`)
+      .eq('status', 'pending')
+      .order('created_at')
+      .limit(300);
+    if (error) fail(error, 'Gagal memuat antrean pemeriksaan.');
     return {
-      memberships: baris(m.data).flatMap((r) => {
-        const person = orangDari(r);
-        return person ? [{ person, membership: toMembership(r) }] : [];
-      }),
-      certificates: baris(c.data).flatMap((r) => {
-        const person = orangDari(r);
-        return person ? [{ person, certificate: toCertificate(r) }] : [];
-      }),
-      claims: baris(k.data).flatMap((r) => {
-        const person = orangDari(r);
-        return person ? [{ person, claim: toClaim(r) }] : [];
-      }),
+      claims: ((data ?? []) as Row[]).flatMap((r) =>
+        r.profiles ? [{ person: toSummary(r.profiles as Row), claim: toClaim(r) }] : [],
+      ),
     };
-  }
-
-  async reviewMembership(userId: string, slug: string, approve: boolean, note?: string): Promise<void> {
-    const { error } = await this.db.rpc('staff_review_membership', {
-      p_user: userId,
-      p_slug: slug,
-      p_approve: approve,
-      p_note: note ?? null,
-    });
-    if (error) fail(error, 'Gagal menyimpan pemeriksaan.');
-  }
-
-  async reviewCertificate(id: string, approve: boolean, note?: string): Promise<void> {
-    const { error } = await this.db.rpc('staff_review_certificate', { p_id: id, p_approve: approve, p_note: note ?? null });
-    if (error) fail(error, 'Gagal menyimpan pemeriksaan.');
   }
 
   async reviewClaim(id: string, approve: boolean, note?: string): Promise<void> {
     const { error } = await this.db.rpc('staff_review_claim', { p_id: id, p_approve: approve, p_note: note ?? null });
     if (error) fail(error, 'Gagal menyimpan pemeriksaan.');
+  }
+
+  async adminAccounts(): Promise<AdminAccount[]> {
+    const { data, error } = await this.db.rpc('admin_users');
+    if (error) fail(error, 'Gagal memuat daftar akun.');
+    return ((data ?? []) as Row[]).map((r) => ({
+      id: r.id as string,
+      email: (r.email as string) ?? null,
+      provider: (r.provider as string) ?? 'email',
+      createdAt: r.created_at as string,
+      lastSignInAt: (r.last_sign_in_at as string) ?? null,
+      emailConfirmed: !!r.email_confirmed,
+    }));
+  }
+
+  async adminProfiles(): Promise<Profile[]> {
+    const { data, error } = await this.db.from('profiles').select(PROFILE_COLS).order('created_at', { ascending: false }).limit(5000);
+    if (error) fail(error, 'Gagal memuat profil.');
+    return (data ?? []).map(toProfile);
+  }
+
+  async adminActivity(limit = 300): Promise<AdminActivity[]> {
+    const { data, error } = await this.db.rpc('admin_activity', { p_limit: limit });
+    if (error) fail(error, 'Gagal memuat aktivitas.');
+    return ((data ?? []) as Row[]).map((r) => ({
+      kind: r.kind as string,
+      userId: (r.user_id as string) ?? null,
+      detail: r.detail as string,
+      at: r.at as string,
+    }));
+  }
+
+  async adminFeedback(): Promise<Feedback[]> {
+    const { data, error } = await this.db
+      .from('feedback')
+      .select('id, user_id, kind, message, page, status, created_at')
+      .order('created_at', { ascending: false })
+      .limit(1000);
+    if (error) fail(error, 'Gagal memuat masukan.');
+    return ((data ?? []) as Row[]).map(toFeedback);
+  }
+
+  async adminSetFeedbackStatus(id: number, status: FeedbackStatus): Promise<void> {
+    const { error } = await this.db.from('feedback').update({ status }).eq('id', id);
+    if (error) fail(error, 'Gagal menyimpan status masukan.');
+  }
+
+  async adminUserDetail(userId: string): Promise<AdminUserDetail> {
+    const { data: row, error } = await this.db.from('profiles').select(PROFILE_COLS).eq('id', userId).maybeSingle();
+    if (error || !row) fail(error, 'Profil tidak ditemukan.');
+    const profile = toProfile(row as Row);
+    const dari = new Date();
+    dari.setDate(dari.getDate() - 29);
+    const [journey, badges, communities, projects, certificates, c, poin, klaim, masukan, lihat, cvLink] = await Promise.all([
+      this.listJourney(userId),
+      this.listEarnedBadges(userId),
+      this.listCommunities(userId),
+      this.listProjects(userId),
+      this.listCertificates(userId),
+      this.countConnections(userId),
+      this.db.from('point_events').select('delta, reason, created_at').eq('user_id', userId).order('created_at'),
+      this.db.from('journey_claims').select(CLAIM_COLS).eq('user_id', userId).order('created_at', { ascending: false }),
+      this.db.from('feedback').select('id, user_id, kind, message, page, status, created_at').eq('user_id', userId).order('created_at', { ascending: false }),
+      this.db
+        .from('profile_views')
+        .select('*', { count: 'exact', head: true })
+        .eq('profile_id', userId)
+        .gte('viewed_on', dari.toISOString().slice(0, 10)),
+      this.getCvLink(userId),
+    ]);
+    return {
+      bundle: { profile, journey, badges, communities, projects, certificates, followers: c.followers, following: c.following },
+      points: ((poin.data ?? []) as Row[]).map((r) => ({ delta: r.delta as number, reason: r.reason as string, createdAt: r.created_at as string })),
+      claims: ((klaim.data ?? []) as Row[]).map(toClaim),
+      feedback: ((masukan.data ?? []) as Row[]).map(toFeedback),
+      views30d: lihat.count ?? 0,
+      cvLink,
+    };
   }
 
   // ---------- analitik ----------
@@ -739,4 +788,16 @@ export class SupabaseRepo implements PassportRepo {
     if (error) fail(error, 'Gagal menghapus akun.');
     await this.db.auth.signOut();
   }
+}
+
+function toFeedback(r: Row): Feedback {
+  return {
+    id: Number(r.id),
+    userId: (r.user_id as string) ?? null,
+    kind: r.kind as Feedback['kind'],
+    message: r.message as string,
+    page: (r.page as string) ?? null,
+    status: r.status as Feedback['status'],
+    createdAt: r.created_at as string,
+  };
 }

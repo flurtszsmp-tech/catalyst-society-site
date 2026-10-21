@@ -8,7 +8,7 @@ import { BrandMark } from '@/components/ui/Icon';
 import { ToastProvider } from '@/components/ui/Toast';
 import { getRepo } from '@/lib/repo';
 import type { PassportBundle } from '@/lib/types';
-import { CvButton, ViewRecorder } from './PublicClient';
+import { PublicCv, ViewRecorder } from './PublicClient';
 import '@/styles/ui.css';
 import '@/styles/passport.css';
 
@@ -32,7 +32,6 @@ export default function PublicProfile() {
   }, [b]);
 
   const p = b?.profile;
-  const cv = p && p.cvFileName && p.cvVisibility === 'public' ? p.cvFileName : null;
 
   return (
     <div className="pass">
@@ -87,7 +86,7 @@ export default function PublicProfile() {
               </div>
               <div className="pass-col">
                 <PointsCard profile={p} events={[]} />
-                <BadgesCard badges={b.badges} footer={cv ? <CvButton id={p.id} cvFileName={cv} /> : undefined} />
+                <BadgesCard badges={b.badges} footer={<PublicCv profile={p} />} />
                 <CertificatesCard certificates={b.certificates} />
               </div>
             </main>

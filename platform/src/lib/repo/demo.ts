@@ -3,16 +3,17 @@
 /* ===========================================================
    DemoRepo — seluruh Passport di localStorage, tanpa server.
 
-   Aturannya meniru supabase/migrations/0002_journey_v2.sql persis: tiap
-   alasan poin hanya sekali, tahap journey berurutan dan hanya naik, poin
-   tidak memengaruhi tahap, dan keanggotaan komunitas menunggu pemeriksaan
-   tim sebelum dihitung. Mode demo tidak punya tim pemeriksa, jadi
-   pengajuan baru tetap berstatus menunggu.
+   Aturannya meniru migrasi 0002 dan 0003 persis: tiap alasan poin hanya
+   sekali, tahap journey berurutan dan hanya naik, poin tidak memengaruhi
+   tahap, komunitas bebas tanpa poin, dan sertifikat terverifikasi bila ID
+   kredensial atau tautan bukti disertakan. Mode demo tidak punya admin,
+   jadi pengajuan tahap tetap berstatus menunggu.
    =========================================================== */
 import { BADGE_CATALOG, DEMO_USER_ID, SAMPLE_PEOPLE, buildDemoSeed, type DemoState } from '@/lib/data/demo-seed';
 import { findCommunity } from '@/lib/data/communities';
 import {
   STAGES,
+  type AdminUserDetail,
   type Certificate,
   type CertificateInput,
   type ClaimInput,
@@ -113,6 +114,7 @@ export class DemoRepo implements PassportRepo {
     const kanal = new Set(
       this.s.memberships.filter((m) => m.status === 'verified').map((m) => findCommunity(m.slug)?.channel).filter(Boolean),
     );
+    if (this.s.certificates.some((c) => c.isVerified)) this.giveBadge('certified');
     if (pr.verifiedCommunities >= 1) this.giveBadge('first_community');
     if (pr.verifiedCommunities >= 5) this.giveBadge('community_explorer');
     if (kanal.size >= 3) this.giveBadge('ecosystem_native');
@@ -219,7 +221,19 @@ export class DemoRepo implements PassportRepo {
   }
 
   async getCvUrl() {
-    return this.cvObjectUrl;
+    return this.s.cvLink ?? this.cvObjectUrl;
+  }
+
+  async getCvLink() {
+    return this.s.cvLink ?? null;
+  }
+
+  async setCvLink(url: string | null) {
+    if (url && !/^https:\/\/[^\s<>"'`]+$/i.test(url.trim())) {
+      throw new RepoError('Tautan CV harus diawali https://, misalnya tautan berbagi Google Drive.');
+    }
+    this.s.cvLink = url ? url.trim() : null;
+    this.save();
   }
 
   // ---------- capaian ----------
@@ -286,24 +300,10 @@ export class DemoRepo implements PassportRepo {
     return structuredClone(this.s.memberships);
   }
 
-  async joinCommunity(slug: string, proof: string) {
-    const bukti = proof.trim().slice(0, 300);
-    if (bukti.length < 3) throw new RepoError('Isi bukti keanggotaan, misalnya username atau tautan profil Anda di komunitas itu.');
+  async joinCommunity(slug: string) {
     if (this.s.memberships.some((m) => m.slug === slug)) return;
-    this.s.memberships.unshift({ slug, status: 'pending', proof: bukti, reviewNote: null, joinedAt: new Date().toISOString() });
-    this.save();
-  }
-
-  async updateMembershipProof(slug: string, proof: string) {
-    const bukti = proof.trim().slice(0, 300);
-    if (bukti.length < 3) throw new RepoError('Bukti keanggotaan minimal 3 karakter.');
-    const m = this.s.memberships.find((x) => x.slug === slug);
-    if (!m || m.status === 'verified') return;
-    m.proof = bukti;
-    if (m.status === 'rejected') {
-      m.status = 'pending';
-      m.reviewNote = null;
-    }
+    this.s.memberships.unshift({ slug, status: 'verified', proof: null, reviewNote: null, joinedAt: new Date().toISOString() });
+    this.recompute();
     this.save();
   }
 
@@ -376,7 +376,7 @@ export class DemoRepo implements PassportRepo {
       userId: DEMO_USER_ID,
       source: 'self',
       imagePath,
-      isVerified: false,
+      isVerified: !!(input.credentialId?.trim() || input.credentialUrl?.trim()),
       reviewNote: null,
       reviewedAt: null,
       createdAt: new Date().toISOString(),
@@ -393,14 +393,19 @@ export class DemoRepo implements PassportRepo {
     if (i < 0) throw new RepoError('Sertifikat tidak ditemukan.');
     const cur = this.s.certificates[i];
     if (cur.source !== 'self') throw new RepoError('Sertifikat terbitan Catalyst tidak bisa diubah.');
-    if (cur.isVerified) throw new RepoError('Sertifikat yang sudah diverifikasi tidak bisa diubah.');
     let imagePath = cur.imagePath;
     if (image === null) imagePath = null;
     else if (image) {
       assertFile(image, LIMITS.certTypes, LIMITS.certBytes, 'Gambar sertifikat');
       imagePath = await shrinkImage(image, 900);
     }
-    this.s.certificates[i] = { ...cur, ...input, imagePath };
+    this.s.certificates[i] = {
+      ...cur,
+      ...input,
+      imagePath,
+      isVerified: !!(input.credentialId?.trim() || input.credentialUrl?.trim()),
+    };
+    this.recompute();
     this.save();
     return structuredClone(this.s.certificates[i]);
   }
@@ -470,21 +475,42 @@ export class DemoRepo implements PassportRepo {
     return structuredClone(out);
   }
 
-  // ---------- tim Catalyst ----------
+  // ---------- masukan ----------
+  async sendFeedback(_kind: string, message: string) {
+    if (message.trim().length < 5) throw new RepoError('Tulis masukan minimal 5 karakter.');
+    // Mode demo tidak punya server; masukan tidak dikirim ke mana pun.
+  }
+
+  // ---------- admin ----------
   async isStaff() {
     return false;
   }
   async getReviewQueue(): Promise<ReviewQueue> {
-    return { memberships: [], certificates: [], claims: [] };
+    return { claims: [] };
   }
-  async reviewMembership(): Promise<void> {
-    throw new RepoError('Pemeriksaan hanya tersedia saat Passport tersambung ke Supabase.');
-  }
-  async reviewCertificate(): Promise<void> {
-    throw new RepoError('Pemeriksaan hanya tersedia saat Passport tersambung ke Supabase.');
+  private tanpaAdmin(): never {
+    throw new RepoError('Dashboard admin hanya tersedia saat tersambung ke Supabase.');
   }
   async reviewClaim(): Promise<void> {
-    throw new RepoError('Pemeriksaan hanya tersedia saat Passport tersambung ke Supabase.');
+    this.tanpaAdmin();
+  }
+  async adminAccounts() {
+    return [];
+  }
+  async adminProfiles() {
+    return [];
+  }
+  async adminActivity() {
+    return [];
+  }
+  async adminFeedback() {
+    return [];
+  }
+  async adminSetFeedbackStatus(): Promise<void> {
+    this.tanpaAdmin();
+  }
+  async adminUserDetail(): Promise<AdminUserDetail> {
+    this.tanpaAdmin();
   }
 
   // ---------- analitik ----------

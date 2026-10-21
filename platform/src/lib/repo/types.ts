@@ -1,8 +1,14 @@
 import type {
+  AdminAccount,
+  AdminActivity,
+  AdminUserDetail,
   Badge,
   Certificate,
   CertificateInput,
   ClaimInput,
+  Feedback,
+  FeedbackKind,
+  FeedbackStatus,
   DailyCount,
   EarnedBadge,
   JourneyClaim,
@@ -52,8 +58,16 @@ export interface PassportRepo {
   /** CV opsional, PDF, maksimal 5 MB. */
   uploadCv(file: File): Promise<Profile>;
   removeCv(): Promise<Profile>;
-  /** Tautan sementara untuk membuka CV. null bila tidak ada atau tidak boleh dibaca. */
+  /**
+   * Tautan untuk membuka CV di browser, tanpa mengunduh. Tautan CV (misalnya
+   * Google Drive) didahulukan; bila tidak ada, berkas PDF yang diunggah.
+   * null bila tidak ada atau tidak boleh dibaca.
+   */
   getCvUrl(profile: Pick<Profile, 'id' | 'cvFileName'>): Promise<string | null>;
+  /** Tautan CV milik userId, bila boleh dibaca. */
+  getCvLink(userId: string): Promise<string | null>;
+  /** null menghapus tautan. */
+  setCvLink(url: string | null): Promise<void>;
 
   // ---------- capaian ----------
   listJourney(userId: string): Promise<JourneyEvent[]>;
@@ -76,10 +90,7 @@ export interface PassportRepo {
   listCommunities(userId: string): Promise<string[]>;
   /** Seluruh keanggotaan milik sendiri, termasuk yang menunggu atau ditolak. */
   listMyMemberships(): Promise<Membership[]>;
-  /** Bergabung berarti mengajukan: tim memeriksa bukti sebelum diterima. */
-  joinCommunity(slug: string, proof: string): Promise<void>;
-  /** Mengganti bukti. Keanggotaan yang ditolak kembali masuk antrean. */
-  updateMembershipProof(slug: string, proof: string): Promise<void>;
+  joinCommunity(slug: string): Promise<void>;
   leaveCommunity(slug: string): Promise<void>;
 
   // ---------- projek ----------
@@ -122,14 +133,21 @@ export interface PassportRepo {
    */
   getPublicBundle(slug: string): Promise<PassportBundle | null>;
 
-  // ---------- tim Catalyst ----------
-  /** true bila pengguna yang masuk anggota tim pemeriksa. */
+  // ---------- masukan ----------
+  sendFeedback(kind: FeedbackKind, message: string, page: string): Promise<void>;
+
+  // ---------- admin ----------
+  /** true bila pengguna yang masuk adalah admin Catalyst (info@catalystsociety.id). */
   isStaff(): Promise<boolean>;
-  /** Semua yang menunggu pemeriksaan. Hanya terbaca tim. */
+  /** Pengajuan tahap yang menunggu pemeriksaan. Hanya terbaca admin. */
   getReviewQueue(): Promise<ReviewQueue>;
-  reviewMembership(userId: string, slug: string, approve: boolean, note?: string): Promise<void>;
-  reviewCertificate(id: string, approve: boolean, note?: string): Promise<void>;
   reviewClaim(id: string, approve: boolean, note?: string): Promise<void>;
+  adminAccounts(): Promise<AdminAccount[]>;
+  adminProfiles(): Promise<Profile[]>;
+  adminActivity(limit?: number): Promise<AdminActivity[]>;
+  adminFeedback(): Promise<Feedback[]>;
+  adminSetFeedbackStatus(id: number, status: FeedbackStatus): Promise<void>;
+  adminUserDetail(userId: string): Promise<AdminUserDetail>;
 
   // ---------- akun ----------
   /** Kata sandi baru untuk akun email, minimal 8 karakter. Akun Google tidak memakainya. */

@@ -181,7 +181,7 @@ export function CertificatesCard({ certificates, owner = false }: { certificates
                   <span>{c.issuer}</span>
                   {c.isVerified ? (
                     <span className="pass-cert-ok">
-                      <Icon name="check" />
+                      <Icon name="verified" />
                       Terverifikasi
                     </span>
                   ) : (

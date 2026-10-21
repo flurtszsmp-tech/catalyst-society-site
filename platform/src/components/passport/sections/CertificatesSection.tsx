@@ -97,7 +97,7 @@ export function CertificatesSection() {
     <div className="ps2">
       <PageHead
         title="Sertifikat"
-        lead="Sertifikat dari program Catalyst tercatat otomatis dan terverifikasi. Sertifikat lain yang Anda tambahkan diperiksa tim Catalyst; yang sudah diterima memberi +25 poin CATA dan tidak bisa diubah lagi."
+        lead="Sertifikat dengan ID kredensial atau tautan bukti langsung bertanda terverifikasi. Sertifikat tanpa bukti tetap tampil, dengan keterangan belum terverifikasi."
       >
         {!loading && !error && (
           <button
@@ -206,17 +206,14 @@ function CertItem({ c, onEdit, onDelete }: { c: Certificate; onEdit: () => void;
       <div className="ps2-cert-body">
         <div>
           {verified ? (
-            <span className="ps2-pill ps2-pill-solid">
+            <span className="cert-ok">
               <Icon name="verified" />
               Terverifikasi
             </span>
           ) : (
-            <span className={`ps2-pill jr-st ${c.reviewedAt ? 'is-rejected' : 'is-pending'}`}>
-              {c.reviewedAt ? 'Ditolak tim, perbaiki lalu simpan ulang' : 'Belum terverifikasi · menunggu tim'}
-            </span>
+            <span className="cert-wait">Belum terverifikasi · tambahkan ID kredensial atau tautan bukti</span>
           )}
         </div>
-        {!verified && c.reviewNote && <p className="jr-note">Catatan tim: {c.reviewNote}</p>}
         <h3 id={`ps2-cert-${c.id}`} tabIndex={-1}>
           {c.title}
         </h3>
@@ -390,14 +387,23 @@ function CertForm({
         <TextField label="Tanggal terbit" type="date" value={v.issuedOn} onChange={set('issuedOn')} error={errors.issuedOn} />
         <TextField
           label="ID kredensial"
+          hint="Nomor sertifikat dari penerbit."
           value={v.credentialId}
           onChange={set('credentialId')}
           maxLength={80}
           error={errors.credentialId}
         />
       </div>
+      <p className="cert-rule">
+        <Icon name="verified" />
+        <span>
+          Isi <b>ID kredensial</b> atau <b>tautan bukti</b> supaya sertifikat langsung bertanda terverifikasi. Tanpa keduanya, sertifikat
+          tetap tampil di profil publik dengan keterangan kecil &ldquo;belum terverifikasi&rdquo;.
+        </span>
+      </p>
       <TextField
-        label="Tautan kredensial"
+        label="Tautan kredensial / bukti"
+        hint="Halaman verifikasi penerbit, unggahan LinkedIn, atau tautan Google Drive."
         type="url"
         inputMode="url"
         placeholder="https://"

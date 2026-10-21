@@ -3,24 +3,16 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePassport } from '@/components/passport/PassportProvider';
-import { ConfirmDialog, Modal } from '@/components/ui/Dialog';
-import { FormError, SubmitButton, TextField } from '@/components/ui/form';
+import { ConfirmDialog } from '@/components/ui/Dialog';
 import { Icon } from '@/components/ui/Icon';
 import { useToast } from '@/components/ui/Toast';
 import { CHANNELS, COMMUNITIES, visibleCommunities, type ChannelKey, type Community } from '@/lib/data/communities';
-import type { Membership } from '@/lib/types';
-import { initials } from '@/lib/url';
+import { initials, safeHref } from '@/lib/url';
 import { Card, EmptyState, ErrorState, PageHead, SessionGate, Skeleton, errMsg, useFocusAfterRender, useLoad } from './common';
 
 const CHANNEL_LABEL = new Map(CHANNELS.map((c) => [c.key, c.label.id]));
-
-const STATUS: Record<Membership['status'], { label: string; cls: string }> = {
-  pending: { label: 'Menunggu verifikasi', cls: 'is-pending' },
-  verified: { label: 'Terverifikasi', cls: 'is-approved' },
-  rejected: { label: 'Ditolak', cls: 'is-rejected' },
-};
 
 /**
  * Logo komunitas berasal dari data tim di repo, berupa path lokal di
@@ -43,49 +35,74 @@ function Logo({ c, name }: { c: Community | null; name: string }) {
   return <Image className="ps2-comm-logo" src={src} alt="" width={40} height={40} />;
 }
 
+/** Tautan grup komunitas (WhatsApp, Discord, Telegram, dan sebagainya), bila ada. */
+function joinUrl(c: Community | null): string | null {
+  return safeHref(c?.join.url ?? null);
+}
+
 export function CommunitiesSection() {
   const { repo, user, loading, error, reload } = usePassport();
   const toast = useToast();
   const params = useSearchParams();
   const uid = user?.id ?? null;
-  const load = useMemo(() => (uid ? () => repo.listMyMemberships() : null), [repo, uid]);
+  const load = useMemo(() => (uid ? () => repo.listCommunities(uid) : null), [repo, uid]);
   const mine = useLoad(load);
   const focusLater = useFocusAfterRender();
 
   const [channel, setChannel] = useState<ChannelKey | 'all'>('all');
   const [pending, setPending] = useState<string | null>(null);
   const [leaving, setLeaving] = useState<{ slug: string; name: string } | null>(null);
-  /** Komunitas yang sedang diajukan atau buktinya sedang diperbarui. */
-  const [ajukan, setAjukan] = useState<{ c: Community | null; slug: string; name: string; proof: string; update: boolean } | null>(null);
 
-  const joined = useMemo(() => new Map((mine.data ?? []).map((m) => [m.slug, m])), [mine.data]);
-  const verified = (mine.data ?? []).filter((m) => m.status === 'verified').length;
-  const menunggu = (mine.data ?? []).filter((m) => m.status === 'pending').length;
+  const joined = useMemo(() => new Set(mine.data ?? []), [mine.data]);
   const discover = useMemo(
     () => visibleCommunities().filter((c) => !joined.has(c.slug) && (channel === 'all' || c.channel === channel)),
     [joined, channel],
   );
 
-  // ?gabung=slug dari halaman detail komunitas langsung membuka formulir pengajuan.
-  const gabungParam = params.get('gabung');
-  useEffect(() => {
-    if (!gabungParam || !mine.data || joined.has(gabungParam)) return;
-    const c = COMMUNITIES.find((x) => x.slug === gabungParam);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (c) setAjukan({ c, slug: c.slug, name: c.name, proof: '', update: false });
-  }, [gabungParam, mine.data, joined]);
-
-  const kirim = async (proof: string) => {
-    if (!ajukan) return;
-    const { slug, name, update } = ajukan;
-    if (update) await repo.updateMembershipProof(slug, proof);
-    else await repo.joinCommunity(slug, proof);
-    const baru = await repo.listMyMemberships();
-    mine.update(() => baru);
-    toast(update ? `Bukti untuk ${name} diperbarui.` : `Pengajuan ${name} terkirim. Tim Catalyst akan memeriksanya.`);
-    setAjukan(null);
-    focusLater('ps2-mine-title');
+  /**
+   * Menambahkan komunitas ke Passport lalu membuka grupnya. Tab baru dibuka
+   * sinkron di dalam klik, sebelum menunggu server, supaya tidak diblokir
+   * penghalang pop-up; opener diputus supaya grup tidak bisa menyentuh halaman ini.
+   */
+  const join = async (c: Community) => {
+    const url = joinUrl(c);
+    // Bukan fitur 'noopener': dengan itu window.open selalu null dan blokir
+    // pop-up tidak bisa dikenali. opener diputus manual.
+    const w = url ? window.open(url, '_blank') : null;
+    if (w) w.opener = null;
+    setPending(c.slug);
+    try {
+      await repo.joinCommunity(c.slug);
+      mine.update((list) => (list.includes(c.slug) ? list : [...list, c.slug]));
+      toast(url ? `${c.name} ditambahkan. Grupnya dibuka di tab baru.` : `${c.name} ditambahkan ke Passport.`);
+      if (url && !w) toast('Browser memblokir tab baru. Buka grupnya lewat tombol Buka grup.', 'error');
+      focusLater('ps2-mine-title');
+      void reload();
+    } catch (e) {
+      toast(errMsg(e, 'Gagal menambahkan komunitas.'), 'error');
+    } finally {
+      setPending(null);
+    }
   };
+
+  // ?gabung=slug dari halaman detail komunitas langsung menambahkan komunitas itu.
+  const gabungParam = params.get('gabung');
+  const sudahGabung = useRef(false);
+  useEffect(() => {
+    if (!gabungParam || !mine.data || sudahGabung.current || joined.has(gabungParam)) return;
+    const c = COMMUNITIES.find((x) => x.slug === gabungParam);
+    if (!c) return;
+    sudahGabung.current = true;
+    // Tanpa klik, tab baru akan diblokir browser; grupnya cukup ditawarkan.
+    void repo.joinCommunity(c.slug).then(
+      () => {
+        mine.update((list) => (list.includes(c.slug) ? list : [...list, c.slug]));
+        toast(`${c.name} ditambahkan ke Passport.`);
+        void reload();
+      },
+      (e) => toast(errMsg(e, 'Gagal menambahkan komunitas.'), 'error'),
+    );
+  }, [gabungParam, mine, joined, repo, toast, reload]);
 
   const leave = async () => {
     if (!leaving) return;
@@ -93,7 +110,7 @@ export function CommunitiesSection() {
     setPending(slug);
     try {
       await repo.leaveCommunity(slug);
-      mine.update((list) => list.filter((m) => m.slug !== slug));
+      mine.update((list) => list.filter((s) => s !== slug));
       toast(`Anda keluar dari ${name}.`);
       setLeaving(null);
       focusLater('ps2-mine-title');
@@ -109,56 +126,45 @@ export function CommunitiesSection() {
     <div className="ps2">
       <PageHead
         title="Komunitas"
-        lead="Ajukan komunitas mitra yang benar-benar Anda ikuti. Tim Catalyst memeriksa setiap keanggotaan sebelum tampil di Passport publik Anda."
+        lead="Tambahkan komunitas mitra yang Anda ikuti. Saat ditambahkan, grup komunitasnya langsung terbuka supaya Anda bisa bergabung."
       />
       <SessionGate loading={loading} error={error} onRetry={() => void reload()}>
         <div className="ps2-grid-2">
-          <Card
-            id="ps2-mine-title"
-            title="Komunitas saya"
-            aside={mine.data ? <span className="ps2-pill">{verified} terverifikasi</span> : undefined}
-          >
+          <Card id="ps2-mine-title" title="Komunitas saya" aside={mine.data ? <span className="ps2-pill">{mine.data.length} komunitas</span> : undefined}>
             {mine.error ? (
               <ErrorState message={mine.error} onRetry={mine.retry} />
             ) : !mine.data ? (
               <Skeleton rows={3} height={64} label="Memuat komunitas Anda…" />
             ) : mine.data.length === 0 ? (
               <EmptyState icon="users" title="Belum ada komunitas">
-                Pilih komunitas di bagian Temukan komunitas, lalu sertakan bukti keanggotaan Anda.
+                Pilih komunitas di bagian Temukan komunitas. Grupnya langsung terbuka di tab baru.
               </EmptyState>
             ) : (
               <ul className="ps2-comms">
-                {mine.data.map((m) => {
-                  const c = COMMUNITIES.find((x) => x.slug === m.slug) ?? null;
-                  const name = c?.name ?? m.slug;
+                {mine.data.map((slug) => {
+                  const c = COMMUNITIES.find((x) => x.slug === slug) ?? null;
+                  const name = c?.name ?? slug;
                   const visible = c && c.status !== 'hidden';
-                  const st = STATUS[m.status];
+                  const url = joinUrl(c);
                   return (
-                    <li key={m.slug} className="ps2-comm cm-item">
+                    <li key={slug} className="ps2-comm">
                       <Logo c={c} name={name} />
                       <div className="ps2-comm-txt">
-                        {visible ? <Link href={`/communities/${encodeURIComponent(m.slug)}`}>{name}</Link> : <b>{name}</b>}
-                        <small>
-                          <span className={`ps2-pill jr-st ${st.cls}`}>{st.label}</span>
-                          {m.proof && <span className="cm-proof">Bukti: {m.proof}</span>}
-                        </small>
-                        {m.status === 'rejected' && m.reviewNote && <small className="jr-note">Catatan tim: {m.reviewNote}</small>}
+                        {visible ? <Link href={`/communities/${encodeURIComponent(slug)}`}>{name}</Link> : <b>{name}</b>}
+                        <small>{c?.category ?? 'Komunitas tidak lagi ditampilkan'}</small>
                       </div>
                       <div className="cm-act">
-                        {m.status !== 'verified' && (
-                          <button
-                            type="button"
-                            className="ui-btn ui-btn-ghost ps2-btn-sm"
-                            onClick={() => setAjukan({ c, slug: m.slug, name, proof: m.proof ?? '', update: true })}
-                          >
-                            {m.status === 'rejected' ? 'Perbaiki bukti' : 'Ubah bukti'}
-                          </button>
+                        {url && (
+                          <a className="ui-btn ui-btn-ghost ps2-btn-sm" href={url} target="_blank" rel="noopener noreferrer">
+                            Buka grup
+                            <Icon name="external" />
+                          </a>
                         )}
                         <button
                           type="button"
                           className="ui-btn ui-btn-ghost ps2-btn-sm"
-                          onClick={() => setLeaving({ slug: m.slug, name })}
-                          disabled={pending === m.slug}
+                          onClick={() => setLeaving({ slug, name })}
+                          disabled={pending === slug}
                           aria-label={`Keluar dari ${name}`}
                         >
                           Keluar
@@ -171,40 +177,30 @@ export function CommunitiesSection() {
             )}
           </Card>
 
-          <Card id="ps2-rewards-title" title="Cara verifikasi">
-            <ol className="ps2-rewards">
-              <li className="ps2-reward">
-                <span className="ps2-reward-n" aria-hidden>
-                  1
-                </span>
+          <Card id="ps2-rewards-title" title="Komunitas di Journey">
+            <ul className="cm-info">
+              <li>
+                <Icon name="users" />
                 <span>
-                  Pilih komunitas dan sertakan bukti
-                  <small>Username, tautan profil, atau nomor anggota Anda di komunitas itu.</small>
+                  <b>Bebas bergabung</b>
+                  <small>Tidak perlu verifikasi. Komunitas langsung tampil di Passport publik Anda.</small>
                 </span>
               </li>
-              <li className="ps2-reward">
-                <span className="ps2-reward-n" aria-hidden>
-                  2
-                </span>
+              <li>
+                <Icon name="j-connector" />
                 <span>
-                  Tim Catalyst memeriksa
-                  <small>Biasanya dalam beberapa hari kerja. Status tampil di daftar Komunitas saya.</small>
+                  <b>Syarat tahap Connector</b>
+                  <small>Lima komunitas ditambah mengikuti lima orang membuka tahap Connector.</small>
                 </span>
               </li>
-              <li className={`ps2-reward${verified >= 5 ? ' is-done' : ''}`}>
-                <span className="ps2-reward-n" aria-hidden>
-                  {verified >= 5 ? <Icon name="check" size={14} /> : 3}
-                </span>
+              <li>
+                <Icon name="bolt" />
                 <span>
-                  Terverifikasi: +5 poin CATA per komunitas
-                  <small>Lima komunitas terverifikasi, ditambah lima koneksi, membuka tahap Connector.</small>
+                  <b>Tidak memberi poin CATA</b>
+                  <small>Poin CATA berasal dari tahap Journey dan profil yang lengkap, bukan dari jumlah komunitas.</small>
                 </span>
               </li>
-            </ol>
-            <p className="ps2-sub" style={{ marginTop: 12 }}>
-              {menunggu > 0 ? `${menunggu} pengajuan sedang diperiksa. ` : ''}
-              Keluar lalu mengajukan ulang komunitas yang sama tidak memberi poin lagi.
-            </p>
+            </ul>
           </Card>
         </div>
 
@@ -226,8 +222,8 @@ export function CommunitiesSection() {
           ) : discover.length === 0 ? (
             <EmptyState icon="search" title="Tidak ada komunitas lain">
               {channel === 'all'
-                ? 'Anda sudah mengajukan semua komunitas mitra.'
-                : `Tidak ada komunitas ${CHANNEL_LABEL.get(channel) ?? ''} yang belum Anda ajukan.`}
+                ? 'Anda sudah menambahkan semua komunitas mitra.'
+                : `Tidak ada komunitas ${CHANNEL_LABEL.get(channel) ?? ''} yang belum Anda tambahkan.`}
             </EmptyState>
           ) : (
             <ul className="ps2-comms">
@@ -243,10 +239,13 @@ export function CommunitiesSection() {
                   <button
                     type="button"
                     className="ui-btn ui-btn-primary ps2-btn-sm"
-                    onClick={() => setAjukan({ c, slug: c.slug, name: c.name, proof: '', update: false })}
-                    aria-label={`Ajukan ${c.name}`}
+                    onClick={() => void join(c)}
+                    disabled={pending !== null}
+                    aria-busy={pending === c.slug || undefined}
+                    aria-label={`Tambahkan ${c.name}${joinUrl(c) ? ' dan buka grupnya' : ''}`}
                   >
-                    Ajukan
+                    {pending === c.slug ? 'Menambahkan…' : 'Tambahkan'}
+                    {joinUrl(c) && <Icon name="external" />}
                   </button>
                 </li>
               ))}
@@ -254,12 +253,10 @@ export function CommunitiesSection() {
           )}
         </Card>
 
-        {ajukan && <ProofDialog nama={ajukan.name} awal={ajukan.proof} update={ajukan.update} onClose={() => setAjukan(null)} onSubmit={kirim} />}
-
         <ConfirmDialog
           open={!!leaving}
           title="Keluar dari komunitas?"
-          message={<p>{leaving?.name} akan dihapus dari Passport Anda. Poin yang sudah didapat tetap tersimpan.</p>}
+          message={<p>{leaving?.name} akan dihapus dari Passport Anda.</p>}
           confirmLabel="Keluar"
           danger
           busy={!!leaving && pending === leaving.slug}
@@ -268,65 +265,5 @@ export function CommunitiesSection() {
         />
       </SessionGate>
     </div>
-  );
-}
-
-function ProofDialog({
-  nama,
-  awal,
-  update,
-  onClose,
-  onSubmit,
-}: {
-  nama: string;
-  awal: string;
-  update: boolean;
-  onClose: () => void;
-  onSubmit: (proof: string) => Promise<void>;
-}) {
-  const [proof, setProof] = useState(awal);
-  const [sibuk, setSibuk] = useState(false);
-  const [galat, setGalat] = useState<string | null>(null);
-
-  async function kirim(e: React.FormEvent) {
-    e.preventDefault();
-    setGalat(null);
-    if (proof.trim().length < 3) return setGalat('Bukti keanggotaan minimal 3 karakter.');
-    setSibuk(true);
-    try {
-      await onSubmit(proof);
-    } catch (err) {
-      setGalat(errMsg(err, 'Gagal mengirim pengajuan.'));
-    } finally {
-      setSibuk(false);
-    }
-  }
-
-  return (
-    <Modal open onClose={onClose} title={update ? `Bukti keanggotaan ${nama}` : `Ajukan ${nama}`} width={480} dismissible={!sibuk}>
-      <form className="ui-form" onSubmit={(e) => void kirim(e)}>
-        <p className="ps2-sub">
-          Tim Catalyst mencocokkan bukti ini dengan data {nama}. Keanggotaan baru tampil di Passport publik dan dihitung untuk Journey
-          setelah diterima.
-        </p>
-        <TextField
-          label="Bukti keanggotaan"
-          hint="Contoh: username Discord/Telegram, tautan profil di komunitas, atau nomor anggota."
-          value={proof}
-          onChange={(e) => setProof(e.target.value)}
-          maxLength={300}
-          counter
-          data-autofocus
-          required
-        />
-        <FormError message={galat} />
-        <div className="ui-actions">
-          <button type="button" className="ui-btn ui-btn-ghost" onClick={onClose} disabled={sibuk}>
-            Batal
-          </button>
-          <SubmitButton busy={sibuk}>{update ? 'Simpan bukti' : 'Kirim pengajuan'}</SubmitButton>
-        </div>
-      </form>
-    </Modal>
   );
 }
