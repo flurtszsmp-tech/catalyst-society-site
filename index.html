@@ -1947,7 +1947,7 @@
 <script>(function(){var v=new URLSearchParams(location.search).get("fd");if(/^[abcd]$/.test(v)){var e=document.currentScript.parentNode;e.classList.remove("fd-v-b");e.classList.add("fd-v-"+v)}})();</script>
   <div class="wrap">
     <div class="fd-banner rv">
-      <img class="fd-bg" src="assets/img/founders-banner.webp" alt="Madani Al Fairuz, Co-Founder dan CTO, bersama Bagas Dwi Putra, Founder dan CEO Catalyst Society" loading="lazy" decoding="async" width="792" height="562">
+      <img class="fd-bg" src="assets/img/founders-banner.webp" alt="Madani Al Fairuz, Co-Founder dan CTO, bersama Bagas Dwi Putra, Founder dan CEO Catalyst Society" loading="lazy" decoding="async" width="980" height="612">
       <div class="fd-isi">
         <div class="ab-label"><span class="snum">07</span><span class="rd-l" data-i18n="fd.label">Founders</span></div>
         <ul class="fd-nama">
@@ -2650,33 +2650,14 @@ addEventListener('DOMContentLoaded', function(){
     akun.forEach(function(e){ e.hidden = !masuk; });
     if(!masuk) return;
     var m = sesi.user.user_metadata || {};
-    var email = (sesi.user.email || '').toLowerCase();
-    // Akun admin tidak punya Passport; tombolnya membuka dashboard admin.
-    if(email === 'info@catalystsociety.id'){
-      tampil('Admin', '', '/bp/admin/');
-      return;
-    }
-    tampil(m.full_name || m.name || email.split('@')[0] || 'Passport', m.avatar_url || m.picture || '', '/bp/passport/');
-    // Nama dan foto terbaru ada di profil Passport, termasuk foto yang diunggah sendiri.
-    CATALYST.db.from('profiles').select('full_name, avatar_path, avatar_url').eq('id', sesi.user.id).maybeSingle()
-      .then(function(r){
-        var p = r && r.data;
-        if(!p) return;
-        var foto = p.avatar_path
-          ? CATALYST_CONFIG.SUPABASE_URL + '/storage/v1/object/public/avatars/' + p.avatar_path.split('/').map(encodeURIComponent).join('/')
-          : (p.avatar_url || '');
-        tampil(p.full_name, foto, '/bp/passport/');
-      });
-  }
-  function tampil(nama, foto, tujuan){
-    // Hanya alamat https yang dipakai sebagai gambar latar, supaya isian tidak bisa keluar dari url().
-    var aman = /^https:\/\/[^"'()\s]+$/.test(foto) ? foto : '';
-    document.querySelectorAll('.akun').forEach(function(e){ e.href = tujuan; e.setAttribute('aria-label', nama); e.title = nama; });
+    var nama = m.full_name || m.name || (sesi.user.email || '').split('@')[0] || 'Passport';
+    var foto = m.avatar_url || m.picture || '';
     document.querySelectorAll('.akun-nama').forEach(function(e){ e.textContent = nama.split(' ')[0]; });
     document.querySelectorAll('.akun-ava').forEach(function(e){
-      if(aman){ e.style.backgroundImage = 'url("' + aman + '")'; e.textContent = ''; }
-      else { e.style.backgroundImage = ''; e.textContent = nama.trim().charAt(0).toUpperCase(); }
+      if(foto){ e.style.backgroundImage = 'url("' + foto + '")'; e.textContent = ''; }
+      else e.textContent = nama.trim().charAt(0).toUpperCase();
     });
+    document.querySelectorAll('.akun').forEach(function(e){ e.setAttribute('aria-label', nama); e.title = nama; });
   }
   /* token Supabase tersimpan di localStorage: dipakai lebih dulu supaya tombol akun
      langsung tampil tanpa menunggu jaringan. Hasil getSession tetap jadi penentu akhir. */
