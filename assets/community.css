@@ -134,7 +134,7 @@ html.dark-theme .about-cell p{color:#b5b5b5}
    Kecepatan konstan (linear), ujung kiri dan kanan memudar. */
 .pm-band{padding:clamp(48px,7vw,84px) 0 clamp(40px,6vw,72px)}
 .pm-band .shead{margin-bottom:clamp(30px,3.4vw,46px)}
-.pm-band .shead .kicker{font-size:clamp(12px,.95vw,14px);letter-spacing:.22em}
+.pm-band .shead .kicker{font-size:clamp(14px,1.2vw,18px);letter-spacing:.2em}
 .pm-band .shead .h-md{font-size:clamp(28px,3.2vw,46px);line-height:1.08;letter-spacing:-.02em;margin-top:12px}
 /* Corporate Partners langsung menyambung Community Partners, tanpa jarak dua kali lipat */
 .pm-band + .pm-band{padding-top:clamp(8px,1.6vw,20px)}
