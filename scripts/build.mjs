@@ -1,5 +1,5 @@
 // Menyalin situs ke dist/ dengan JS, CSS, dan HTML yang sudah dipadatkan.
-// Dijalankan Vercel lewat vercel.json (buildCommand). Sumber tidak diubah.
+// Jalankan: npm run build. Hasilnya diterbitkan ke branch gh-pages (GitHub Pages). Sumber tidak diubah.
 import { readdirSync, statSync, mkdirSync, copyFileSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { join, extname, dirname } from 'node:path';
 import { createHash } from 'node:crypto';
@@ -8,7 +8,8 @@ import { minify } from 'html-minifier-terser';
 
 const OUT = 'dist';
 const SKIP = new Set(['dist', 'node_modules', 'platform', 'scripts', '.git', '.vercel', '.netlify', 'supabase-schema.sql',
-  'package.json', 'package-lock.json', 'vercel.json', '.vercelignore', '.gitignore', '.github']);
+  'package.json', 'package-lock.json', 'vercel.json', '.vercelignore', '.gitignore', '.github',
+  'cs-ai', 'arsip', 'docs', 'README.md', 'SUPABASE.md', 'CNAME.md']);
 
 rmSync(OUT, { recursive: true, force: true });
 let sebelum = 0, sesudah = 0;

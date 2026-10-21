@@ -1,0 +1,92 @@
+/* Scroll choreography stays independent of the site's general reveal timer. */
+.eco{overflow:clip;--circuit:rgba(75,85,101,.27)}
+.eco::after{opacity:.13}
+.eco-scroll{position:relative}
+.eco-scroll.is-enhanced{height:165svh;min-height:900px}
+.eco-scene{position:relative;perspective:none;padding:0;min-height:600px}
+.is-enhanced .eco-scene{position:sticky;top:80px;height:calc(100svh - 96px);min-height:460px;max-height:820px}
+.eco-stage{width:min(1120px,100%);height:100%;min-height:560px;aspect-ratio:auto;transform:none;transform-style:flat;--orb:min(303.8px,29.14vw)}
+.is-enhanced .eco-stage{min-height:0}
+.eco-rays,.eco-pulse{display:none}
+.eco-orbit{inset:13% 12%;border:1px solid var(--line);transform:rotate(-13deg);opacity:.45}
+.eco-orbit::before{inset:9% -7%;border-style:solid;transform:rotate(25deg)}
+.eco-hub{width:var(--orb);left:50%;top:50%;transform:translate(-50%,-50%);transform-style:flat;opacity:1;transition:none;z-index:3;gap:12px;
+ background:radial-gradient(ellipse at 36% 30%,rgba(187,199,209,.26),transparent 49%),radial-gradient(ellipse at 50% 40%,#323942 0%,#131920 57%,#05080d 78%,#798791 97%,#e6eff4 100%);
+ box-shadow:inset 0 2px 3px rgba(255,255,255,.85),inset 8px 0 15px -9px #f0f9ff,inset -9px -9px 22px -14px #f0f9ff,0 38px 38px -26px rgba(18,24,31,.6)}
+.eco-hub .mark{width:62%;height:62%;font-size:inherit;transform:none;animation:none;filter:drop-shadow(0 0 7px #ffffff70) drop-shadow(0 0 22px #e3edf544)}
+.eco-hub .mark path{fill:#f4f7fa;stroke:#fff;stroke-width:.55}
+.eco-hub span{font-size:10px;letter-spacing:.38em;transform:none;color:#ecf1f5}
+.eco-hub::before{inset:-32%;opacity:.65;background:radial-gradient(circle,#dbe4eb55,transparent 68%);animation:none!important}
+.eco-hub::after{width:90%;height:90%;border:0;background:radial-gradient(ellipse at 54% 88%,#cde6ff42,transparent 43%);filter:none;animation:none!important}
+.eco-orb-in{animation:none!important}
+.eco-galaxy{left:2%;right:2%;top:37%;height:27%;filter:blur(1px);transform:rotate(-28deg);opacity:.7;background:radial-gradient(ellipse,#f4eee5a6 0%,#cddceb45 28%,transparent 68%);animation:none!important}
+.eco-galaxy::after{opacity:.6}
+.eco-reflection{position:absolute;inset:5%;border-radius:50%;background:radial-gradient(ellipse at 28% 19%,#ffffff80 0%,#ffffff20 13%,transparent 30%);box-shadow:none}
+.eco-reflection::before{content:none}
+.eco-reflection::after{content:"";position:absolute;right:8%;top:28%;width:9%;height:29%;border-radius:50%;background:linear-gradient(#fff7,#fff0);transform:rotate(-14deg)}
+.eco-ring{transform-style:flat}
+.eco-stage .node{width:clamp(170px,23%,250px);opacity:1;animation:none;transform:translate(-50%,-50%);transition:none;cursor:default;z-index:4}
+.node:nth-child(1){left:24%;top:18%}.node:nth-child(2){left:76%;top:18%}
+.node:nth-child(3){left:83%;top:51%}.node:nth-child(4){left:17%;top:51%}
+.node:nth-child(5){left:24%;top:84%}.node:nth-child(6){left:76%;top:84%}
+.eco-stage .node-in{position:relative;overflow:visible;isolation:auto;padding:20px 22px;border-radius:14px;transform:perspective(900px) rotateX(9deg) rotateY(var(--yaw,-12deg));transform-style:preserve-3d;transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s;
+ background:linear-gradient(140deg,#fff,#f0f1f2);box-shadow:inset 0 1px 0 #fff,0 1px 0 #c1c6cb,0 2px 0 #c1c6cb,0 3px 0 #b4bbc2,0 4px 0 #b4bbc2,0 5px 0 #aab3bc,0 24px 28px -18px #28394955}
+.eco-stage .node:nth-child(even){--yaw:12deg}
+.eco-stage .node-in::before{border-radius:inherit;background:linear-gradient(125deg,#fff8,transparent 38%,#fff2);opacity:.65}
+.eco-stage .node .nh{gap:9px;flex-wrap:nowrap;margin-bottom:9px}
+.eco-stage .node .nh b{font-size:11px;font-weight:500;letter-spacing:.09em;line-height:1.4}
+.eco-stage .node .nh svg{width:18px;height:18px}
+.eco-stage .node p{font-size:12px;line-height:1.55;color:#5d636b;max-height:none;opacity:1;overflow:visible;margin:0}
+.eco-stage .node.anda .node-in{background:linear-gradient(135deg,#303740,#12161b);box-shadow:inset 0 1px 0 #ffffff40,0 5px 0 #05080c,0 24px 28px -18px #0b172866}
+.eco-stage .node.anda p{color:#c5cbd2}
+@media(hover:hover){.eco-stage .node:hover .node-in{transform:perspective(900px) translateY(-5px) rotateX(3deg) rotateY(0deg)}}
+.eco-circuits{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:1;fill:none}
+.eco-wire{stroke:var(--circuit);stroke-width:1;vector-effect:non-scaling-stroke}
+.eco-current{stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-dasharray:8 92;vector-effect:non-scaling-stroke;animation:eco-current 4.8s linear infinite;animation-delay:calc(var(--i)*-.73s)}
+.eco-port{fill:#eef7ff;stroke:#a3b5c5;stroke-width:1}
+@keyframes eco-current{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+.eco-scroll:not(.is-visible) .eco-current{animation-play-state:paused}
+html.dark-theme .eco{--circuit:rgba(184,206,228,.22)}
+html.dark-theme .eco-stage .node-in{background:linear-gradient(135deg,#30363e,#171c23);border-color:#ffffff20;box-shadow:inset 0 1px 0 #ffffff38,0 5px 0 #080c11,0 24px 32px -17px #000b}
+html.dark-theme .eco-stage .node p{color:#bbc3cc}
+html.dark-theme .eco-stage .node.anda .node-in{background:linear-gradient(135deg,#f5f7fa,#c7d1db);color:#12161b;box-shadow:inset 0 1px 0 #fff,0 5px 0 #728190,0 24px 32px -17px #000b}
+html.dark-theme .eco-stage .node.anda p{color:#434c56}
+.eco-note{margin-top:35px}
+@media(max-width:640px){
+ .eco-scroll.is-enhanced{height:175svh;min-height:980px}
+ .is-enhanced .eco-scene{top:78px;height:calc(100svh - 90px);min-height:510px}
+ .eco-stage{width:100%;--orb:min(173.6px,29.76vw);min-height:620px}
+ .eco-stage .eco-hub{top:38%;gap:6px}
+ .eco-hub span{font-size:7px}.eco-hub .mark{width:68%;height:68%}
+ .eco-stage .node{width:46%;max-width:210px}
+ .eco-stage .node:nth-child(1){left:25%;top:10%}.eco-stage .node:nth-child(2){left:75%;top:10%}
+ .eco-stage .node:nth-child(3){left:75%;top:66%}.eco-stage .node:nth-child(4){left:25%;top:66%}
+ .eco-stage .node:nth-child(5){left:25%;top:89%}.eco-stage .node:nth-child(6){left:75%;top:89%}
+ .eco-stage .node-in{padding:12px 11px;border-radius:10px}
+ .eco-stage .node .nh{gap:5px;margin-bottom:5px}
+ .eco-stage .node .nh b{font-size:9px;letter-spacing:.04em}
+ .eco-stage .node .nh svg{width:14px;height:14px}
+ .eco-stage .node p{font-size:10.5px;line-height:1.45}
+ .eco-orbit{inset:12% 3%;transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+ .eco-scroll.is-enhanced{height:auto;min-height:0}
+ .is-enhanced .eco-scene{position:relative;top:0;height:680px;max-height:none}
+ .eco-current{display:none}.eco-stage .node-in{transition:none}
+}
+
+/* Independent translate leaves the entry transform and 3D hover intact.
+   Only the small card surfaces move; connector endpoints remain hidden inside them. */
+.eco-stage .node.is-settled .node-in{animation:eco-hover calc(5.2s + var(--idx) * .32s) ease-in-out infinite;animation-delay:0s}
+.eco-stage .node:nth-child(even).is-settled .node-in{animation-name:eco-hover-soft}
+.eco-hub.is-settled{animation:eco-hover-soft 7s ease-in-out infinite}
+@keyframes eco-hover{0%,100%{translate:0 0}50%{translate:0 -12px}}
+@keyframes eco-hover-soft{0%,100%{translate:0 0}50%{translate:0 -8px}}
+.eco-scroll:not(.is-visible) .node-in,
+.eco-scroll:not(.is-visible) .eco-hub,
+.eco-scroll.is-suspended .node-in,
+.eco-scroll.is-suspended .eco-hub,
+.eco-scroll.is-suspended .eco-current{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){
+ .eco-stage .node.is-settled .node-in,.eco-hub.is-settled{animation:none!important;translate:none}
+}

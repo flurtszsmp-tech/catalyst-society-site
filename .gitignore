@@ -2,3 +2,10 @@ node_modules
 dist
 .DS_Store
 Thumbs.db
+.env
+.env.local
+.env.*.local
+platform/.next
+platform/out
+arsip/platform-lama/.next
+.wrangler

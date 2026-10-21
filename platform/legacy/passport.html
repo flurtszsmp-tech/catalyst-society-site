@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catalyst Passport</title>
+<meta name="description" content="Catalyst Passport. Satu profil untuk seluruh ekosistem: perjalanan, komunitas, projek, lencana, dan sertifikat dalam satu tempat.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script>
+!function(){try{if(localStorage.getItem('catalyst-theme')==='dark') document.documentElement.classList.add('dark-theme');}catch(e){}}();
+</script>
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/passport.css">
+</head>
+<body class="pass" data-view="owner">
+
+<div class="pass-shell">
+
+  <!-- ---------------- sisi kiri ---------------- -->
+  <aside class="pass-side" id="ppSide">
+    <a class="pass-brand" href="passport.html" aria-label="Catalyst Passport">
+      <svg class="mark" viewBox="-108 -118 244 236"><path d="M 79.86 -60.18 A 100 100 0 1 0 79.86 60.18 L 49.52 37.31 A 62 62 0 1 1 49.52 -37.31 Z"/><path d="M 126.5 -87.7 Q 108.05 -84.22 104.8 -64.5 Q 101.55 -84.22 83.1 -87.7 Q 101.55 -91.18 104.8 -110.9 Q 108.05 -91.18 126.5 -87.7 Z"/></svg>
+      <b translate="no">CATALYST</b>
+      <span translate="no">PASSPORT</span>
+    </a>
+
+    <nav class="pass-nav">
+      <a href="passport.html" class="on"><svg viewBox="0 0 24 24"><use href="#ps-home"/></svg>Home</a>
+      <a href="app.html#passport"><svg viewBox="0 0 24 24"><use href="#ps-user"/></svg>Profile</a>
+      <a href="app.html#passport"><svg viewBox="0 0 24 24"><use href="#ps-journey"/></svg>Journey</a>
+      <a href="communities.html"><svg viewBox="0 0 24 24"><use href="#ps-users"/></svg>Communities</a>
+      <a href="app.html#finder"><svg viewBox="0 0 24 24"><use href="#ps-cube"/></svg>Projects</a>
+      <a href="app.html#academy"><svg viewBox="0 0 24 24"><use href="#ps-award"/></svg>Certificates</a>
+      <a href="app.html#passport"><svg viewBox="0 0 24 24"><use href="#ps-skills"/></svg>Skills &amp; Roles</a>
+      <a href="app.html#passport"><svg viewBox="0 0 24 24"><use href="#ps-network"/></svg>Connections</a>
+      <a href="app.html#passport"><svg viewBox="0 0 24 24"><use href="#ps-chart"/></svg>Analytics</a>
+      <a href="app.html"><svg viewBox="0 0 24 24"><use href="#ps-settings"/></svg>Settings</a>
+    </nav>
+
+    <div class="pass-pro">
+      <div class="cap">Upgrade to</div>
+      <h4>Catalyst Pro <svg viewBox="0 0 24 24"><use href="#ps-spark4"/></svg></h4>
+      <p>Buka fitur lanjutan, tautan kustom, dan keterlihatan eksklusif.</p>
+      <button type="button">Upgrade Now</button>
+    </div>
+
+    <a class="pass-side-foot" href="index.html">
+      <svg class="mark" viewBox="-108 -118 244 236"><path d="M 79.86 -60.18 A 100 100 0 1 0 79.86 60.18 L 49.52 37.31 A 62 62 0 1 1 49.52 -37.31 Z"/><path d="M 126.5 -87.7 Q 108.05 -84.22 104.8 -64.5 Q 101.55 -84.22 83.1 -87.7 Q 101.55 -91.18 104.8 -110.9 Q 108.05 -91.18 126.5 -87.7 Z"/></svg>
+      <span>
+        <b translate="no">CATALYST</b>
+        <span translate="no">SOCIETY</span>
+        <em translate="no">Learn. Earn. Impact.</em>
+      </span>
+    </a>
+  </aside>
+  <div class="pass-scrim" id="ppScrim" aria-hidden="true"></div>
+
+  <!-- ---------------- kanan ---------------- -->
+  <div class="pass-work">
+
+    <header class="pass-top">
+      <button class="pass-burger" id="ppBurger" aria-label="Menu">
+        <svg viewBox="0 0 24 24"><use href="#ps-menu"/></svg>
+      </button>
+
+      <label class="pass-search">
+        <svg viewBox="0 0 24 24"><use href="#ps-search"/></svg>
+        <input type="search" placeholder="Search people, skills, communities, or projects…" aria-label="Cari">
+      </label>
+
+      <div class="pass-top-right">
+        <button class="pass-icobtn" id="ppBell" aria-label="Notifikasi">
+          <svg viewBox="0 0 24 24"><use href="#ps-bell"/></svg>
+        </button>
+        <button class="pass-icobtn" aria-label="Pesan">
+          <svg viewBox="0 0 24 24"><use href="#ps-chat"/></svg>
+        </button>
+        <span class="pass-sep" aria-hidden="true"></span>
+        <button class="pass-me" id="ppMe" aria-label="Akun"></button>
+      </div>
+    </header>
+
+    <main class="pass-board">
+      <div class="pass-col">
+        <section class="pass-hero" id="ppHero"></section>
+        <section class="pass-card pass-about" id="ppAboutCard"><div id="ppAbout"></div></section>
+        <section class="pass-card" id="ppJourneyCard"><div id="ppJourney"></div></section>
+        <section class="pass-card" id="ppComsCard"><div id="ppComs"></div></section>
+        <section class="pass-card" id="ppProjCard"><div id="ppProj"></div></section>
+      </div>
+
+      <div class="pass-col">
+        <section class="pass-card" id="ppShareCard"><div id="ppShareBox"></div></section>
+        <section class="pass-card" id="ppPointsCard"><div id="ppPoints"></div></section>
+        <section class="pass-card" id="ppBadgesCard"><div id="ppBadges"></div></section>
+        <section class="pass-card" id="ppCertsCard"><div id="ppCerts"></div></section>
+      </div>
+    </main>
+
+    <footer class="pass-strip">
+      <div class="pass-strip-in">
+        <div class="pass-value">
+          <svg viewBox="0 0 24 24"><use href="#ps-s-showcase"/></svg>
+          <div><b>Showcase Everything</b>
+            <p>Semua capaian, keahlian, dan pengalaman Anda dalam satu tempat.</p></div>
+        </div>
+        <div class="pass-value">
+          <svg viewBox="0 0 24 24"><use href="#ps-s-journey"/></svg>
+          <div><b>Track Your Journey</b>
+            <p>Setiap langkah yang Anda ambil tercatat dan menjadi dampak.</p></div>
+        </div>
+        <div class="pass-value">
+          <svg viewBox="0 0 24 24"><use href="#ps-s-network"/></svg>
+          <div><b>Build Your Network</b>
+            <p>Terhubung dengan builders, mentor, investor, dan peluang.</p></div>
+        </div>
+        <div class="pass-value">
+          <svg viewBox="0 0 24 24"><use href="#ps-s-impact"/></svg>
+          <div><b>Create Your Impact</b>
+            <p>Ikut projek, bangun solusi, dan ciptakan perubahan.</p></div>
+        </div>
+        <div class="pass-strip-mark">
+          <svg class="mark" viewBox="-108 -118 244 236"><path d="M 79.86 -60.18 A 100 100 0 1 0 79.86 60.18 L 49.52 37.31 A 62 62 0 1 1 49.52 -37.31 Z"/><path d="M 126.5 -87.7 Q 108.05 -84.22 104.8 -64.5 Q 101.55 -84.22 83.1 -87.7 Q 101.55 -91.18 104.8 -110.9 Q 108.05 -91.18 126.5 -87.7 Z"/></svg>
+          <span><b translate="no">CATALYST</b><span translate="no">PASSPORT</span></span>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha512-ZDSPMa/JM1D+7kdg2x3BsruQ6T/JpJo3jWDWkCZsP+5yVyp1KfESqLI+7RqB5k24F7p2cV7i2YHh/890y6P6Sw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="assets/js/passport-icons.js"></script>
+<script src="assets/js/communities-data.js"></script>
+<script src="assets/js/demo.js"></script>
+<script src="assets/js/passport.js"></script>
+</body>
+</html>

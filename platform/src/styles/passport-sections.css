@@ -1,0 +1,192 @@
+/* ===========================================================
+   Enam halaman Passport: Journey, Komunitas, Projek, Sertifikat,
+   Koneksi, Analitik. Semua kelas berawalan ps2- karena App Router
+   tidak melepas CSS saat berpindah halaman di sisi klien.
+   =========================================================== */
+
+.ps2{display:flex;flex-direction:column;gap:var(--pass-gap,16px);min-width:0;padding-top:4px}
+.ps2 :focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* ---------- kepala halaman ---------- */
+.ps2-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.ps2-kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.ps2-head h1{font-family:var(--display);font-weight:400;font-size:clamp(22px,3vw,28px);letter-spacing:-.01em;line-height:1.2}
+.ps2-lead{font-size:13px;color:var(--muted);line-height:1.6;max-width:62ch;margin-top:6px}
+.ps2-head-act{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ---------- kartu ---------- */
+.ps2-card{
+  background:var(--pass-surface,var(--white));
+  border:1px solid var(--line);
+  border-radius:var(--pass-card,14px);
+  padding:18px 20px;min-width:0;
+}
+.ps2-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.ps2-card-head h2{font-family:var(--display);font-weight:400;font-size:15px;line-height:1.3}
+.ps2-card-head h2:focus{outline:none}
+.ps2-card-head h2:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.ps2-sub{font-size:12px;color:var(--muted);line-height:1.6}
+.ps2-grid-2{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:var(--pass-gap,16px);align-items:start}
+@media (max-width:980px){.ps2-grid-2{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- keadaan ---------- */
+.ps2-skel{display:flex;flex-direction:column;gap:10px}
+.ps2-err{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:14px 16px;border:1px solid var(--line);border-radius:12px;font-size:12.5px;line-height:1.5}
+.ps2-err p{color:var(--ink)}
+
+/* ---------- pil, tombol kecil ---------- */
+.ps2-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;
+  border:1px solid var(--line);font-size:11px;line-height:1.4;color:var(--ink);white-space:nowrap}
+.ps2-pill svg{width:12px;height:12px}
+.ps2-pill-solid{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.ps2-pill-muted{color:var(--muted)}
+.ps2-btn-sm{padding:7px 12px;font-size:12px}
+.ps2-acts{display:flex;gap:6px;flex-wrap:wrap}
+.ps2-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.ps2-link svg{width:13px;height:13px}
+.ps2-list{display:flex;flex-direction:column}
+.ps2-list > li{border-top:1px solid var(--line)}
+.ps2-list > li:first-child{border-top:0}
+
+/* ---------- avatar ---------- */
+.ps2-ava{border-radius:50%;object-fit:cover;flex:none;background:var(--paper)}
+.ps2-ava-ini{display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;
+  color:var(--ink);border:1px solid var(--line)}
+
+/* ---------- bilah kemajuan ---------- */
+.ps2-bar{height:6px;border-radius:999px;background:var(--line);overflow:hidden}
+.ps2-bar > span{display:block;height:100%;background:var(--ink);border-radius:inherit}
+
+/* ===================== JOURNEY ===================== */
+.ps2-stages{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;counter-reset:ps2s}
+@media (max-width:900px){.ps2-stages{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:520px){.ps2-stages{grid-template-columns:minmax(0,1fr)}}
+.ps2-stage{position:relative;display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid var(--line);
+  border-radius:12px;min-width:0}
+.ps2-stage svg.ps2-stage-ico{width:26px;height:26px;color:var(--muted)}
+.ps2-stage b{font-weight:500;font-size:13px}
+.ps2-stage small{font-size:11px;color:var(--muted);line-height:1.5}
+.ps2-stage-state{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ps2-stage.is-done svg.ps2-stage-ico{color:var(--ink)}
+.ps2-stage.is-current{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.ps2-stage.is-current svg.ps2-stage-ico{color:var(--ink)}
+.ps2-stage.is-current .ps2-stage-state{color:var(--ink);font-weight:500}
+.ps2-stage.is-goal{border-style:dashed;border-color:var(--ink)}
+.ps2-stage.is-locked{opacity:.62}
+.ps2-goal{display:flex;flex-direction:column;gap:12px}
+.ps2-goal h3{font-family:var(--display);font-weight:400;font-size:20px;line-height:1.25}
+.ps2-goal p{font-size:13px;line-height:1.6}
+.ps2-goal-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.ps2-note{font-size:12px;line-height:1.6;color:var(--muted);padding:10px 12px;border:1px dashed var(--line);border-radius:10px}
+.ps2-points > li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0}
+.ps2-points span{font-size:12.5px;line-height:1.4}
+.ps2-points time{display:block;font-size:11px;color:var(--muted)}
+.ps2-points b{font-weight:500;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ps2-total{font-size:12px;color:var(--muted)}
+.ps2-total b{color:var(--ink);font-weight:500}
+
+/* ===================== KOMUNITAS ===================== */
+.ps2-comms{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.ps2-comm{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px;min-width:0}
+.ps2-comm-logo{width:40px;height:40px;border-radius:10px;object-fit:contain;flex:none;background:var(--paper)}
+.ps2-comm-ini{display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;border:1px solid var(--line)}
+.ps2-comm-txt{flex:1;min-width:0}
+.ps2-comm-txt a,.ps2-comm-txt b{display:block;font-size:13px;font-weight:500;color:var(--ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ps2-comm-txt a:hover{text-decoration:underline;text-underline-offset:3px}
+.ps2-comm-txt small{display:block;font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ps2-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.ps2-chip{padding:6px 12px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--ink);
+  background:transparent;transition:border-color .2s var(--ease)}
+.ps2-chip:hover{border-color:var(--ink)}
+.ps2-chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.ps2-rewards{display:flex;flex-direction:column;gap:10px}
+.ps2-reward{display:flex;gap:12px;align-items:flex-start;font-size:12.5px;line-height:1.5}
+.ps2-reward-n{flex:none;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);
+  display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-variant-numeric:tabular-nums}
+.ps2-reward.is-done .ps2-reward-n{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.ps2-reward small{display:block;color:var(--muted);font-size:11.5px}
+
+/* ===================== PROJEK ===================== */
+.ps2-projects > li{padding:16px 0;display:flex;flex-direction:column;gap:8px}
+.ps2-projects > li:first-child{padding-top:0}
+.ps2-proj-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ps2-proj-top h3{font-size:14.5px;font-weight:500;line-height:1.35;overflow-wrap:anywhere}
+.ps2-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11.5px;color:var(--muted)}
+.ps2-desc{font-size:12.5px;line-height:1.65;white-space:pre-line;overflow-wrap:anywhere}
+.ps2-form{display:flex;flex-direction:column;gap:14px}
+.ps2-row-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+@media (max-width:520px){.ps2-row-2{grid-template-columns:minmax(0,1fr)}}
+
+/* ===================== SERTIFIKAT ===================== */
+.ps2-certs{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.ps2-cert{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden;min-width:0}
+.ps2-cert-img{position:relative;aspect-ratio:4/3;background:var(--paper);border-bottom:1px solid var(--line)}
+.ps2-cert-img img{object-fit:cover}
+.ps2-cert-img svg{position:absolute;inset:0;width:100%;height:100%;color:var(--muted)}
+.ps2-cert-body{display:flex;flex-direction:column;gap:6px;padding:12px 14px 14px;flex:1}
+.ps2-cert-body h3{font-size:13.5px;font-weight:500;line-height:1.35;overflow-wrap:anywhere}
+.ps2-cert-body p{font-size:12px;color:var(--muted);line-height:1.5;overflow-wrap:anywhere}
+.ps2-cert-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+.ps2-img-pick{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.ps2-img-prev{position:relative;width:120px;aspect-ratio:4/3;border-radius:10px;overflow:hidden;
+  border:1px solid var(--line);background:var(--paper);flex:none}
+.ps2-img-prev img{object-fit:cover}
+.ps2-img-prev svg{position:absolute;inset:0;width:100%;height:100%;color:var(--muted)}
+
+/* ===================== KONEKSI ===================== */
+.ps2-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.ps2-tab{padding:9px 12px;font-size:12.5px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;background:transparent}
+.ps2-tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.ps2-tab span{font-variant-numeric:tabular-nums;margin-left:4px}
+.ps2-people > li{display:flex;align-items:center;gap:12px;padding:10px 0}
+.ps2-person{display:flex;align-items:center;gap:12px;flex:1;min-width:0;color:var(--ink)}
+.ps2-person:hover b{text-decoration:underline;text-underline-offset:3px}
+.ps2-person > span{min-width:0}
+.ps2-person b{display:flex;align-items:center;gap:4px;font-size:13px;font-weight:500}
+.ps2-person b svg{width:13px;height:13px;flex:none}
+.ps2-person small{display:block;font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ps2-search{position:relative;margin-bottom:12px}
+.ps2-search svg{position:absolute;left:12px;top:50%;width:15px;height:15px;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.ps2-search input{padding-left:36px}
+
+/* ===================== ANALITIK ===================== */
+.ps2-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:640px){.ps2-stats{grid-template-columns:minmax(0,1fr)}}
+.ps2-stat{padding:14px 16px;border:1px solid var(--line);border-radius:12px}
+.ps2-stat small{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
+.ps2-stat b{font-family:var(--display);font-weight:400;font-size:26px;font-variant-numeric:tabular-nums;line-height:1.1}
+.ps2-chart{width:100%;min-width:0}
+.ps2-chart svg{display:block;width:100%;height:auto;overflow:visible}
+.ps2-chart text{font-size:11px;fill:var(--muted);font-family:inherit}
+.ps2-chart .ps2-axis{stroke:var(--muted);stroke-opacity:.35;stroke-width:1}
+.ps2-chart .ps2-grid{stroke:var(--muted);stroke-opacity:.18;stroke-width:1;stroke-dasharray:3 4}
+.ps2-chart .ps2-col{fill:var(--ink);opacity:.9}
+.ps2-chart .ps2-col-zero{fill:var(--muted);opacity:.3}
+.ps2-chart .ps2-col-hit{fill:transparent}
+.ps2-chart g:hover > .ps2-col{opacity:1}
+.ps2-chart .ps2-line{fill:none;stroke:var(--ink);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.ps2-chart .ps2-area{fill:var(--ink);opacity:.07}
+.ps2-chart .ps2-dot{fill:var(--bg);stroke:var(--ink);stroke-width:1.5}
+.ps2-chart-table{margin-top:10px;font-size:12px}
+.ps2-chart-table summary{cursor:pointer;color:var(--muted);width:max-content}
+.ps2-chart-table summary:hover{color:var(--ink)}
+.ps2-chart-table table{width:100%;border-collapse:collapse;margin-top:8px;font-variant-numeric:tabular-nums}
+.ps2-chart-table th,.ps2-chart-table td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line)}
+.ps2-chart-table th{font-weight:500;color:var(--muted)}
+.ps2-chart-table-wrap{max-height:260px;overflow:auto}
+.ps2-reasons{display:flex;flex-direction:column;gap:12px}
+.ps2-reasons li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;font-size:12.5px;align-items:center}
+.ps2-reasons li .ps2-bar{grid-column:1 / -1}
+.ps2-reasons b{font-weight:500;font-variant-numeric:tabular-nums}
+
+@media (prefers-reduced-motion:no-preference){
+  .ps2-bar > span{transition:width .6s var(--ease-out,ease)}
+  .ps2-chart .ps2-col{transform-box:fill-box;transform-origin:bottom;animation:ps2-grow .5s var(--ease-out,ease) both}
+  .ps2-chart .ps2-line{stroke-dasharray:1;stroke-dashoffset:1;animation:ps2-draw .9s var(--ease-out,ease) forwards}
+  .ps2-chart .ps2-area,.ps2-chart .ps2-dot{animation:ps2-fade .6s .5s both}
+}
+@keyframes ps2-grow{from{transform:scaleY(0)}}
+@keyframes ps2-draw{to{stroke-dashoffset:0}}
+@keyframes ps2-fade{from{opacity:0}}

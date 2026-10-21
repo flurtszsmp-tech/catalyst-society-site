@@ -1,0 +1,174 @@
+/* ===========================================================
+   Halaman komunitas: /communities dan /communities/[slug].
+
+   Semua aturan diikat ke .com-page (elemen <main> kedua halaman).
+   App Router tetap memuat lembar gaya ini sesudah pengunjung pindah
+   halaman, jadi aturan yang menyentuh kelas bersama seperti .btn atau
+   .kicker tidak boleh lepas dari akar ini. Bilah navigasi, .page-top,
+   dan kaki halaman sudah diatur site.css.
+   =========================================================== */
+
+/* ---------- kepala halaman ---------- */
+.com-page .com-head{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap}
+.com-page .com-head .lead{margin-top:18px}
+.com-page .com-count{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+  white-space:nowrap;padding-bottom:6px}
+
+/* ---------- saring dan cari ---------- */
+.com-page .com-tools{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;
+  margin-bottom:clamp(22px,3vw,34px)}
+.com-page .com-filter{display:flex;gap:8px;flex-wrap:wrap}
+.com-page .com-filter button{padding:9px 16px;border-radius:100px;border:1px solid var(--line);
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--d-gray);
+  transition:.24s var(--ease);white-space:nowrap}
+.com-page .com-filter button:hover{border-color:var(--ink);color:var(--ink)}
+.com-page .com-filter button.on{background:var(--black);color:#fff;border-color:var(--black)}
+html.dark-theme .com-page .com-filter button.on{background:#fff;color:#000;border-color:#fff}
+
+.com-page .com-search{display:flex;align-items:center;gap:9px;padding:9px 16px;border-radius:100px;
+  border:1px solid var(--line);min-width:210px;transition:.24s var(--ease)}
+.com-page .com-search svg{width:14px;height:14px;color:var(--muted);flex:none}
+/* Cincin fokus pindah ke kapsulnya (:focus-within), jadi garis
+   bawaan input di dalam kapsul boleh dimatikan tanpa menghilangkan
+   tanda fokus. */
+.com-page .com-search input{border:0;outline:0;background:none;width:100%;min-width:0;font-size:12.5px;color:var(--ink)}
+.com-page .com-search:focus-within{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.com-page .com-search input::placeholder{color:var(--muted)}
+
+/* ---------- petak kartu ---------- */
+.com-page .com-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+
+.com-page .com-card{display:flex;flex-direction:column;gap:14px;padding:22px 22px 20px}
+.com-page .com-card:hover{transform:translateY(-4px)}
+.com-page .com-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+/* Logo mitra datang dengan latar sendiri, sebagian terang sebagian gelap.
+   Ubin putih tipis dengan cincin halus menyatukannya tanpa mewarnai logo. */
+.com-page .com-logo{width:52px;height:52px;border-radius:14px;overflow:hidden;flex:none;
+  background:#fff;box-shadow:0 0 0 1px var(--line);
+  display:flex;align-items:center;justify-content:center}
+.com-page .com-logo img{width:100%;height:100%;object-fit:cover}
+html.dark-theme .com-page .com-logo{background:#f2f2f2;box-shadow:0 0 0 1px rgba(255,255,255,.14)}
+/* Ubin ini selalu terang, di tema gelap sekalipun, jadi warna inisialnya tetap. */
+.com-page .com-logo-fallback{font-family:var(--display);font-size:15px;letter-spacing:.04em;color:#333}
+.com-page .com-out{width:15px;height:15px;color:var(--muted);flex:none;opacity:.55;
+  transition:.3s var(--ease)}
+.com-page .com-card:hover .com-out{opacity:1;color:var(--ink);transform:translate(2px,-2px)}
+
+/* Nama komunitas bisa panjang ("Young Leaders Indonesia (YLI)"), jadi
+   barisnya boleh patah dan tanda mitra ikut turun bersamanya. */
+.com-page .com-title{display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-width:0;
+  font-family:var(--display);
+  font-weight:400;font-size:16px;letter-spacing:-.006em;line-height:1.2;color:var(--ink)}
+/* Bintang empat sudut yang sama dipakai di seluruh situs sebagai tanda
+   "mitra resmi". Bukan centang biru; itu milik jejaring sosial. */
+.com-page .com-verified{width:12px;height:12px;color:var(--ink);flex:none;opacity:.7}
+
+.com-page .com-desc{font-size:12.5px;line-height:1.6;color:var(--muted);font-weight:300;flex:1}
+
+.com-page .com-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding-top:13px;border-top:1px solid var(--line)}
+.com-page .com-tag{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--d-gray);
+  padding:4px 10px;border-radius:100px;border:1px solid var(--line);line-height:1.5}
+.com-page .com-join-type{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  margin-left:auto;display:inline-flex;align-items:center;gap:6px}
+.com-page .com-join-type::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
+
+/* Tidak ada hasil. */
+.com-page .com-empty{grid-column:1/-1;padding:52px 0;text-align:center}
+.com-page .com-empty p{font-size:13.5px;color:var(--muted);font-weight:300}
+.com-page .com-empty .btn{margin-top:16px}
+
+/* ---------- halaman detail ---------- */
+.com-page .com-back{display:inline-flex;align-items:center;gap:9px;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);transition:color .3s var(--ease);margin-bottom:clamp(24px,4vw,44px)}
+.com-page .com-back svg{width:14px;height:14px;transition:transform .3s var(--ease)}
+.com-page .com-back:hover{color:var(--ink)}
+.com-page .com-back:hover svg{transform:translateX(-4px)}
+
+.com-page .com-detail{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:clamp(28px,4vw,56px);align-items:start}
+
+.com-page .com-id{display:flex;align-items:center;gap:18px;margin-bottom:26px}
+.com-page .com-id .com-logo{width:74px;height:74px;border-radius:18px}
+.com-page .com-id h1{font-family:var(--display);font-weight:400;font-size:clamp(26px,3.2vw,42px);
+  line-height:1.1;letter-spacing:-.014em;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.com-page .com-id .com-verified{width:17px;height:17px;opacity:.75}
+.com-page .com-sub{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  margin-top:8px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.com-page .com-sub .dot{width:3px;height:3px;border-radius:50%;background:currentColor;flex:none}
+
+.com-page .com-body{font-size:14.5px;line-height:1.75;color:var(--d-gray);font-weight:300;max-width:62ch}
+
+.com-page .com-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:26px}
+.com-page .com-tags .com-tag{font-size:10px;padding:6px 13px}
+
+.com-page .com-memberships{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.com-page .com-member{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;padding:6px 13px;
+  border-radius:100px;background:var(--black);color:#fff;line-height:1.5}
+html.dark-theme .com-page .com-member{background:#fff;color:#000}
+
+/* ---------- kartu samping ---------- */
+.com-page .com-aside{position:sticky;top:98px;padding:24px}
+.com-page .com-aside .kicker{font-size:10px;letter-spacing:.2em;margin-bottom:14px}
+.com-page .com-actions{display:flex;flex-direction:column;gap:10px}
+.com-page .com-actions .btn{width:100%;justify-content:center}
+.com-page .com-actions .com-out{opacity:.8;color:currentColor}
+.com-page .com-actions button.btn-soon:disabled{opacity:1}
+/* Aksi Passport sengaja berbobot kedua: tombol utama tetap pintu resmi
+   komunitas, bukan penyimpanan di Passport. */
+.com-page .com-pp{font-size:12px;padding:12px 22px}
+.com-page .com-pp[disabled]{opacity:.55;cursor:default}
+.com-page .com-pp svg{width:14px;height:14px}
+.com-page .com-pp-status{font-size:11px;line-height:1.55;color:var(--muted);text-align:center}
+/* Wilayah aria-live harus sudah ada sebelum isinya datang, jadi yang
+   kosong tidak disembunyikan; cukup tanpa jarak. */
+.com-page .com-pp-status:not(:empty){margin-top:10px}
+.com-page .com-pp-status.err{color:#b3261e}
+html.dark-theme .com-page .com-pp-status.err{color:#f2b8b5}
+.com-page .com-note{font-size:11px;line-height:1.6;color:var(--muted);margin-top:12px;text-align:center}
+
+.com-page .com-platforms{margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}
+.com-page .com-plat{display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:12px;
+  font-size:12.5px;color:var(--d-gray);transition:.24s var(--ease)}
+.com-page .com-plat:hover{background:rgba(0,0,0,.05);color:var(--ink)}
+html.dark-theme .com-page .com-plat:hover{background:rgba(255,255,255,.07)}
+.com-page .com-plat .ico{width:15px;height:15px;flex:none}
+.com-page .com-plat .out{width:12px;height:12px;flex:none;margin-left:auto;opacity:.5}
+.com-page .com-plat:hover .out{opacity:1}
+
+/* ---------- komunitas terkait ---------- */
+.com-page .com-related{margin-top:clamp(48px,7vw,86px)}
+.com-page .com-related h2{font-family:var(--display);font-weight:400;font-size:clamp(19px,2vw,25px);
+  letter-spacing:-.008em;margin-bottom:22px}
+
+/* ---------- halaman tidak ditemukan ---------- */
+.com-page .com-404{padding-block:clamp(60px,12vh,140px);text-align:center}
+.com-page .com-404 h1{margin-bottom:16px}
+.com-page .com-404 .lead{margin:0 auto 28px}
+
+/* ---------- responsif ---------- */
+@media (max-width:1040px){
+  .com-page .com-grid{grid-template-columns:repeat(2,1fr)}
+  .com-page .com-detail{grid-template-columns:minmax(0,1fr)}
+  .com-page .com-aside{position:static}
+}
+@media (max-width:640px){
+  .com-page .com-grid{grid-template-columns:1fr}
+  .com-page .com-tools{flex-direction:column;align-items:stretch}
+  /* width:100% bukan hiasan. align-items:stretch tidak menyusutkan anak yang
+     isinya lebih lebar dari induk: rail pil dan kotak cari tetap selebar
+     isinya, lalu mendorong seluruh halaman melar ke samping. Lebar eksplisit
+     mengikat keduanya ke induk, barulah overflow-x di bawah bisa menggulir. */
+  .com-page .com-tools>*{width:100%;min-width:0}
+  .com-page .com-search{min-width:0}
+  /* Bantalan kecil supaya cincin fokus tombol tidak terpotong overflow. */
+  .com-page .com-filter{overflow-x:auto;flex-wrap:nowrap;padding:3px 3px 6px;
+    scrollbar-width:none;-ms-overflow-style:none}
+  .com-page .com-filter button{flex:none}
+  .com-page .com-filter::-webkit-scrollbar{display:none}
+  .com-page .com-id{gap:14px}
+  .com-page .com-id .com-logo{width:58px;height:58px;border-radius:15px}
+}
+@media (prefers-reduced-motion:reduce){
+  .com-page .com-card:hover{transform:none}
+  .com-page .com-card:hover .com-out,.com-page .com-back:hover svg{transform:none}
+}

@@ -1,0 +1,137 @@
+/* ===========================================================
+   Halaman /login: panel merek hitam di kiri, formulir di kanan.
+   Dipindah dari login.html. Semua aturan diikat ke .auth karena App
+   Router tetap memuat lembar gaya ini sesudah pengunjung pindah halaman.
+   =========================================================== */
+.auth{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;min-height:100dvh;background:var(--bg);color:var(--ink)}
+
+/* ---------- panel merek ---------- */
+.auth-brand{background:#000;color:#fff;padding:44px clamp(30px,4vw,64px);
+  display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.auth-glow{position:absolute;width:70%;aspect-ratio:1;border-radius:50%;right:-18%;top:22%;
+  background:radial-gradient(closest-side,rgba(255,255,255,.10),transparent 72%);filter:blur(40px);pointer-events:none}
+.auth-lockup{display:inline-flex;align-items:center;gap:11px;position:relative;align-self:flex-start}
+.auth-lockup .mark{width:30px;height:30px;fill:#fff}
+.auth-lockup>span{font-size:13px;letter-spacing:.06em;line-height:1.15}
+.auth-lockup>span span{display:block;font-size:8.5px;letter-spacing:.34em;color:#9a9a9a}
+.auth-mid{position:relative}
+.auth-mid h1{font-family:var(--display);font-size:clamp(30px,3.4vw,50px);line-height:.99;font-weight:300}
+.auth-mid p{font-size:13px;line-height:1.72;color:#9a9a9a;margin-top:20px;max-width:38ch}
+.auth-flow{position:relative;margin-top:34px;display:flex;flex-direction:column;gap:15px}
+.auth-flow div{display:flex;align-items:flex-start;gap:34px;font-size:12px;line-height:1.55;color:#c8c8c8}
+.auth-flow dt{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#8a8a8a;
+  width:118px;flex:none;white-space:nowrap;padding-top:1px}
+.auth-flow dd{margin:0}
+.auth-bot{position:relative;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:#8a8a8a;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.auth-bot a{display:inline-flex;align-items:center;gap:7px;letter-spacing:.04em;text-transform:none;
+  font-size:11.5px;color:#9a9a9a;transition:color .3s var(--ease)}
+.auth-bot a svg{width:14px;height:14px;flex:none}
+.auth-bot a:hover{color:#fff}
+
+/* ---------- panel formulir ---------- */
+.auth-side{position:relative;display:flex;align-items:center;justify-content:center;padding:44px clamp(22px,4vw,64px)}
+.auth-theme{position:absolute;top:20px;right:20px}
+.auth .theme-toggle{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;flex:none;transition:.35s var(--ease)}
+.auth .theme-toggle:hover{background:rgba(0,0,0,.05)}
+.auth .theme-toggle svg{width:17px;height:17px;stroke:var(--ink);fill:none}
+.auth .theme-toggle .sun{display:none}
+html.dark-theme .auth .theme-toggle .sun{display:block}
+html.dark-theme .auth .theme-toggle .moon{display:none}
+html.dark-theme .auth .theme-toggle:hover{background:rgba(255,255,255,.08)}
+
+.auth-card{width:100%;max-width:392px}
+.auth-kicker{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.auth-card h2{font-family:var(--display);font-size:clamp(25px,2.6vw,34px);line-height:1.04;font-weight:300}
+.auth-sub{font-size:13px;color:var(--d-gray);margin-top:11px;line-height:1.72}
+
+/* Pil penanda bergeser di antara dua tombol. Lebarnya tetap setengah,
+   jadi cukup digeser dengan transform, tanpa mengukur tombol. */
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;margin:26px 0 18px;padding:4px;border:1px solid var(--line);
+  border-radius:100px;position:relative;isolation:isolate;
+  background:linear-gradient(140deg,rgba(255,255,255,.7),rgba(246,246,248,.5));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 1px 2px rgba(18,20,26,.05)}
+.auth-tabs::before{content:"";position:absolute;z-index:-1;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);
+  border-radius:100px;background:linear-gradient(140deg,rgba(24,24,28,.96),rgba(8,8,10,.99));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 8px 20px -10px rgba(0,0,0,.5);
+  transition:transform .5s cubic-bezier(.22,1,.36,1)}
+.auth-tabs[data-mode="daftar"]::before{transform:translateX(100%)}
+.auth-tabs button{padding:10px 14px;border-radius:100px;font-size:12px;letter-spacing:.04em;color:var(--muted);
+  transition:color .3s var(--ease);-webkit-tap-highlight-color:transparent}
+.auth-tabs button.on{color:#fff}
+.auth-tabs button:focus-visible{outline:1px solid var(--muted);outline-offset:-3px}
+.auth-tabs button.on:focus-visible{outline-color:rgba(255,255,255,.6)}
+html.dark-theme .auth-tabs{background:rgba(255,255,255,.04);box-shadow:none}
+html.dark-theme .auth-tabs::before{background:#fff;box-shadow:none}
+html.dark-theme .auth-tabs button.on{color:#000}
+html.dark-theme .auth-tabs button.on:focus-visible{outline-color:rgba(0,0,0,.5)}
+
+.auth-google{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:13px 16px;border-radius:100px;border:1px solid var(--line);background:var(--bg);
+  font-size:13px;color:var(--ink);transition:border-color .25s var(--ease),box-shadow .25s var(--ease)}
+.auth-google svg{width:18px;height:18px;flex:none}
+.auth-google:not(:disabled):hover{border-color:var(--ink);box-shadow:0 10px 24px -18px rgba(0,0,0,.5)}
+.auth-google:disabled{opacity:.55;cursor:default}
+
+.auth-or{display:flex;align-items:center;gap:12px;margin:18px 0;font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted)}
+.auth-or::before,.auth-or::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.auth-field{margin-bottom:15px}
+.auth-label-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.auth-field label{display:block;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.auth-field input{width:100%;padding:13px 15px;border:1px solid var(--line);border-radius:11px;
+  background:var(--bg);color:var(--ink);font-size:13.5px;transition:.25s var(--ease)}
+.auth-field input:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(0,0,0,.06)}
+html.dark-theme .auth-field input:focus{box-shadow:0 0 0 3px rgba(255,255,255,.1)}
+.auth-pass{position:relative}
+.auth-pass input{padding-right:46px}
+.auth-pass button{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;
+  border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.auth-pass button:hover{color:var(--ink)}
+.auth-pass button svg{width:17px;height:17px}
+.auth-hint{font-size:11px;color:var(--muted);margin-top:6px}
+.auth-link{font-size:11px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.auth-link:hover{color:var(--ink)}
+
+.auth-submit{width:100%;padding:14px;border-radius:100px;background:var(--black);color:#fff;
+  font-size:13px;letter-spacing:.02em;margin-top:8px;
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  transition:transform .3s var(--ease),box-shadow .3s var(--ease),opacity .25s var(--ease)}
+.auth-submit svg{width:15px;height:15px;transition:transform .3s var(--ease)}
+.auth-submit:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 16px 30px -16px rgba(0,0,0,.5)}
+.auth-submit:not(:disabled):hover svg{transform:translateX(3px)}
+.auth-submit:disabled{opacity:.5;cursor:default}
+.auth-submit:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+html.dark-theme .auth-submit{background:#fff;color:#000}
+
+/* Wilayah pesan selalu ada di DOM supaya pembaca layar mengumumkan isinya. */
+.auth-msg{border-radius:11px;font-size:12.5px;line-height:1.6;border:1px solid transparent}
+.auth-msg:empty{display:none}
+.auth-msg.err,.auth-msg.ok{margin-top:16px;padding:12px 15px}
+.auth-msg.err{background:#fdf0f0;border-color:#f2c9c9;color:#8c2020}
+.auth-msg.ok{background:#f0f6f1;border-color:#c6dfcb;color:#1f5c2c}
+html.dark-theme .auth-msg.err{background:rgba(242,184,181,.08);border-color:rgba(242,184,181,.3);color:#f2b8b5}
+html.dark-theme .auth-msg.ok{background:rgba(160,220,170,.08);border-color:rgba(160,220,170,.3);color:#a8dcb2}
+
+.auth-note{font-size:11.5px;line-height:1.65;color:var(--muted);margin-top:16px}
+.auth-note code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;background:rgba(127,127,127,.14);
+  padding:1px 5px;border-radius:4px;word-break:break-all}
+
+.auth-back{margin-top:26px;font-size:11.5px;color:var(--muted);display:inline-flex;align-items:center;gap:8px;transition:.25s var(--ease)}
+.auth-back:hover{color:var(--ink)}
+.auth-back svg{width:13px;height:13px}
+
+@media (max-width:880px){
+  .auth{grid-template-columns:1fr}
+  .auth-brand{padding:26px 22px 30px}
+  .auth-mid{margin:30px 0 0}
+  .auth-mid h1{font-size:30px}
+  .auth-flow,.auth-bot{display:none}
+  .auth-side{padding:34px 22px 60px;align-items:flex-start}
+  .auth-theme{top:auto;bottom:20px}
+}
+@media (prefers-reduced-motion:reduce){
+  .auth-tabs::before,.auth-submit,.auth-submit svg{transition:none}
+}

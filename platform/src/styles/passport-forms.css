@@ -1,0 +1,207 @@
+/* ===========================================================
+   Halaman formulir Passport: Profil, Skills & Roles, Pengaturan.
+   Semua kelas berawalan .pf-, dan aturan untuk elemen bersama
+   (.ui-*, h1, code) dibatasi di bawah .pf, karena App Router tidak
+   membongkar CSS saat berpindah halaman.
+   =========================================================== */
+
+.pf{
+  --pf-surface:var(--pass-surface,var(--paper));
+  --pf-ok:#1f7a3f;
+  --pf-bad:#c62828;
+  --pf-warn-bg:rgba(198,120,0,.08);
+  --pf-warn-ink:#8a5300;
+  display:flex;flex-direction:column;gap:16px;
+  max-width:880px;padding-bottom:32px;
+}
+html.dark-theme .pf{--pf-ok:#5fd08a;--pf-bad:#ff7a7a;--pf-warn-bg:rgba(255,184,77,.08);--pf-warn-ink:#ffc46b}
+
+/* ---------- judul halaman ---------- */
+.pf-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:4px}
+.pf-head h1{font-family:var(--display);font-weight:400;font-size:clamp(22px,3vw,28px);letter-spacing:-.01em;line-height:1.15}
+.pf-head p{margin-top:6px;color:var(--muted);font-size:13px;line-height:1.55;max-width:60ch}
+.pf-head-act{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ---------- memuat ---------- */
+.pf-loading{display:flex;flex-direction:column;gap:16px}
+.pf-skel{height:150px;border-radius:var(--pass-card,14px)}
+.pf-skel-lg{height:360px}
+
+/* ---------- kartu ---------- */
+.pf-card{
+  background:var(--pf-surface);border:1px solid var(--line);
+  border-radius:var(--pass-card,14px);padding:20px;
+  display:flex;flex-direction:column;gap:16px;min-width:0;
+}
+.pf-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.pf-card-head h2{font-family:var(--display);font-weight:400;font-size:16px;letter-spacing:-.004em;line-height:1.3}
+.pf-card-head p{margin-top:4px;color:var(--muted);font-size:12.5px;line-height:1.55;max-width:62ch}
+.pf-sep{border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:12px}
+.pf-sub{font-size:11.5px;color:var(--muted);letter-spacing:.02em}
+.pf-badge{
+  display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;
+  border:1px dashed var(--line);font-size:11px;color:var(--muted);white-space:nowrap;
+}
+.pf-note{
+  display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:12px;
+  background:var(--pf-surface);border:1px solid var(--line);font-size:12.5px;line-height:1.55;color:var(--ink);
+}
+.pf-card .pf-note{background:transparent}
+.pf-note svg{width:16px;height:16px;flex:none;margin-top:2px;color:var(--muted)}
+.pf-note a,.pf-warn a,.pf-check-go{text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- formulir ---------- */
+.pf-form{display:flex;flex-direction:column;gap:16px;min-width:0}
+.pf-fields{display:flex;flex-direction:column;gap:14px}
+.pf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.pf-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pf .ui-field{min-width:0}
+
+.pf-savebar{
+  position:sticky;bottom:12px;z-index:5;
+  display:flex;flex-direction:column;gap:10px;padding:12px 14px;border-radius:14px;
+  background:var(--pf-surface);border:1px solid var(--line);
+  box-shadow:0 10px 30px -18px rgba(0,0,0,.35);
+}
+.pf-savebar.is-dirty{border-color:var(--ink)}
+.pf-savebar-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.pf-savebar-status{font-size:12.5px;color:var(--muted)}
+.pf-savebar.is-dirty .pf-savebar-status{color:var(--ink)}
+
+/* ---------- foto ---------- */
+.pf-avatar{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.pf-avatar-box{position:relative;width:96px;height:96px;flex:none}
+.pf-avatar-img{width:96px;height:96px;border-radius:50%;object-fit:cover;display:block;border:1px solid var(--line)}
+.pf-avatar-ini{
+  display:flex;align-items:center;justify-content:center;
+  background:var(--l-gray);color:var(--ink);font-family:var(--display);font-size:30px;
+}
+.pf-avatar-box.is-busy .pf-avatar-img{opacity:.55}
+.pf-avatar-side{display:flex;flex-direction:column;gap:8px;min-width:0;flex:1 1 240px}
+
+/* ---------- progres unggah ---------- */
+.pf-live:empty{display:none}
+.pf-progress{display:inline-flex;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
+.pf-bar{position:relative;width:120px;height:4px;border-radius:4px;background:var(--line);overflow:hidden}
+.pf-bar i{position:absolute;inset:0 auto 0 0;width:40%;border-radius:4px;background:var(--ink);animation:pf-geser 1.1s var(--ease-io,ease-in-out) infinite}
+@keyframes pf-geser{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
+@media (prefers-reduced-motion:reduce){.pf-bar i{animation:none;width:100%;opacity:.5}}
+
+/* ---------- berkas CV ---------- */
+.pf-file{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:14px;border:1px solid var(--line);border-radius:12px;
+}
+.pf-file-empty{border-style:dashed}
+.pf-file-ico{width:26px;height:26px;flex:none;color:var(--muted)}
+.pf-file-name{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 200px}
+.pf-file-name b{font-weight:500;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pf-file-name span{font-size:11.5px;color:var(--muted)}
+
+/* ---------- tautan sosial ---------- */
+.pf-link-label{display:inline-flex;align-items:center;gap:7px}
+.pf-link-label svg{width:14px;height:14px;flex:none}
+.pf-link-hint{overflow-wrap:anywhere}
+.pf-link-url{color:var(--ink)}
+.pf-link-open{display:inline-flex;align-items:center;gap:5px;color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.pf-link-open svg{width:12px;height:12px}
+
+/* ---------- kelengkapan & saran ---------- */
+.pf-check{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pf-check li{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;
+  border:1px solid var(--line);border-radius:10px;font-size:12.5px;color:var(--muted);
+}
+.pf-check li svg{width:15px;height:15px;flex:none}
+.pf-check li.is-done{color:var(--ink)}
+.pf-check li.is-done svg{color:var(--pf-ok)}
+.pf-check-go{margin-left:auto;font-size:11.5px;color:var(--ink)}
+
+.pf-chips{display:flex;flex-wrap:wrap;gap:6px}
+.pf-chip{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;
+  border:1px solid var(--line);font-size:12px;color:var(--ink);background:transparent;
+  transition:border-color .2s var(--ease),background .2s var(--ease);
+}
+.pf-chip svg{width:12px;height:12px}
+.pf-chip:not(:disabled):hover{border-color:var(--ink)}
+.pf-chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pf-chip:disabled{opacity:.45;cursor:not-allowed}
+
+/* ---------- pilihan tersegmen (bahasa, kanal saran) ---------- */
+.pf-seg-set{border:0;display:flex;flex-direction:column;gap:8px;min-width:0}
+.pf-seg{display:flex;flex-wrap:wrap;gap:6px}
+.pf-seg-opt{
+  position:relative;display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:10px;
+  border:1px solid var(--line);font-size:12.5px;cursor:pointer;color:var(--ink);
+  transition:border-color .2s var(--ease),background .2s var(--ease);
+}
+.pf-seg-opt:hover{border-color:var(--ink)}
+.pf-seg-opt.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+/* Radio asli tetap ada untuk keyboard dan pembaca layar, hanya tidak terlihat. */
+.pf-seg-opt input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.pf-seg-opt:has(input:focus-visible){outline:2px solid var(--ink);outline-offset:2px}
+.pf-seg-tag{font-size:10px;opacity:.7}
+.pf-flag{width:16px;height:12px;border-radius:2px;flex:none}
+
+/* ---------- pengaturan ---------- */
+.pf-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.pf-row > div:first-child{min-width:0;flex:1 1 260px;display:flex;flex-direction:column;gap:4px}
+.pf-row.pf-sep{flex-direction:row}
+.pf-dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.pf-dl > div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.pf-dl dt{font-size:11.5px;color:var(--muted)}
+.pf-dl dd{font-size:13px;overflow-wrap:anywhere}
+.pf code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em;
+  padding:1px 6px;border-radius:6px;border:1px solid var(--line)}
+.pf-anchor{scroll-margin-top:96px}
+.pf-anchor:focus{outline:none}
+.pf-pw h3{font-weight:500;font-size:13.5px}
+
+.pf-theme{
+  width:40px;height:40px;border-radius:50%;border:1px solid var(--line);
+  display:inline-flex;align-items:center;justify-content:center;flex:none;
+  transition:border-color .2s var(--ease);
+}
+.pf-theme:hover{border-color:var(--ink)}
+.pf-theme svg{width:17px;height:17px;stroke:var(--ink);fill:none}
+.pf-theme .sun{display:none}
+html.dark-theme .pf-theme .sun{display:block}
+html.dark-theme .pf-theme .moon{display:none}
+
+.pf-slug{
+  display:flex;align-items:stretch;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  transition:border-color .2s var(--ease);
+}
+.pf-slug:focus-within{border-color:var(--ink)}
+.pf .has-error .pf-slug{border-color:var(--pf-bad)}
+.pf-slug-pre{
+  display:flex;align-items:center;padding:0 10px;font-size:12.5px;color:var(--muted);
+  border-right:1px solid var(--line);white-space:nowrap;max-width:55%;overflow:hidden;text-overflow:ellipsis;
+}
+.pf .pf-slug .ui-input{border:0;border-radius:0;flex:1;min-width:0}
+.pf .pf-slug .ui-input:focus-visible{outline:none}
+.pf-status{font-size:12px;color:var(--muted)}
+.pf-status.is-ok{color:var(--pf-ok)}
+.pf-status.is-bad{color:var(--pf-bad)}
+.pf-warn{
+  padding:10px 12px;border-radius:10px;background:var(--pf-warn-bg);color:var(--pf-warn-ink);
+  font-size:12px;line-height:1.55;overflow-wrap:anywhere;
+}
+
+.pf-danger{border-color:rgba(198,40,40,.35)}
+.pf-danger .pf-card-head h2{color:var(--pf-bad)}
+.pf-confirm{display:flex;flex-direction:column;gap:12px;font-size:13px;line-height:1.55}
+.pf-confirm form{display:flex;flex-direction:column;gap:6px}
+
+/* ---------- layar sempit ---------- */
+@media (max-width:640px){
+  .pf-card{padding:16px}
+  .pf-grid,.pf-check,.pf-dl{grid-template-columns:minmax(0,1fr)}
+  .pf-savebar{bottom:8px}
+  .pf-savebar-row .pf-btns{width:100%}
+  .pf-savebar-row .pf-btns .ui-btn{flex:1}
+}
+
+/* Pembungkus isian formulir; hanya dipakai untuk mengunci saat menyimpan. */
+.pf .pf-fieldset{border:0;margin:0;padding:0;min-width:0;display:contents}
