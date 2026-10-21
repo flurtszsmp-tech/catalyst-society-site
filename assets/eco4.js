@@ -120,17 +120,18 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') tutup(); });
   document.addEventListener('bahasa-berubah', function () { if (buka) isiPapan(); });
 
-  /* ---------- gelembung didorong kursor (hanya tetikus) ----------
-     Tiap gelembung punya pegas ke tempat asalnya. Kursor yang mendekat mendorongnya
-     menjauh, lalu pegas menariknya pulang; sisa laju membuatnya memantul beberapa kali
-     sebelum diam. Gelembung juga saling menolak supaya tidak pernah tumpang tindih, dan
-     dibatasi agar tetap di dalam panggung. Hanya berjalan saat panggung terlihat. */
+  /* ---------- gelembung diseret kursor (hanya tetikus) ----------
+     Gelembung hanya bergerak kalau ditarik: kursor yang lewat tidak mendorongnya menjauh.
+     Setelah dilepas, pegas menariknya pulang ke tempat asal dan sisa laju membuatnya
+     memantul beberapa kali sebelum diam. Gelembung yang tertabrak ikut terdorong, semuanya
+     tetap di dalam panggung, dan pantulan cahayanya bergeser mengikuti perpindahan supaya
+     permukaannya terbaca seperti bola kaca. Hanya berjalan saat panggung terlihat. */
   var fisika = (function () {
     if (reduce || !window.matchMedia || !matchMedia('(hover:hover)').matches) return null;
-    var JANGKAU = 150, DORONG = 2600, PEGAS = 42, REDAM = 5.2, MAKS = 150, MAKS_SERET = 320;
+    var PEGAS = 42, REDAM = 5.2, MAKS = 150, MAKS_SERET = 320;
     var seret = null, pegangX = 0, pegangY = 0, jauhSeret = 0;
     var b = el.map(function (e) { return { e: e, x: 0, y: 0, vx: 0, vy: 0, cx: 0, cy: 0, r: 0 }; });
-    var mx = -1e4, my = -1e4, adaKursor = false, jalanF = false, lalu = 0, batas = null, terlihatF = false;
+    var mx = -1e4, my = -1e4, jalanF = false, lalu = 0, batas = null, terlihatF = false;
     /* pengamat sendiri: bagian 3D punya penanda tampil miliknya di lingkup lain */
     if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { terlihatF = e[0].isIntersecting; }, { threshold: 0 }).observe(root);
     else terlihatF = true;
@@ -158,7 +159,7 @@
           if (ty > MAKS_SERET) ty = MAKS_SERET; else if (ty < -MAKS_SERET) ty = -MAKS_SERET;
           o.vx = (tx - o.x) / dt; o.vy = (ty - o.y) / dt;
           o.x = tx; o.y = ty;
-          o.e.style.translate = o.x.toFixed(2) + 'px ' + o.y.toFixed(2) + 'px';
+          taruh(o);
           sibuk = true;
           /* tetap mendorong gelembung lain yang tertabrak */
           for (var j = 0; j < b.length; j++) {
@@ -168,14 +169,6 @@
             if (jw < mauW) { var fw = (mauW - jw) / mauW * 1800; w.vx += wx / jw * fw * dt; w.vy += wy / jw * fw * dt; }
           }
           continue;
-        }
-        /* dorongan kursor: makin dekat makin kuat, berhenti tepat di tepi jangkauan */
-        if (adaKursor && !seret) {
-          var dx = gx - mx, dy = gy - my, d = Math.hypot(dx, dy) || 1, jangkau = JANGKAU + o.r;
-          if (d < jangkau) {
-            var kuat = (1 - d / jangkau) * DORONG / Math.max(d, 26);
-            o.vx += dx * kuat * dt; o.vy += dy * kuat * dt;
-          }
         }
         /* saling menolak supaya tidak bertumpuk */
         for (var k = i + 1; k < b.length; k++) {
@@ -206,19 +199,23 @@
         if (o.y > MAKS) o.y = MAKS; else if (o.y < -MAKS) o.y = -MAKS;
         if (Math.abs(o.x) > 0.12 || Math.abs(o.y) > 0.12 || Math.abs(o.vx) > 0.6 || Math.abs(o.vy) > 0.6) sibuk = true;
         else { o.x = o.y = o.vx = o.vy = 0; }
-        o.e.style.translate = o.x.toFixed(2) + 'px ' + o.y.toFixed(2) + 'px';
+        taruh(o);
       }
-      if (sibuk || adaKursor || seret) requestAnimationFrame(bingkaiF);
+      if (sibuk || seret) requestAnimationFrame(bingkaiF);
       else jalanF = false;
+    }
+    /* cahaya jatuh dari arah tetap, jadi sorotnya bergeser berlawanan arah gerak */
+    function taruh(o) {
+      o.e.style.translate = o.x.toFixed(2) + 'px ' + o.y.toFixed(2) + 'px';
+      o.e.style.setProperty('--kx', (-o.x * 0.055).toFixed(2) + 'px');
+      o.e.style.setProperty('--ky', (-o.y * 0.055).toFixed(2) + 'px');
     }
     function mulaiF() { if (!jalanF && terlihatF && !document.hidden) { jalanF = true; lalu = 0; requestAnimationFrame(bingkaiF); } }
     window.addEventListener('pointermove', function (e) {
       if (e.pointerType !== 'mouse') return;
-      mx = e.clientX; my = e.clientY; adaKursor = true;
-      if (!batas) ukurF();
-      mulaiF();
+      mx = e.clientX; my = e.clientY;
+      if (seret) mulaiF();
     }, { passive: true });
-    window.addEventListener('pointerleave', function () { adaKursor = false; });
 
     /* seret: gelembung ditangkap kursor, lalu terlempar sesuai laju tangan saat dilepas.
        Klik tetap bekerja; hanya seretan lebih dari 5px yang membatalkan klik. */
@@ -228,7 +225,7 @@
         if (!batas) ukurF();
         seret = o; jauhSeret = 0;
         pegangX = (o.cx + o.x) - e.clientX; pegangY = (o.cy + o.y) - e.clientY;
-        mx = e.clientX; my = e.clientY; adaKursor = true;
+        mx = e.clientX; my = e.clientY;
         o.vx = o.vy = 0;
         o.e.classList.add('digenggam');
         try { o.e.setPointerCapture(e.pointerId); } catch (_) {}
@@ -254,8 +251,11 @@
       o.e.addEventListener('pointerup', lepas);
       o.e.addEventListener('pointercancel', lepas);
     });
-    addEventListener('scroll', function () { batas = null; if (adaKursor) { ukurF(); mulaiF(); } }, { passive: true });
-    addEventListener('resize', function () { b.forEach(function (o) { o.x = o.y = o.vx = o.vy = 0; o.e.style.translate = ''; }); batas = null; });
+    addEventListener('scroll', function () { batas = null; if (seret) ukurF(); }, { passive: true });
+    addEventListener('resize', function () {
+      b.forEach(function (o) { o.x = o.y = o.vx = o.vy = 0; o.e.style.translate = ''; o.e.style.removeProperty('--kx'); o.e.style.removeProperty('--ky'); });
+      batas = null;
+    });
     return { ukur: ukurF, mulai: mulaiF };
   })();
 
