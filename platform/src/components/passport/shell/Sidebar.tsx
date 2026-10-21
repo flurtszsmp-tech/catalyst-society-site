@@ -148,6 +148,13 @@ export const Sidebar = forwardRef<HTMLElement, Props>(function Sidebar({ open, o
               </Link>
             </li>
             <li>
+              {/* keluar dari dasbor menuju landing; <a> biasa supaya basePath /bp tidak ikut ditempel */}
+              <a href="/">
+                <Icon name="back" />
+                Back to site
+              </a>
+            </li>
+            <li>
               <a href="https://www.instagram.com/catalystsociety.id/" target="_blank" rel="noopener noreferrer">
                 <Icon name="ig" />
                 <span translate="no">catalystsociety.id</span>
