@@ -7,7 +7,7 @@ import { transformSync } from 'esbuild';
 import { minify } from 'html-minifier-terser';
 
 const OUT = 'dist';
-const SKIP = new Set(['dist', 'node_modules', 'platform', 'scripts', '.git', '.vercel', '.netlify', 'supabase-schema.sql',
+const SKIP = new Set(['dist', 'node_modules', 'platform', 'scripts', '.git', '.vercel', '.netlify', 'supabase-schema.sql', 'supabase.config.json',
   'package.json', 'package-lock.json', 'vercel.json', '.vercelignore', '.gitignore', '.github']);
 
 rmSync(OUT, { recursive: true, force: true });

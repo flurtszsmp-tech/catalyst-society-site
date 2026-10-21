@@ -105,7 +105,19 @@ window.PI18N = (function () {
       'lg.errUmum':'Terjadi kesalahan.',
       'lg.errKredensial':'Email atau kata sandi salah.',
       'lg.errTerdaftar':'Email ini sudah terdaftar. Silakan masuk.',
-      'lg.errKonfirmasi':'Email belum dikonfirmasi. Cek kotak masuk Anda.'
+      'lg.errKonfirmasi':'Email belum dikonfirmasi. Cek kotak masuk Anda.',
+      'lg.lupa':'Lupa kata sandi?',
+      'lg.pulih.judul':'Atur ulang kata sandi',
+      'lg.pulih.sub':'Masukkan email akun Anda. Kami kirim tautan untuk membuat kata sandi baru.',
+      'lg.pulih.kirim':'Kirim tautan',
+      'lg.pulih.terkirim':'Tautan sudah dikirim. Cek kotak masuk email Anda.',
+      'lg.baru.judul':'Buat kata sandi baru',
+      'lg.baru.sub':'Masukkan kata sandi baru untuk akun Anda.',
+      'lg.baru.label':'Kata sandi baru',
+      'lg.baru.kirim':'Simpan kata sandi',
+      'lg.baru.ok':'Kata sandi diperbarui. Mengalihkan ke Passport.',
+      'lg.baru.min':'Kata sandi baru minimal 8 karakter.',
+      'lg.pulih.gagal':'Tautan tidak berlaku atau sudah kedaluwarsa. Minta tautan baru.'
     },
 
     en: {
@@ -199,7 +211,19 @@ window.PI18N = (function () {
       'lg.errUmum':'Something went wrong.',
       'lg.errKredensial':'Wrong email or password.',
       'lg.errTerdaftar':'This email is already registered. Please sign in.',
-      'lg.errKonfirmasi':'Email not confirmed. Check your inbox.'
+      'lg.errKonfirmasi':'Email not confirmed. Check your inbox.',
+      'lg.lupa':'Forgot password?',
+      'lg.pulih.judul':'Reset your password',
+      'lg.pulih.sub':'Enter your account email. We will send a link to create a new password.',
+      'lg.pulih.kirim':'Send link',
+      'lg.pulih.terkirim':'Link sent. Check your email inbox.',
+      'lg.baru.judul':'Create a new password',
+      'lg.baru.sub':'Enter a new password for your account.',
+      'lg.baru.label':'New password',
+      'lg.baru.kirim':'Save password',
+      'lg.baru.ok':'Password updated. Redirecting to Passport.',
+      'lg.baru.min':'New password must be at least 8 characters.',
+      'lg.pulih.gagal':'This link is invalid or has expired. Request a new one.'
     },
 
     zh: {
@@ -293,7 +317,19 @@ window.PI18N = (function () {
       'lg.errUmum':'出现错误。',
       'lg.errKredensial':'邮箱或密码错误。',
       'lg.errTerdaftar':'该邮箱已注册，请直接登录。',
-      'lg.errKonfirmasi':'邮箱尚未确认，请查看收件箱。'
+      'lg.errKonfirmasi':'邮箱尚未确认，请查看收件箱。',
+      'lg.lupa':'忘记密码？',
+      'lg.pulih.judul':'重置密码',
+      'lg.pulih.sub':'请输入账户邮箱，我们将发送设置新密码的链接。',
+      'lg.pulih.kirim':'发送链接',
+      'lg.pulih.terkirim':'链接已发送，请查收邮箱。',
+      'lg.baru.judul':'设置新密码',
+      'lg.baru.sub':'请输入账户的新密码。',
+      'lg.baru.label':'新密码',
+      'lg.baru.kirim':'保存密码',
+      'lg.baru.ok':'密码已更新，正在前往 Passport。',
+      'lg.baru.min':'新密码至少需要 8 个字符。',
+      'lg.pulih.gagal':'链接无效或已过期，请重新获取。'
     }
   };
 
