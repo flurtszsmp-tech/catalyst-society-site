@@ -1,0 +1,521 @@
+/* ===========================================================
+   Catalyst Passport. Lembar gaya dasbor.
+
+   Dipakai oleh passport.html (dasbor pemilik) dan p.html (tampilan
+   publik yang dibagikan). Token, reset, dan tipografi datang dari
+   tokens.css yang dimuat lebih dulu.
+
+   Ini antarmuka aplikasi, bukan halaman pemasaran, jadi skalanya lebih
+   rapat daripada index.html: teks 12 sampai 13 px, kartu berjarak 14 px,
+   sudut 14 px. Yang diwarisi dari situs hanyalah warna, huruf, easing,
+   dan lambangnya.
+
+   Semua nama kelas berawalan .pass- supaya tidak bertabrakan dengan
+   .pp-* milik app.html kalau suatu saat keduanya disatukan.
+   =========================================================== */
+
+:root{
+  --pass-side:244px;
+  --pass-rail:346px;
+  --pass-gap:16px;
+  --pass-pad:24px;
+  --pass-card:14px;          /* sudut kartu */
+  --pass-surface:#fff;
+  --pass-board:#fafafa;
+  --pass-ink-dim:#6f6f6f;
+  --pass-hero:#0d0d0d;
+}
+html.dark-theme{
+  --pass-surface:#141418;
+  --pass-board:#0a0a0a;
+  --pass-ink-dim:#9a9a9a;
+  --pass-hero:#141418;
+}
+
+/* Pembungkus seluruh area /passport. Bukan body, karena body dipakai
+   bersama halaman lain dan CSS area ini tetap termuat sesudah navigasi. */
+.pass{background:var(--pass-board);color:var(--ink);min-height:100vh}
+
+/* ---------- rangka ---------- */
+.pass-shell{display:flex;min-height:100vh;align-items:stretch}
+.pass-work{flex:1;min-width:0;display:flex;flex-direction:column}
+.pass-main{flex:1;padding:0 var(--pass-pad) var(--pass-pad);min-width:0}
+
+/* ---------- sidebar: panel kaca bertingkat ----------
+   Mengikuti gambar acuan pertama: pil hitam berisi lambang di atas, lalu
+   menu dipecah ke beberapa panel kaca yang melayang. Kaca memakai isian
+   putih tembus yang meredup ke abu lembut di bagian bawah, tepi terang,
+   dan bayangan halus, supaya terbaca sebagai benda, bukan kotak datar. */
+.pass-side{
+  width:var(--pass-side);flex:none;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+  padding:clamp(10px,1.6vh,16px) 12px clamp(10px,1.6vh,16px) 16px;
+  display:flex;flex-direction:column;gap:clamp(8px,1.3vh,12px);
+  scrollbar-width:none;outline:0;
+}
+.pass-side::-webkit-scrollbar{display:none}
+
+.pass-brand-pill{
+  display:flex;align-items:center;gap:12px;flex:none;
+  padding:clamp(9px,1.4vh,14px) 20px;border-radius:100px;
+  background:#000;color:#fff;
+  box-shadow:0 14px 30px -16px rgba(0,0,0,.55);
+}
+.pass-brand-pill .mark{font-size:30px;color:#fff}
+.pass-brand-pill .word{display:flex;flex-direction:column;line-height:1}
+.pass-brand-pill .word b{font-family:var(--display);font-weight:500;font-size:16px;letter-spacing:.06em}
+.pass-brand-pill .word span{font-size:8.5px;letter-spacing:.42em;color:rgba(255,255,255,.72);margin-top:4px}
+
+.pass-panels{display:flex;flex-direction:column;gap:clamp(8px,1.3vh,12px)}
+.pass-panel{
+  border-radius:20px;padding:6px;
+  background:linear-gradient(180deg,rgba(255,255,255,.82) 0%,rgba(255,255,255,.62) 55%,rgba(214,214,220,.58) 100%);
+  border:1px solid rgba(255,255,255,.85);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.35),
+             0 14px 34px -20px rgba(18,20,26,.35);
+  backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);
+}
+.pass-panel ul{list-style:none;display:flex;flex-direction:column;gap:2px}
+.pass-grp{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:#8a8a8a;padding:clamp(8px,1.3vh,14px) 14px clamp(3px,.6vh,6px)}
+.pass-panel a,.pass-panel button{
+  display:flex;align-items:center;gap:13px;width:100%;
+  padding:clamp(7px,1.1vh,11px) 14px;border-radius:14px;
+  font-size:13.5px;color:var(--d-gray);text-align:left;
+  transition:background .22s var(--ease),color .22s var(--ease),box-shadow .22s var(--ease);
+}
+.pass-panel a svg,.pass-panel button svg{width:18px;height:18px;flex:none}
+.pass-panel a:hover,.pass-panel button:hover{background:rgba(0,0,0,.05);color:var(--ink)}
+.pass-panel button:disabled{opacity:.55;cursor:default}
+/* Item aktif: pil hitam dengan pendar tipis, seperti gambar acuan. */
+/* Pil hitam tunggal (lihat Sidebar.tsx): di atas kaca panel, di bawah teks menu.
+   Sebelum skrip siap, menu aktif memakai latar hitam biasa supaya tidak berkedip. */
+.pass-panels{position:relative}
+.pass-pil{position:absolute;left:0;top:0;z-index:0;border-radius:14px;background:#000;pointer-events:none;opacity:0;
+  box-shadow:0 10px 22px -10px rgba(0,0,0,.6),0 0 18px -6px rgba(0,0,0,.35);will-change:transform;
+  transition:transform .42s cubic-bezier(.22,1,.36,1),width .42s cubic-bezier(.22,1,.36,1),height .42s cubic-bezier(.22,1,.36,1),opacity .2s}
+.pass-pil.diam{transition:none}
+.pass-panel a,.pass-panel button{position:relative;z-index:1}
+.pass-panel a.di-pil,.pass-panel button.di-pil{color:#fff;transition:color .2s var(--ease) .06s}
+.pass-panels:not(.siap) .pass-panel a.on{background:#000;color:#fff}
+.pass-panel a:hover,.pass-panel button:hover{background:transparent}
+.pass-panel a.di-pil:hover,.pass-panel button.di-pil:hover{color:#fff}
+@media (prefers-reduced-motion:reduce){.pass-pil{transition-duration:.22s}}
+
+html.dark-theme .pass-brand-pill{background:#fff;color:#000;box-shadow:0 14px 30px -16px rgba(0,0,0,.9)}
+html.dark-theme .pass-brand-pill .mark{color:#000}
+html.dark-theme .pass-brand-pill .word span{color:rgba(0,0,0,.6)}
+html.dark-theme .pass-panel{
+  background:linear-gradient(180deg,rgba(40,40,48,.78) 0%,rgba(28,28,34,.7) 60%,rgba(18,18,22,.72) 100%);
+  border-color:rgba(255,255,255,.12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 14px 34px -18px rgba(0,0,0,.9);
+}
+html.dark-theme .pass-grp{color:#8f8f96}
+html.dark-theme .pass-panel a,html.dark-theme .pass-panel button{color:#cfcfd4}
+html.dark-theme .pass-panel a:hover,html.dark-theme .pass-panel button:hover{background:rgba(255,255,255,.07);color:#fff}
+html.dark-theme .pass-pil{background:#fff;box-shadow:0 10px 22px -10px rgba(0,0,0,.9),0 0 18px -6px rgba(255,255,255,.25)}
+html.dark-theme .pass-panel :is(a,button).di-pil,html.dark-theme .pass-panel :is(a,button).di-pil:hover{color:#000}
+html.dark-theme .pass-panels:not(.siap) .pass-panel a.on{background:#fff;color:#000}
+
+/* ---------- bilah atas ---------- */
+.pass-top{
+  display:flex;align-items:center;gap:18px;
+  padding:16px var(--pass-pad) 14px;
+  background:var(--pass-board);
+  position:sticky;top:0;z-index:40;
+}
+.pass-burger{display:none;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);
+  align-items:center;justify-content:center;flex:none;color:var(--ink)}
+.pass-burger svg{width:17px;height:17px}
+
+.pass-search{
+  flex:1 1 0;min-width:0;max-width:556px;display:flex;align-items:center;gap:10px;
+  padding:10px 16px;border-radius:100px;
+  background:var(--pass-surface);border:1px solid var(--line);
+  transition:border-color .24s var(--ease);
+}
+.pass-search:focus-within{border-color:var(--ink)}
+.pass-search svg{width:15px;height:15px;color:var(--muted);flex:none}
+.pass-search input{flex:1;min-width:0;border:0;outline:0;background:none;font-size:12.5px;color:var(--ink)}
+.pass-search input::placeholder{color:var(--muted)}
+.pass-search input::-webkit-search-cancel-button{display:none}
+
+.pass-top-right{margin-left:auto;display:flex;align-items:center;gap:6px;flex:none}
+.pass-demo{font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:100px;
+  border:1px dashed var(--line);color:var(--muted);margin-right:6px;white-space:nowrap}
+.pass-icobtn{
+  position:relative;width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;flex:none;color:var(--ink);
+  transition:background .22s var(--ease);
+}
+.pass-icobtn:not(:disabled):hover{background:rgba(0,0,0,.05)}
+.pass-icobtn:disabled{opacity:.45;cursor:default}
+html.dark-theme .pass-icobtn:not(:disabled):hover{background:rgba(255,255,255,.07)}
+.pass-icobtn svg{width:18px;height:18px}
+
+.pass-sep{width:1px;height:26px;background:var(--line);margin:0 8px;flex:none}
+
+.pass-me{display:flex;align-items:center;gap:10px;padding:4px 6px 4px 4px;border-radius:100px;
+  transition:background .22s var(--ease)}
+.pass-me:hover{background:rgba(0,0,0,.045)}
+html.dark-theme .pass-me:hover{background:rgba(255,255,255,.06)}
+.pass-me img,.pass-me .pass-ini{width:36px;height:36px;border-radius:50%;object-fit:cover;flex:none}
+.pass-me-txt b{display:block;font-size:12.5px;font-weight:500;line-height:1.25}
+.pass-me-txt span{display:block;font-size:10px;color:var(--muted);letter-spacing:.04em;line-height:1.25}
+.pass-me .chev{width:14px;height:14px;color:var(--muted);flex:none}
+
+/* Avatar cadangan saat foto tidak ada: inisial di atas bidang gelap. */
+.pass-ini{display:flex;align-items:center;justify-content:center;
+  background:var(--black);color:#fff;font-size:12px;letter-spacing:.04em}
+html.dark-theme .pass-ini{background:#fff;color:#000}
+
+/* ---------- keadaan memuat dan galat ---------- */
+.pass-loading{display:flex;flex-direction:column;gap:var(--pass-gap);max-width:960px}
+.pass-state{max-width:560px;margin:40px auto}
+.pass-muted{font-size:12px;color:var(--muted);line-height:1.6}
+
+/* ---------- papan ---------- */
+.pass-board{
+  display:grid;grid-template-columns:minmax(0,1fr) var(--pass-rail);
+  gap:var(--pass-gap);align-items:start;
+}
+.pass-col{display:flex;flex-direction:column;gap:var(--pass-gap);min-width:0}
+
+/* ---------- kartu umum ---------- */
+.pass-card{
+  background:var(--pass-surface);
+  border:1px solid var(--line);
+  border-radius:var(--pass-card);
+  padding:18px 20px;
+}
+.pass-card h2{
+  font-family:var(--display);font-weight:400;font-size:15px;
+  letter-spacing:-.004em;line-height:1.3;
+}
+.pass-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.pass-all{font-size:11px;color:var(--muted);transition:color .22s var(--ease);white-space:nowrap}
+.pass-all:hover{color:var(--ink)}
+
+/* ---------- kartu passport ---------- */
+.pass-hero{
+  position:relative;overflow:hidden;
+  background:var(--pass-hero);color:#fff;
+  border-radius:16px;padding:26px 30px 24px;
+}
+html.dark-theme .pass-hero{box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+/* Guratan tipis di sudut kanan, mengikuti bidang lengkung lambang C. */
+.pass-hero::after{
+  content:"";position:absolute;right:-80px;top:-120px;width:420px;height:420px;
+  border-radius:50%;border:1px solid rgba(255,255,255,.05);
+  pointer-events:none;
+}
+.pass-hero-cap{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:#8a8a8a;
+  margin-bottom:16px}
+.pass-hero-mark{position:absolute;right:26px;top:80px;font-size:52px;color:rgba(255,255,255,.9)}
+
+.pass-hero-top{display:flex;align-items:flex-start;gap:22px}
+.pass-photo{width:116px;height:116px;border-radius:12px;object-fit:cover;flex:none;
+  background:#1c1c22}
+/* Kartu hero selalu gelap, di tema terang maupun gelap. Avatar cadangan di
+   dalamnya karena itu tidak ikut membalik: blok putih di sini terbaca
+   sebagai gambar yang gagal dimuat, bukan sebagai tempat foto. */
+.pass-photo.pass-ini{background:#22222a;color:#e8e8e8;font-size:26px;letter-spacing:.06em}
+html.dark-theme .pass-photo.pass-ini{background:#22222a;color:#e8e8e8}
+.pass-hero-body{flex:1;min-width:0}
+.pass-hero-body h1{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  font-family:var(--display);font-weight:400;
+  font-size:clamp(28px,2.7vw,40px);line-height:1.08;letter-spacing:-.018em;color:#fff;
+}
+.pass-verified-wrap{display:inline-flex;color:#fff}
+.pass-verified{width:19px;height:19px;flex:none}
+.pass-role{font-size:14.5px;color:#b9b9b9;margin-top:7px;font-weight:300}
+.pass-loc{display:flex;align-items:center;gap:6px;font-size:12px;color:#8a8a8a;margin-top:7px}
+.pass-loc svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5;flex:none}
+.pass-skills{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px;list-style:none}
+.pass-skill{font-size:11px;padding:5px 13px;border-radius:100px;
+  border:1px solid rgba(255,255,255,.22);color:#e4e4e4;line-height:1.5}
+
+/* aksi di pojok kanan kartu */
+.pass-hero-act{position:absolute;right:30px;top:26px;display:flex;align-items:center;gap:8px}
+.pass-edit{display:inline-flex;align-items:center;gap:8px;background:#fff;color:#000;
+  border-radius:100px;padding:9px 17px;font-size:12px;transition:opacity .25s var(--ease)}
+.pass-edit svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.6}
+.pass-edit:hover{opacity:.86}
+.pass-share{width:38px;height:38px;border-radius:100px;border:1px solid rgba(255,255,255,.28);
+  display:flex;align-items:center;justify-content:center;flex:none;
+  transition:background .22s var(--ease)}
+.pass-share:hover{background:rgba(255,255,255,.12)}
+.pass-share svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:1.6}
+
+.pass-idbox{position:absolute;right:96px;top:76px;
+  border:1px solid rgba(255,255,255,.16);border-radius:10px;padding:8px 12px;
+  display:flex;align-items:center;gap:14px}
+.pass-idbox .cap{font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:#8a8a8a;
+  display:block;line-height:1.5}
+.pass-idbox b{font-size:13px;font-weight:400;letter-spacing:.04em;color:#fff;display:block;line-height:1.3}
+.pass-idbox button{flex:none;display:flex}
+.pass-idbox svg{width:14px;height:14px;stroke:#8a8a8a;fill:none;stroke-width:1.5;
+  transition:stroke .22s var(--ease)}
+.pass-idbox button:hover svg{stroke:#fff}
+
+/* baris angka */
+.pass-stats{display:flex;align-items:stretch;gap:0;margin-top:22px}
+.pass-stat{padding-right:26px;margin-right:26px;border-right:1px solid rgba(255,255,255,.12)}
+.pass-stat:last-child{border-right:0;margin-right:0;padding-right:0}
+.pass-stat{display:flex;flex-direction:column-reverse}
+.pass-stat dd{display:flex;align-items:center;gap:6px;font-family:var(--display);
+  font-weight:400;font-size:23px;letter-spacing:-.01em;color:#fff;line-height:1.2}
+.pass-stat dd svg{width:16px;height:16px;fill:#fff;stroke:none}
+.pass-stat dt{display:block;font-size:10.5px;color:#8a8a8a;margin-top:3px}
+
+.pass-prog{margin-top:20px}
+.pass-prog-lbl{display:flex;justify-content:space-between;font-size:11.5px;color:#c9c9c9;margin-bottom:9px}
+.pass-prog-bar{height:5px;border-radius:100px;background:rgba(255,255,255,.16);overflow:hidden}
+.pass-prog-bar i{display:block;height:100%;border-radius:100px;background:#fff;
+  transition:width 1.1s var(--ease)}
+
+/* ---------- tentang ---------- */
+.pass-about p{font-size:12.5px;line-height:1.72;color:var(--pass-ink-dim);font-weight:300;
+  margin-top:8px;max-width:78ch}
+.pass-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.pass-link{display:inline-flex;align-items:center;gap:9px;
+  padding:8px 14px;border-radius:9px;border:1px solid var(--line);
+  font-size:11.5px;color:var(--d-gray);transition:.22s var(--ease)}
+.pass-link:hover{border-color:var(--ink);color:var(--ink)}
+.pass-link svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;flex:none}
+/* Kanal yang belum diisi: ada di barisnya, tetapi jelas belum aktif. */
+.pass-link.kosong{color:var(--muted);opacity:.55;cursor:default;border-style:dashed}
+.pass-link.kosong:hover{border-color:var(--line);color:var(--muted)}
+
+/* ---------- perjalanan ---------- */
+.pass-journey{list-style:none;display:flex;align-items:stretch;gap:0;overflow-x:auto;padding-bottom:4px;
+  scrollbar-width:none;-ms-overflow-style:none}
+.pass-journey::-webkit-scrollbar{display:none}
+.pass-step-wrap{display:flex;flex:1 1 0;min-width:0}
+.pass-step-wrap:first-child{flex:1 1 0}
+.pass-step{
+  flex:1 1 0;min-width:104px;
+  border:1px solid var(--line);border-radius:11px;
+  padding:12px 13px;background:var(--pass-surface);
+}
+.pass-step svg.ico{width:19px;height:19px;color:var(--ink);margin-bottom:9px}
+.pass-step b{display:block;font-size:12px;font-weight:500;line-height:1.3}
+.pass-step span{display:block;font-size:9.5px;color:var(--muted);line-height:1.45;margin-top:3px}
+.pass-step em{display:block;font-style:normal;font-size:9.5px;color:var(--muted);margin-top:7px}
+/* Tahap berikutnya dibalik jadi gelap: itu tujuan, bukan riwayat. */
+.pass-step.next{background:var(--black);border-color:var(--black);color:#fff}
+html.dark-theme .pass-step.next{background:#000;border-color:#000}
+.pass-step.next svg.ico{color:#fff}
+.pass-step.next span{color:#9a9a9a}
+.pass-step.next .goal{display:inline-block;margin-top:9px;font-size:9px;
+  padding:4px 10px;border-radius:100px;border:1px solid rgba(255,255,255,.26);color:#fff}
+/* penghubung: garis dengan tanda centang di tengah */
+.pass-join{flex:0 0 26px;display:flex;align-items:center;justify-content:center;position:relative}
+.pass-join::before{content:"";position:absolute;left:0;right:0;height:1px;background:var(--line)}
+.pass-join svg{width:15px;height:15px;position:relative;background:var(--pass-surface);
+  border-radius:50%;stroke:var(--ink);fill:none;stroke-width:1.8}
+.pass-join.off svg{stroke:var(--l-gray)}
+
+/* ---------- komunitas ---------- */
+.pass-coms{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.pass-coms>li{min-width:0}
+.pass-com-ini{width:26px;height:26px;border-radius:50%;font-size:9px;flex:none}
+.pass-com{display:flex;align-items:center;gap:10px;min-width:0;
+  padding:9px 12px;border-radius:10px;border:1px solid var(--line);
+  font-size:12px;transition:.22s var(--ease)}
+.pass-com:hover{border-color:var(--ink)}
+.pass-com img{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:none;background:#fff;
+  box-shadow:0 0 0 1px var(--line)}
+.pass-com span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pass-com.add{justify-content:center;color:var(--muted);border-style:dashed}
+.pass-com.add:hover{color:var(--ink)}
+.pass-com.add svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.6}
+
+/* ---------- projek ---------- */
+.pass-proj-list{list-style:none;display:flex;flex-direction:column;gap:16px}
+.pass-proj-list>li+li{padding-top:16px;border-top:1px solid var(--line)}
+.pass-proj{display:flex;align-items:flex-start;gap:22px}
+.pass-proj-lbl{font-family:var(--display);font-weight:400;font-size:15px;flex:none;padding-top:1px}
+.pass-proj-body{flex:1;min-width:0}
+.pass-proj-body h3{font-size:13.5px;font-weight:500;line-height:1.35}
+.pass-proj-body p{font-size:12px;color:var(--pass-ink-dim);line-height:1.6;margin-top:3px;font-weight:300;max-width:56ch}
+.pass-proj-meta{display:flex;align-items:center;gap:10px;margin-top:9px;flex-wrap:wrap}
+.pass-tag{font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+  padding:4px 9px;border-radius:5px;background:var(--black);color:#fff;line-height:1.5}
+html.dark-theme .pass-tag{background:#fff;color:#000}
+.pass-proj-meta time{font-size:10.5px;color:var(--muted)}
+.pass-proj-side{display:flex;align-items:center;gap:12px;flex:none;align-self:center}
+.pass-faces{display:flex}
+.pass-faces img,.pass-faces .more{width:27px;height:27px;border-radius:50%;object-fit:cover;
+  box-shadow:0 0 0 2px var(--pass-surface);margin-left:-8px}
+.pass-faces :first-child{margin-left:0}
+.pass-faces .more{display:flex;align-items:center;justify-content:center;
+  background:var(--paper);color:var(--d-gray);font-size:9.5px;margin-left:6px;box-shadow:none}
+.pass-outline{border:1px solid var(--line);border-radius:8px;padding:9px 16px;font-size:11.5px;
+  transition:.22s var(--ease);white-space:nowrap}
+.pass-outline:hover{border-color:var(--ink)}
+
+/* ---------- bagikan ---------- */
+.pass-share-sub{font-size:11px;color:var(--muted);margin-top:-8px;margin-bottom:13px;line-height:1.5}
+.pass-url{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:9px;
+  border:1px solid var(--line);background:var(--paper)}
+.pass-url input{flex:1;min-width:0;border:0;outline:0;background:none;font-size:11.5px;color:var(--d-gray)}
+.pass-url button{flex:none;display:flex}
+.pass-url svg{width:15px;height:15px;stroke:var(--muted);fill:none;stroke-width:1.5;
+  transition:stroke .22s var(--ease)}
+.pass-url button:hover svg{stroke:var(--ink)}
+.pass-share-row{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:11px}
+.pass-share-row a,.pass-share-row button{
+  height:40px;border-radius:9px;border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;transition:.22s var(--ease)}
+.pass-share-row a:hover,.pass-share-row button:hover{border-color:var(--ink);background:rgba(0,0,0,.03)}
+html.dark-theme .pass-share-row a:hover,html.dark-theme .pass-share-row button:hover{background:rgba(255,255,255,.06)}
+.pass-share-row svg{width:17px;height:17px;stroke:var(--ink);fill:none;stroke-width:1.5}
+
+/* Kode QR. Ukuran kotak wajib pasti: createSvgTag({scalable:true})
+   tidak menulis width/height, jadi tanpa ini SVG jatuh ke ukuran bawaan
+   300x150 dan kodenya melar sampai tidak terbaca pemindai. */
+.pass-qr{margin-top:13px;padding-top:13px;border-top:1px solid var(--line);
+  display:flex;flex-direction:column;align-items:center;gap:9px}
+.pass-qr-box{width:150px;height:150px;background:#fff;border-radius:8px;
+  box-shadow:0 0 0 1px var(--line);padding:0;overflow:hidden}
+.pass-qr-box svg{display:block;width:100%;height:100%}
+.pass-qr-note{font-size:10.5px;color:var(--muted);text-align:center;line-height:1.5}
+
+/* ---------- poin ---------- */
+.pass-pts{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.pass-pts-num{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:400;
+  font-size:30px;letter-spacing:-.014em;line-height:1.1}
+.pass-pts-num svg{width:20px;height:20px;fill:var(--ink);stroke:none}
+.pass-pts-cap{font-size:11px;color:var(--muted);margin-top:2px}
+.pass-delta{display:inline-flex;align-items:center;gap:4px;font-size:10px;
+  padding:5px 10px;border-radius:100px;background:#e9f7ee;color:#1c7a41;white-space:nowrap}
+html.dark-theme .pass-delta{background:rgba(34,160,84,.16);color:#54c77e}
+.pass-delta svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2}
+.pass-spark{margin-top:14px}
+.pass-spark svg{width:100%;height:76px;overflow:visible}
+.pass-spark .line{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.pass-spark .node{fill:var(--ink)}
+.pass-months{display:flex;justify-content:space-between;font-size:9.5px;color:var(--muted);margin-top:7px}
+.pass-analytics{display:flex;align-items:center;justify-content:flex-end;gap:7px;
+  font-size:11.5px;margin-top:14px;padding-top:13px;border-top:1px solid var(--line);
+  transition:gap .25s var(--ease)}
+.pass-analytics:hover{gap:11px}
+.pass-analytics svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.6}
+
+/* ---------- lencana ---------- */
+.pass-badges{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:12px 6px}
+.pass-badge{display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center}
+.pass-hex{width:46px;height:52px;position:relative;display:flex;align-items:center;justify-content:center;flex:none}
+.pass-hex svg.frame{position:absolute;inset:0;width:100%;height:100%;
+  fill:none;stroke:var(--line);stroke-width:1.4}
+.pass-hex svg.ico{width:19px;height:19px;stroke:var(--ink);fill:none;stroke-width:1.4;position:relative}
+.pass-badge span{font-size:9.5px;line-height:1.3;color:var(--d-gray)}
+/* Lencana pertama dibuat padat, menandai capaian terbaru. */
+.pass-badge.solid .pass-hex svg.frame{fill:var(--black);stroke:var(--black)}
+.pass-badge.solid .pass-hex svg.ico{stroke:#fff}
+html.dark-theme .pass-badge.solid .pass-hex svg.frame{fill:#fff;stroke:#fff}
+html.dark-theme .pass-badge.solid .pass-hex svg.ico{stroke:#000}
+
+/* ---------- sertifikat ---------- */
+.pass-certs{list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+.pass-cert{border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  transition:.22s var(--ease)}
+.pass-cert:hover{border-color:var(--ink)}
+/* Berkas gambar sertifikat belum ada, jadi bidangnya digambar: kertas
+   bergaris tipis dengan lambang penghargaan di tengah. Sengaja terlihat
+   seperti tempat gambar, bukan seperti gambar yang gagal dimuat. */
+.pass-cert .thumb{aspect-ratio:4/2.9;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  background:
+    repeating-linear-gradient(180deg,transparent 0 13px,var(--line) 13px 14px),
+    var(--paper)}
+.pass-cert .thumb img{width:100%;height:100%;object-fit:cover}
+.pass-cert-ok{display:inline-flex!important;align-items:center;gap:4px;margin-top:6px;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)!important}
+.pass-cert-ok svg{width:11px;height:11px}
+.pass-cert-ico{width:30px;height:30px;stroke:var(--muted);fill:none;stroke-width:1.2}
+.pass-cert .meta{padding:9px 11px 11px}
+.pass-cert b{display:block;font-size:11.5px;font-weight:500;line-height:1.35}
+.pass-cert span{display:block;font-size:10px;color:var(--muted);line-height:1.4;margin-top:3px}
+
+/* ---------- pita bawah ---------- */
+.pass-strip{background:#0b0b0b;color:#fff;padding:20px var(--pass-pad)}
+.pass-strip-in{display:flex;align-items:center;gap:0}
+.pass-value{flex:1;display:flex;align-items:flex-start;gap:13px;padding:0 24px;
+  border-right:1px solid rgba(255,255,255,.12);min-width:0}
+.pass-value:first-child{padding-left:0}
+.pass-value:last-of-type{border-right:0}
+.pass-value svg{width:34px;height:34px;stroke:#fff;fill:none;stroke-width:1.2;flex:none}
+.pass-value b{display:block;font-size:12.5px;font-weight:500;line-height:1.35}
+.pass-value p{font-size:10.5px;color:#9a9a9a;line-height:1.5;margin-top:3px}
+.pass-strip-mark{display:flex;align-items:center;gap:10px;padding-left:26px;flex:none}
+.pass-strip-mark .mark{font-size:30px}
+.pass-strip-mark b{font-family:var(--display);font-weight:400;font-size:15px;letter-spacing:.04em;
+  display:block;line-height:1.2}
+.pass-strip-mark span{font-size:8px;letter-spacing:.3em;color:#9a9a9a;display:block}
+
+/* ---------- pesan tersalin ---------- */
+.pass-toast{
+  position:fixed;left:50%;bottom:28px;transform:translate(-50%,16px);
+  background:var(--black);color:#fff;font-size:12px;
+  padding:11px 20px;border-radius:100px;z-index:200;
+  opacity:0;pointer-events:none;transition:opacity .3s var(--ease),transform .3s var(--ease);
+}
+html.dark-theme .pass-toast{background:#fff;color:#000}
+.pass-toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- tampilan publik ---------- */
+/* p.html memakai kartu yang sama tanpa sisi kiri dan bilah atas. */
+.pass-public{max-width:1180px;margin-inline:auto;padding:26px var(--pass-pad) 0}
+.pass-public-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+.pass-public .pass-board{padding-inline:0}
+.pass-public-top .pass-brand-pill{text-decoration:none}
+.pass-public-act{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.pass-cv-btn svg{width:16px;height:16px}
+@media (max-width:560px){
+  .pass-public-top{flex-wrap:wrap}
+  .pass-public-act{width:100%;justify-content:stretch}
+  .pass-public-act .ui-btn{flex:1 1 auto}
+}
+
+/* ---------- responsif ---------- */
+@media (max-width:1240px){
+  .pass-board{grid-template-columns:minmax(0,1fr)}
+  .pass-hero-act{position:static;margin-bottom:16px;justify-content:flex-end}
+  .pass-idbox{position:static;margin-top:16px;display:inline-flex}
+  .pass-hero-mark{display:none}
+  .pass-coms{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:1040px){
+  .pass-side{
+    position:fixed;left:0;top:0;z-index:120;
+    transform:translateX(-100%);transition:transform .45s var(--ease);
+    box-shadow:0 0 60px -20px rgba(0,0,0,.4);
+  }
+  .pass-side.open{transform:none}
+  .pass-burger{display:flex}
+  .pass-scrim{position:fixed;inset:0;z-index:110;background:rgba(0,0,0,.4);
+    opacity:0;visibility:hidden;transition:opacity .35s var(--ease),visibility .35s}
+  .pass-scrim.on{opacity:1;visibility:visible}
+  .pass-strip-in{flex-wrap:wrap;gap:18px}
+  .pass-value{flex:1 1 44%;border-right:0;padding-inline:0}
+  .pass-strip-mark{padding-left:0;width:100%}
+}
+@media (max-width:760px){
+  :root{--pass-pad:16px}
+  .pass-hero{padding:22px 20px}
+  .pass-hero-top{flex-direction:column;gap:16px}
+  .pass-photo{width:92px;height:92px}
+  .pass-stats{flex-wrap:wrap;gap:16px 0}
+  .pass-stat{flex:1 1 44%;padding-right:16px;margin-right:16px}
+  .pass-stat:nth-child(2n){border-right:0;margin-right:0;padding-right:0}
+  .pass-coms{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pass-proj{flex-direction:column;gap:12px}
+  .pass-proj-side{align-self:flex-start}
+  .pass-certs{grid-template-columns:1fr}
+  .pass-me b,.pass-me span{display:none}
+  .pass-me .chev{display:none}
+  .pass-top{gap:10px}
+  .pass-search{padding:9px 13px}
+  .pass-value{flex:1 1 100%}
+}

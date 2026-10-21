@@ -154,7 +154,8 @@
   function pasangBiasKapsul() {
     if (biasKapsul || !el[0].offsetWidth) return;
     biasKapsul = true;
-    el.forEach(function (e) { var w = e.querySelector('.e8-pn'); if (w) w.style.width = '30px'; pasangBias(e, 100, 14, 34, 6); if (w) w.style.width = ''; });
+    /* gelembung: lingkaran penuh, bening seperti lensa kursor (blur kecil, bias kuat di tepi) */
+    el.forEach(function (e) { pasangBias(e, 999, 20, 46, 1.2); });
   }
   function pasangBiasPapan() {
     if (biasPapan) return;

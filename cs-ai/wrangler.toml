@@ -1,0 +1,8 @@
+# Cloudflare Worker untuk Tanya Catalyst. Deploy: npx wrangler deploy
+# Kunci Gemini dipasang terpisah: npx wrangler secret put GEMINI_API_KEY
+name = "catalyst-cs"
+main = "worker.js"
+compatibility_date = "2025-09-01"
+workers_dev = true
+# variabel yang diisi lewat dashboard jangan dihapus saat deploy
+keep_vars = true

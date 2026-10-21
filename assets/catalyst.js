@@ -41,12 +41,14 @@ window.CATALYST_CONFIG = {
       return menunggu;
     },
 
+    /* Nilai channel mengikuti skema database: investments, ai, business,
+       builder, impact. Lihat platform/supabase/migrations/0001_init.sql. */
     CHANNEL: {
-      investments:   { label: 'Investments',    sub: 'Finance & Investments' },
-      ai_technology: { label: 'AI & Technology', sub: 'AI & Technology' },
-      business:      { label: 'Business',        sub: 'Businessman & Entrepreneur' },
-      builders:      { label: 'Builders',        sub: 'Developer & Builder' },
-      social_impact: { label: 'Social Impact',   sub: 'Sustainability & Social Impact' }
+      investments: { label: 'Investments',     sub: 'Finance & Investments' },
+      ai:          { label: 'AI & Technology', sub: 'AI & Technology' },
+      business:    { label: 'Business',        sub: 'Businessman & Entrepreneur' },
+      builder:     { label: 'Builders',        sub: 'Developer & Builder' },
+      impact:      { label: 'Social Impact',   sub: 'Sustainability & Social Impact' }
     },
 
     JOURNEY: ['explorer', 'connector', 'builder', 'challenger', 'contributor', 'innovator'],
