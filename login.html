@@ -111,6 +111,13 @@
   .hint{font-size:11px;color:var(--gray);margin-top:0;max-height:0;opacity:0;overflow:hidden;
     transition:max-height .38s var(--ease),opacity .28s var(--ease),margin-top .38s var(--ease)}
   .hint.show{max-height:40px;opacity:1;margin-top:6px}
+  /* tautan kecil di bawah kata sandi: lupa kata sandi, masuk lewat link email */
+  .aksi-kecil{display:flex;justify-content:space-between;gap:12px;margin:-4px 0 6px;font-size:12px}
+  .aksi-kecil[hidden]{display:none}
+  .tautan{background:none;border:0;padding:4px 0;color:var(--gray);font:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  .tautan:hover{color:var(--black)}
+  .balik{display:block;margin:14px auto 0;font-size:12px}
+  .balik[hidden]{display:none}
 
   .submit{width:100%;padding:14px;border-radius:100px;background:var(--black);color:#fff;
     font-size:13px;letter-spacing:.02em;margin-top:8px;
@@ -147,10 +154,6 @@
   .msg code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;
     background:rgba(0,0,0,.06);padding:1px 5px;border-radius:4px}
 
-  .lupa{font-size:11.5px;color:var(--gray);padding:2px 0;margin-top:-4px;
-    transition:color .3s var(--ease)}
-  .lupa:hover{color:var(--black)}
-  .lupa.off{display:none}
   .back{margin-top:26px;font-size:11.5px;color:var(--gray);display:inline-flex;align-items:center;gap:8px;
     transition:.25s var(--ease)}
   .back:hover{color:var(--ink)}
@@ -264,18 +267,21 @@ setTimeout(function(){
           </select>
         </div>
 
-        <div class="field" id="fEmail">
+        <div class="field anim show" id="fEmail">
           <label for="email" data-i18n="lg.email">Email atau username</label>
           <input id="email" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="nama@email.com" required>
         </div>
 
-        <div class="field" id="fSandi">
+        <div class="field anim show" id="fSandi">
           <label for="sandi" data-i18n="lg.sandi">Kata sandi</label>
           <input id="sandi" type="password" autocomplete="current-password" placeholder="Minimal 6 karakter" data-i18n-ph="lg.sandiPh" required>
           <p class="hint" id="hintSandi" data-i18n="lg.hint">Gunakan minimal 6 karakter.</p>
         </div>
 
-        <button type="button" class="lupa" id="lupa" data-i18n="lg.lupa">Lupa kata sandi?</button>
+        <div class="aksi-kecil" id="aksiMasuk" hidden>
+          <button type="button" class="tautan" id="btnLupa" data-i18n="lg.lupa">Lupa kata sandi?</button>
+          <button type="button" class="tautan" id="btnLink" data-i18n="lg.pakaiLink">Masuk lewat link email</button>
+        </div>
 
         <button class="submit" id="kirim" type="submit">
           <span id="labelKirim" data-i18n="lg.kirim.masuk">Masuk</span>
@@ -284,6 +290,7 @@ setTimeout(function(){
       </form>
 
       <div class="msg" id="pesan" role="status" aria-live="polite"></div>
+      <button type="button" class="tautan balik" id="btnBalik" hidden data-i18n="lg.balik">Masuk dengan kata sandi</button>
 
       <a class="back" href="index.html">
         <svg viewBox="0 0 24 24" style="transform:rotate(180deg)"><use href="#i-arrow"/></svg>
@@ -294,6 +301,7 @@ setTimeout(function(){
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="assets/catalyst.js"></script>
 <script src="assets/platform-i18n.js"></script>
 <script>
@@ -309,16 +317,11 @@ setTimeout(function(){
     pesan.innerHTML = teks;
   }
 
-  /* Halaman tujuan setelah berhasil masuk. Parameter next dipakai saat
-     pengguna tadinya membuka halaman Passport yang butuh sesi. Hanya jalur
-     internal yang diterima, supaya tidak bisa dipakai mengalihkan ke situs lain. */
-  function tujuan(){
-    var n = new URLSearchParams(location.search).get('next') || '';
-    return (/^\/[^/]/.test(n)) ? n : '/bp/passport/';
+  /* Supabase belum diisi: halaman berjalan sebagai demo dengan satu akun contoh */
+  var DEMO = !CATALYST.siap;
+  function pesanDemo(){
+    tampilPesan(T('lg.demo', { u: CATALYST.DEMO_AKUN.username, p: CATALYST.DEMO_AKUN.sandi }), 'warn');
   }
-
-  /* Klien Supabase dimuat sekali, lalu dipakai ulang seluruh halaman */
-  var dbSiap = CATALYST.siapkan();
 
   var kartu = document.querySelector('.card');
   var tabs  = document.getElementById('tabs');
@@ -333,25 +336,22 @@ setTimeout(function(){
   }
   addEventListener('resize', geserPil);
 
-  /* Empat mode dalam satu kartu:
-       masuk  - email dan kata sandi
-       daftar - tambah nama dan channel
-       pulih  - minta tautan atur ulang, hanya email
-       baru   - pasang kata sandi baru setelah tautan diklik */
-  var JUDUL = { masuk:'lg.masuk.judul', daftar:'lg.daftar.judul', pulih:'lg.pulih.judul', baru:'lg.baru.judul' };
-  var SUB   = { masuk:'lg.masuk.sub',   daftar:'lg.daftar.sub',   pulih:'lg.pulih.sub',   baru:'lg.baru.sub' };
-  var TOMBOL= { masuk:'lg.kirim.masuk', daftar:'lg.kirim.daftar', pulih:'lg.pulih.kirim', baru:'lg.baru.kirim' };
-
+  /* Mode: masuk, daftar, lupa (kirim link atur ulang), link (masuk lewat link email),
+     sandiBaru (setelah membuka link atur ulang). Tiga mode terakhir hanya ada bila Supabase aktif. */
+  var JUDUL = { masuk: 'lg.masuk', daftar: 'lg.daftar', lupa: 'lg.lupa', link: 'lg.link', sandiBaru: 'lg.baru' };
+  var KIRIM = { masuk: 'lg.kirim.masuk', daftar: 'lg.kirim.daftar', lupa: 'lg.kirim.lupa', link: 'lg.kirim.link', sandiBaru: 'lg.kirim.baru' };
   function setMode(m, langsung){
     if(m === mode && !langsung) return;
     mode = m;
-    var daftar = m === 'daftar';
-    var pulih  = m === 'pulih';
-    var baru   = m === 'baru';
+    var daftar = m === 'daftar', khusus = m === 'lupa' || m === 'link' || m === 'sandiBaru';
+    tabs.hidden = khusus;
+    document.getElementById('fEmail').classList.toggle('show', m !== 'sandiBaru');
+    document.getElementById('fSandi').classList.toggle('show', m !== 'lupa' && m !== 'link');
+    document.getElementById('aksiMasuk').hidden = DEMO || m !== 'masuk';
+    document.getElementById('btnBalik').hidden = !(m === 'lupa' || m === 'link');
 
     /* pil penanda dan warna label tab */
     document.getElementById('tabs').dataset.mode = m;
-    document.getElementById('tabs').style.display = baru ? 'none' : '';
     document.getElementById('tabMasuk').classList.toggle('on', !daftar);
     document.getElementById('tabDaftar').classList.toggle('on', daftar);
     geserPil();
@@ -359,19 +359,15 @@ setTimeout(function(){
     /* field opsional membuka/menutup dengan tinggi teranimasi */
     document.getElementById('fNama').classList.toggle('show', daftar);
     document.getElementById('fChannel').classList.toggle('show', daftar);
-    document.getElementById('hintSandi').classList.toggle('show', daftar || baru);
-    document.getElementById('fEmail').style.display  = baru ? 'none' : '';
-    document.getElementById('fSandi').style.display  = pulih ? 'none' : '';
-    document.getElementById('lupa').classList.toggle('off', m !== 'masuk');
-    document.getElementById('sandi').setAttribute('autocomplete', (daftar || baru) ? 'new-password' : 'current-password');
-    document.querySelector('label[for="sandi"]').textContent = T(baru ? 'lg.baru.label' : 'lg.sandi');
-    if(!langsung) pesan.className = 'msg';
+    document.getElementById('hintSandi').classList.toggle('show', daftar || m === 'sandiBaru');
+    document.getElementById('sandi').setAttribute('autocomplete', daftar || m === 'sandiBaru' ? 'new-password' : 'current-password');
+    if(DEMO) pesanDemo(); else pesan.className = 'msg';
 
     /* teks ditukar saat tak terlihat supaya tidak terlihat berkedip */
     var tulis = function(){
-      document.getElementById('judul').textContent = T(JUDUL[m]);
-      document.getElementById('sub').textContent   = T(SUB[m]);
-      document.getElementById('labelKirim').textContent = T(TOMBOL[m]);
+      document.getElementById('judul').textContent = T(JUDUL[m] + '.judul');
+      document.getElementById('sub').textContent   = T(JUDUL[m] + '.sub');
+      document.getElementById('labelKirim').textContent = T(KIRIM[m]);
     };
 
     if(langsung){ tulis(); return; }
@@ -381,30 +377,21 @@ setTimeout(function(){
 
   document.getElementById('tabMasuk').addEventListener('click', function(){ setMode('masuk'); });
   document.getElementById('tabDaftar').addEventListener('click', function(){ setMode('daftar'); });
+  document.getElementById('btnLupa').addEventListener('click', function(){ setMode('lupa'); });
+  document.getElementById('btnLink').addEventListener('click', function(){ setMode('link'); });
+  document.getElementById('btnBalik').addEventListener('click', function(){ setMode('masuk'); });
 
-  /* Tautan atur ulang kata sandi membawa parameter code. Sesi yang lahir
-     darinya hanya dipakai untuk memasang kata sandi baru, bukan untuk masuk
-     diam diam, jadi halaman tidak langsung mengalihkan ke Passport. */
-  var kodePulih = new URLSearchParams(location.search).get('code');
-  var modePulih = kodePulih || /type=recovery/.test(location.hash);
-
-  dbSiap.then(async function(db){
-    if(!db) return;
-    if(modePulih){
-      if(kodePulih){
-        var tukar = await db.auth.exchangeCodeForSession(kodePulih);
-        if(tukar.error){ tampilPesan(T('lg.pulih.gagal'), 'err'); return; }
-      }
-      history.replaceState(null, '', location.pathname);
-      setMode('baru', true);
-      return;
-    }
-    var r = await db.auth.getSession();
-    if(r.data.session) location.href = tujuan();
-  });
-
-  /* Pindah ke mode minta tautan */
-  document.getElementById('lupa').addEventListener('click', function(){ setMode('pulih'); });
+  /* Sudah punya sesi aktif: langsung ke aplikasi */
+  if(DEMO && CATALYST.demoAktif()) location.href = '/bp/passport/';
+  var MODE_URL = new URLSearchParams(location.search).get('mode');
+  var GALAT_URL = new URLSearchParams(location.hash.slice(1)).get('error_code');
+  if(CATALYST.db){
+    /* link atur ulang kata sandi membuka sesi pemulihan: tampilkan form kata sandi baru */
+    CATALYST.db.auth.onAuthStateChange(function(ev){ if(ev === 'PASSWORD_RECOVERY') setMode('sandiBaru'); });
+    CATALYST.db.auth.getSession().then(function(r){
+      if(r.data.session && MODE_URL !== 'sandi-baru') location.href = '/bp/passport/';
+    });
+  }
 
   form.addEventListener('submit', async function(e){
     e.preventDefault();
@@ -413,53 +400,77 @@ setTimeout(function(){
     var sandi = document.getElementById('sandi').value;
     var nama  = document.getElementById('nama').value.trim();
 
-    if(mode === 'baru'){
-      if(sandi.length < 8){ tampilPesan(T('lg.baru.min'), 'err'); return; }
-    } else if(mode === 'pulih'){
-      if(email.indexOf('@') < 0){ tampilPesan(T('lg.emailValid'), 'err'); return; }
-    } else {
-      if(!email || !sandi){ tampilPesan(T('lg.errIsi'), 'err'); return; }
-      if(email.indexOf('@') < 0){ tampilPesan(T('lg.emailValid'), 'err'); return; }
-      if(mode === 'daftar'){
-        if(sandi.length < 6){ tampilPesan(T('lg.sandiMin'), 'err'); return; }
-        if(!nama){ tampilPesan(T('lg.namaWajib'), 'err'); return; }
+    if(!DEMO && (mode === 'lupa' || mode === 'link' || mode === 'sandiBaru')){
+      if(mode !== 'sandiBaru' && email.indexOf('@') < 0){ tampilPesan(T('lg.emailValid'), 'err'); return; }
+      if(mode === 'sandiBaru' && sandi.length < 6){ tampilPesan(T('lg.sandiMin'), 'err'); return; }
+      kirim.disabled = true;
+      document.getElementById('labelKirim').textContent = T('lg.proses');
+      try{
+        var asal = location.origin + '/login.html';
+        if(mode === 'lupa'){
+          var r1 = await CATALYST.db.auth.resetPasswordForEmail(email, { redirectTo: asal + '?mode=sandi-baru' });
+          if(r1.error) throw r1.error;
+          tampilPesan(T('lg.lupaOk'), 'ok');
+        } else if(mode === 'link'){
+          var r2 = await CATALYST.db.auth.signInWithOtp({ email: email, options: { shouldCreateUser: false, emailRedirectTo: asal + '?mode=masuk-link' } });
+          if(r2.error) throw r2.error;
+          tampilPesan(T('lg.linkOk'), 'ok');
+        } else {
+          var r3 = await CATALYST.db.auth.updateUser({ password: sandi });
+          if(r3.error) throw r3.error;
+          location.href = '/bp/passport/';
+          return;
+        }
+      } catch(err){
+        var m2 = (err && err.message) || T('lg.errUmum');
+        if(/signups not allowed|user not found/i.test(m2)) m2 = T('lg.errBelumDaftar');
+        if(/rate limit|too many|security purposes/i.test(m2)) m2 = T('lg.errBatas');
+        if(/should be different/i.test(m2)) m2 = T('lg.errSandiSama');
+        tampilPesan(m2, 'err');
+      } finally {
+        kirim.disabled = false;
+        document.getElementById('labelKirim').textContent = T(KIRIM[mode]);
       }
+      return;
+    }
+
+    if(!email || !sandi){ tampilPesan(T('lg.errIsi'), 'err'); return; }
+
+    if(DEMO){
+      if(mode === 'daftar'){
+        tampilPesan(T('lg.daftarDemo', { u: CATALYST.DEMO_AKUN.username, p: CATALYST.DEMO_AKUN.sandi }), 'warn');
+        return;
+      }
+      if(CATALYST.demoMasuk(email, sandi)){ location.href = '/bp/passport/'; return; }
+      tampilPesan(T('lg.salahDemo'), 'err');
+      return;
+    }
+
+    if(email.indexOf('@') < 0){ tampilPesan(T('lg.emailValid'), 'err'); return; }
+    if(mode === 'daftar'){
+      if(sandi.length < 6){ tampilPesan(T('lg.sandiMin'), 'err'); return; }
+      if(!nama){ tampilPesan(T('lg.namaWajib'), 'err'); return; }
     }
 
     kirim.disabled = true;
     document.getElementById('labelKirim').textContent = T('lg.proses');
 
     try{
-      var db = await dbSiap;
-      if(!db){ tampilPesan(T('lg.errUmum'), 'err'); return; }
-
-      if(mode === 'pulih'){
-        var pulih = await db.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/login.html' });
-        if(pulih.error) throw pulih.error;
-        tampilPesan(T('lg.pulih.terkirim'), 'ok');
-      } else if(mode === 'baru'){
-        var ubah = await db.auth.updateUser({ password: sandi });
-        if(ubah.error) throw ubah.error;
-        tampilPesan(T('lg.baru.ok'), 'ok');
-        setTimeout(function(){ location.href = tujuan(); }, 900);
-      } else if(mode === 'daftar'){
-        var res = await db.auth.signUp({
+      if(mode === 'daftar'){
+        var res = await CATALYST.db.auth.signUp({
           email: email,
           password: sandi,
-          options: {
-            data: { full_name: nama, channel: document.getElementById('channel').value },
-            emailRedirectTo: location.origin + '/login.html'
-          }
+          options: { data: { full_name: nama, channel: document.getElementById('channel').value } }
         });
         if(res.error) throw res.error;
 
-        if(res.data.session){ location.href = tujuan(); return; }
+        if(res.data.session){ location.href = '/bp/passport/'; return; }
         setMode('masuk');
         tampilPesan(T('lg.daftarOk'), 'ok');
       } else {
-        var login = await db.auth.signInWithPassword({ email: email, password: sandi });
+        var login = await CATALYST.db.auth.signInWithPassword({ email: email, password: sandi });
         if(login.error) throw login.error;
-        location.href = tujuan();
+        location.href = '/bp/passport/';
         return;
       }
     } catch(err){
@@ -470,15 +481,17 @@ setTimeout(function(){
       tampilPesan(m, 'err');
     } finally {
       kirim.disabled = false;
-      document.getElementById('labelKirim').textContent = T(TOMBOL[mode]);
+      document.getElementById('labelKirim').textContent = T(KIRIM[mode]);
     }
   });
 
   /* mode awal dipasang tanpa animasi supaya tidak ada kedipan saat halaman dibuka */
   PI.apply();
   document.title = T('lg.title');
-  if(new URLSearchParams(location.search).get('mode') === 'daftar') setMode('daftar', true);
+  if(MODE_URL === 'daftar') setMode('daftar', true);
+  else if(MODE_URL === 'sandi-baru' && !DEMO) setMode('sandiBaru', true);
   else setMode('masuk', true);
+  if(GALAT_URL) tampilPesan(T('lg.errLinkKedaluwarsa'), 'err');
 
   /* ganti bahasa tanpa memuat ulang supaya isian formulir tidak hilang */
   PI.pasangPemilih(document.getElementById('langMenu'), function(){

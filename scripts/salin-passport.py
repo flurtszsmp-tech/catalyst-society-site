@@ -10,14 +10,9 @@ os.chdir(AKAR)
 if os.path.isdir('bp'): shutil.rmtree('bp')
 shutil.copytree(OUT, 'bp')
 # Passport: wajib sudah masuk, tampil utuh
-# Sesi disimpan di cookie oleh @supabase/ssr, bukan di localStorage, jadi
-# penjaga ini membaca cookie. Pengguna yang belum masuk dilempar ke halaman
-# masuk dengan membawa alamat tujuannya.
 PENJAGA = ('<script>(function(){try{'
-  'var m=document.cookie.split(";").some(function(c){c=c.trim();'
-  'return c.indexOf("sb-")===0&&c.indexOf("-auth-token")>0});'
-  'if(!m)location.replace("/login.html?next="+encodeURIComponent(location.pathname))'
-  '}catch(e){}})();</script>')
+  "var m=localStorage.getItem('catalyst-demo-sesi')==='1'||Object.keys(localStorage).some(function(k){return /^sb-.+-auth-token$/.test(k)});"
+  "if(!m)location.replace('/login.html')}catch(e){}})();</script>")
 n = 0
 for f in glob.glob('bp/passport/**/*.html', recursive=True):
     s = io.open(f, encoding='utf-8').read(); i = s.index('<head>') + 6

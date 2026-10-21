@@ -1,45 +1,22 @@
 /* ===========================================================
    Catalyst Society - konfigurasi Supabase + util bersama
-
-   Kredensial di bawah ditanam oleh scripts/set-supabase-env.mjs
-   dari supabase.config.json. Jangan disunting tangan.
-
-   Klien dibuat dengan createBrowserClient dari @supabase/ssr,
-   persis seperti aplikasi Passport di /bp. Keduanya menyimpan
-   sesi di cookie dengan nama yang sama, sehingga sekali masuk
-   di halaman ini, Passport langsung mengenali penggunanya.
+   Isi dua nilai di bawah dengan kredensial project Supabase.
+   Ambil di: Supabase Dashboard > Project Settings > API
    =========================================================== */
 window.CATALYST_CONFIG = {
-  SUPABASE_URL: 'https://ydhoxefcntwayjkslzje.supabase.co',
-  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaG94ZWZjbnR3YXlqa3NsemplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1NzcxNzAsImV4cCI6MjEwODE1MzE3MH0.1zk_GLhrkzvE6kVdA39PU8k-RoJ_gqHXXPYNpzFVo8c'
+  SUPABASE_URL: 'https://ydhoxefcntwayjkslzje.supabase.co',        // contoh: https://abcdefgh.supabase.co
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkaG94ZWZjbnR3YXlqa3NsemplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1NzcxNzAsImV4cCI6MjEwODE1MzE3MH0.1zk_GLhrkzvE6kVdA39PU8k-RoJ_gqHXXPYNpzFVo8c'        // kunci publik anon, aman dipakai di browser
 };
 
 (function () {
   var cfg = window.CATALYST_CONFIG;
-  var siap = /^https:\/\/[^\s/]+$/.test(cfg.SUPABASE_URL) && cfg.SUPABASE_ANON_KEY.length > 20;
-
-  /* Versi dikunci agar sama dengan yang dipakai bundel Passport,
-     supaya format cookie sesi selalu cocok di kedua sisi. */
-  var SSR = 'https://cdn.jsdelivr.net/npm/@supabase/ssr@0.12.7/+esm';
-
-  var menunggu = null;
+  var siap = cfg.SUPABASE_URL.indexOf('http') === 0 && cfg.SUPABASE_ANON_KEY.length > 20;
 
   window.CATALYST = {
     siap: siap,
-    db: null,
-
-    /* Memuat klien sekali saja, lalu memakai ulang hasilnya. */
-    siapkan: function () {
-      if (!siap) return Promise.resolve(null);
-      if (!menunggu) {
-        var diri = this;
-        menunggu = import(SSR).then(function (m) {
-          diri.db = m.createBrowserClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
-          return diri.db;
-        });
-      }
-      return menunggu;
-    },
+    db: siap && window.supabase
+      ? window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY)
+      : null,
 
     /* Nilai channel mengikuti skema database: investments, ai, business,
        builder, impact. Lihat platform/supabase/migrations/0001_init.sql. */
@@ -55,17 +32,35 @@ window.CATALYST_CONFIG = {
 
     /* Pengalihan halaman berdasarkan status sesi */
     async wajibLogin() {
-      var db = await this.siapkan();
-      if (!db) { location.href = 'login.html?perlu=konfigurasi'; return null; }
-      var { data } = await db.auth.getSession();
+      if (!this.db) { location.href = 'login.html?perlu=konfigurasi'; return null; }
+      var { data } = await this.db.auth.getSession();
       if (!data.session) { location.href = 'login.html'; return null; }
       return data.session.user;
     },
 
     async keluar() {
-      var db = await this.siapkan();
-      if (db) await db.auth.signOut();
+      if (this.db) await this.db.auth.signOut();
       location.href = 'index.html';
+    },
+
+    /* Akun demo untuk presentasi, dipakai hanya selama Supabase belum diisi.
+       Kredensialnya terlihat di sumber halaman, jadi JANGAN dipakai untuk akun
+       asli. Hapus blok demo ini begitu Supabase produksi menyala. */
+    DEMO_AKUN: { username: 'Bagas ceo', sandi: 'ceo123' },
+
+    demoAktif() {
+      try { return localStorage.getItem('catalyst-demo-sesi') === '1'; } catch (e) { return false; }
+    },
+
+    demoMasuk(username, sandi) {
+      var a = this.DEMO_AKUN;
+      var cocok = String(username).trim().toLowerCase() === a.username.toLowerCase() && sandi === a.sandi;
+      if (cocok) { try { localStorage.setItem('catalyst-demo-sesi', '1'); } catch (e) {} }
+      return cocok;
+    },
+
+    demoKeluar() {
+      try { localStorage.removeItem('catalyst-demo-sesi'); } catch (e) {}
     },
 
     /* Format angka ala Indonesia */
