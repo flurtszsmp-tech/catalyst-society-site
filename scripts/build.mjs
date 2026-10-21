@@ -9,7 +9,7 @@ import { minify } from 'html-minifier-terser';
 const OUT = 'dist';
 const SKIP = new Set(['dist', 'node_modules', 'platform', 'scripts', '.git', '.vercel', '.netlify', 'supabase-schema.sql', 'supabase.config.json',
   'package.json', 'package-lock.json', 'vercel.json', '.vercelignore', '.gitignore', '.github',
-  'cs-ai', 'arsip', 'docs', 'README.md', 'SUPABASE.md', 'CNAME.md']);
+  'cs-ai', 'arsip', 'docs', 'README.md', 'SUPABASE.md', 'CNAME.md', '.claude']);
 
 rmSync(OUT, { recursive: true, force: true });
 let sebelum = 0, sesudah = 0;
