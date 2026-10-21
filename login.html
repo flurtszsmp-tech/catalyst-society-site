@@ -217,7 +217,27 @@
      lebih pendek sehingga seluruh halaman muat satu layar tanpa gulir. */
   #form{display:grid;grid-template-columns:1fr 1fr;column-gap:14px}
   #form > *{grid-column:1 / -1}
-  #fNama,#fChannel{grid-column:span 1}
+  /* Nama selebar kartu; pilihan channel di baris sendiri karena berbentuk deretan ikon. */
+  .field .lbl{display:block;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gray);margin-bottom:7px}
+  .field.anim.show#fChannel{max-height:140px}
+  .ind{position:relative;isolation:isolate;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:4px;
+    border-radius:16px;background:#f4f4f6}
+  .ind-pil{position:absolute;top:0;left:0;z-index:-1;border-radius:12px;opacity:0;pointer-events:none;
+    background:linear-gradient(140deg,rgba(24,24,28,.97),rgba(6,6,8,.99));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 10px 22px -12px rgba(0,0,0,.6);
+    transition:transform .5s cubic-bezier(.22,1,.36,1),width .5s cubic-bezier(.22,1,.36,1),height .5s cubic-bezier(.22,1,.36,1),opacity .3s}
+  .ind-pil.diam{transition:none}
+  .ind button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:0;
+    padding:clamp(8px,1.3vh,11px) 2px;border-radius:12px;font-size:10.5px;letter-spacing:.01em;color:#55555c;
+    transition:color .3s var(--ease);-webkit-tap-highlight-color:transparent;outline:none}
+  .ind button span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ind button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;
+    transition:transform .45s cubic-bezier(.22,1,.36,1)}
+  .ind button.di-pil{color:#fff}
+  .ind button.di-pil svg{transform:translateY(-1px) scale(1.06)}
+  .ind button[aria-checked="true"]:not(.di-pil){color:var(--ink)}
+  .ind button:focus-visible{box-shadow:0 0 0 2px var(--black)}
+  @media (prefers-reduced-motion:reduce){.ind-pil{transition:opacity .2s}}
   .field input,.field select{background:#f4f4f6;border-color:transparent;border-radius:12px;padding:clamp(10px,1.6vh,14px) 16px}
   .field input:focus,.field select:focus{background:#fff;border-color:var(--black)}
   .atau{display:flex;align-items:center;gap:14px;margin:clamp(12px,2vh,22px) 0 clamp(8px,1.3vh,14px);font-size:11.5px;color:var(--gray)}
@@ -349,14 +369,33 @@ setTimeout(function(){
         </div>
 
         <div class="field anim" id="fChannel">
-          <label for="channel" data-i18n="lg.channel">Channel industri</label>
-          <select id="channel">
-            <option value="business" data-i18n="lg.opt.business">Business (Businessman &amp; Entrepreneur)</option>
-            <option value="investments" data-i18n="lg.opt.investments">Investments (Finance &amp; Investments)</option>
-            <option value="ai" data-i18n="lg.opt.ai_technology">AI &amp; Technology</option>
-            <option value="builder" data-i18n="lg.opt.builders">Builders (Developer &amp; Builder)</option>
-            <option value="impact" data-i18n="lg.opt.social_impact">Social Impact (Sustainability &amp; Social Impact)</option>
-          </select>
+          <span class="lbl" id="channelLbl" data-i18n="lg.channel">Channel industri</span>
+          <input type="hidden" id="channel" value="business">
+          <!-- Satu pil hitam untuk seluruh pilihan: diam di pilihan aktif, mengikuti
+               kursor saat pilihan lain disentuh, lalu kembali saat kursor keluar. -->
+          <div class="ind" id="ind" role="radiogroup" aria-labelledby="channelLbl">
+            <span class="ind-pil" id="indPil" aria-hidden="true"></span>
+            <button type="button" role="radio" data-v="business" title="Businessman &amp; Entrepreneur">
+              <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/></svg>
+              <span>Business</span>
+            </button>
+            <button type="button" role="radio" data-v="investments" title="Finance &amp; Investments">
+              <svg viewBox="0 0 24 24"><path d="M3 20h18"/><path d="M5 16l4-5 4 3 6-8"/><path d="M15 6h4v4"/></svg>
+              <span>Invest</span>
+            </button>
+            <button type="button" role="radio" data-v="ai" title="AI &amp; Technology">
+              <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2.5"/><path d="M10 10h4v4h-4zM9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></svg>
+              <span>AI &amp; Tech</span>
+            </button>
+            <button type="button" role="radio" data-v="builder" title="Developer &amp; Builder">
+              <svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>
+              <span>Builder</span>
+            </button>
+            <button type="button" role="radio" data-v="impact" title="Sustainability &amp; Social Impact">
+              <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z"/></svg>
+              <span>Impact</span>
+            </button>
+          </div>
         </div>
 
         <div class="field anim show" id="fEmail">
@@ -516,6 +555,50 @@ setTimeout(function(){
     });
   });
   pasangSosial();
+
+  /* Pilihan channel industri. Pil hitam diukur dari tombol sasaran lalu digeser
+     dengan transform, jadi gerakannya mulus dan selalu pas di tepi tombol. */
+  (function(){
+    var ind = document.getElementById('ind'), pil = document.getElementById('indPil');
+    var nilai = document.getElementById('channel');
+    var tombol = Array.prototype.slice.call(ind.querySelectorAll('button'));
+    var sorot = null;
+    function aktif(){ return ind.querySelector('[aria-checked="true"]'); }
+    function taruh(awal){
+      var t = sorot || aktif();
+      tombol.forEach(function(b){ b.classList.toggle('di-pil', b === t); });
+      if(!t){ pil.style.opacity = '0'; return; }
+      if(awal) pil.classList.add('diam');
+      var c = ind.getBoundingClientRect(), r = t.getBoundingClientRect();
+      pil.style.transform = 'translate3d(' + (r.left - c.left) + 'px,' + (r.top - c.top) + 'px,0)';
+      pil.style.width = r.width + 'px';
+      pil.style.height = r.height + 'px';
+      pil.style.opacity = '1';
+      if(awal){ void pil.offsetWidth; pil.classList.remove('diam'); }
+    }
+    function pilih(b){
+      tombol.forEach(function(x){ x.setAttribute('aria-checked', x === b ? 'true' : 'false'); x.tabIndex = x === b ? 0 : -1; });
+      nilai.value = b.dataset.v;
+      taruh();
+    }
+    tombol.forEach(function(b){
+      b.addEventListener('click', function(){ pilih(b); });
+      b.addEventListener('pointerenter', function(e){ if(e.pointerType === 'mouse'){ sorot = b; taruh(); } });
+      b.addEventListener('focus', function(){ sorot = b; taruh(); });
+      b.addEventListener('blur', function(){ sorot = null; taruh(); });
+      b.addEventListener('keydown', function(e){
+        var i = tombol.indexOf(b), n = null;
+        if(e.key === 'ArrowRight' || e.key === 'ArrowDown') n = tombol[(i + 1) % tombol.length];
+        if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') n = tombol[(i - 1 + tombol.length) % tombol.length];
+        if(n){ e.preventDefault(); pilih(n); n.focus(); }
+      });
+    });
+    ind.addEventListener('pointerleave', function(){ sorot = null; taruh(); });
+    pilih(tombol[0]);
+    taruh(true);
+    addEventListener('resize', function(){ taruh(true); });
+    if(window.ResizeObserver) new ResizeObserver(function(){ taruh(true); }).observe(ind);
+  })();
 
   /* Tujuan sesudah masuk. Akun admin ke dashboard admin; selain itu ke halaman
      yang tadinya diminta (?next=, hanya jalur internal) atau ke Passport. */

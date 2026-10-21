@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePassport } from '@/components/passport/PassportProvider';
 import { Icon } from '@/components/ui/Icon';
 import { useToast } from '@/components/ui/Toast';
@@ -55,7 +55,12 @@ export function ConnectionsSection() {
 
   const [tab, setTab] = useState<Tab>('discover');
   const [pending, setPending] = useState<string | null>(null);
-  const [panel, setPanel] = useState(false);
+  /** Menu saringan yang sedang terbuka. */
+  const [buka, setBuka] = useState<'industri' | 'tahap' | 'mirip' | null>(null);
+  const pilihMenu = (f: () => void) => {
+    f();
+    setBuka(null);
+  };
 
   // ?q= mengisi kolom pencarian, misalnya dari pencarian di bilah atas.
   const qParam = (params.get('q') ?? '').slice(0, 60);
@@ -164,92 +169,102 @@ export function ConnectionsSection() {
         </div>
 
         {tab === 'discover' ? (
-          <div className="cx-layout">
-            <aside className={`cx-panel${panel ? ' open' : ''}`} aria-label="Saringan">
-              <div className="cx-panel-head">
-                <b>
-                  <Icon name="filter" /> Saringan
-                </b>
-                {pil.length > 0 && (
-                  <button type="button" className="cx-reset" onClick={() => setFilter({ ...DEFAULT_PEOPLE_FILTER, hideFollowing: filter.hideFollowing })}>
-                    Atur ulang
-                  </button>
-                )}
+          <div className="cx-wrap">
+            <div className="cx-hero">
+              <div className="ps2-search cx-search">
+                <Icon name="search" />
+                <label htmlFor="ps2-q" className="sr-only">
+                  Cari nama atau headline
+                </label>
+                <input
+                  id="ps2-q"
+                  type="search"
+                  className="ui-input"
+                  placeholder="Cari nama, headline, atau peran"
+                  value={filter.query}
+                  maxLength={60}
+                  onChange={(e) => ubah('query', e.target.value)}
+                  autoComplete="off"
+                />
               </div>
 
-              <FilterGroup title="Industri">
-                <div className="cx-opts">
-                  <Opt on={!filter.channel} onClick={() => ubah('channel', null)}>
-                    Semua
-                  </Opt>
+              <div className="cx-toolbar" role="toolbar" aria-label="Saringan">
+                <Dropdown
+                  id="industri"
+                  open={buka === 'industri'}
+                  onToggle={() => setBuka((b) => (b === 'industri' ? null : 'industri'))}
+                  onClose={() => setBuka(null)}
+                  active={!!filter.channel}
+                  label={filter.channel ? (CHANNEL_LABEL.get(filter.channel) ?? 'Industri') : 'Industri'}
+                  icon="briefcase"
+                >
+                  <MenuOpt on={!filter.channel} onClick={() => pilihMenu(() => ubah('channel', null))}>
+                    Semua industri
+                  </MenuOpt>
                   {CHANNELS.map((c) => (
-                    <Opt key={c.key} on={filter.channel === c.key} onClick={() => ubah('channel', c.key as Channel)}>
+                    <MenuOpt key={c.key} on={filter.channel === c.key} onClick={() => pilihMenu(() => ubah('channel', c.key as Channel))}>
                       {c.label.id}
-                      {profile?.channel === c.key && <em>Anda</em>}
-                    </Opt>
+                      {profile?.channel === c.key && <em>Industri Anda</em>}
+                    </MenuOpt>
                   ))}
-                </div>
-              </FilterGroup>
+                </Dropdown>
 
-              <FilterGroup title="Tahap Journey">
-                <div className="cx-opts">
-                  <Opt on={!filter.stage} onClick={() => ubah('stage', null)}>
-                    Semua
-                  </Opt>
-                  {STAGES.map((s) => (
-                    <Opt key={s} on={filter.stage === s} onClick={() => ubah('stage', s as Stage)}>
-                      {STAGE_INFO[s].name}
-                    </Opt>
+                <Dropdown
+                  id="tahap"
+                  open={buka === 'tahap'}
+                  onToggle={() => setBuka((b) => (b === 'tahap' ? null : 'tahap'))}
+                  onClose={() => setBuka(null)}
+                  active={!!filter.stage}
+                  label={filter.stage ? STAGE_INFO[filter.stage].name : 'Tahap Journey'}
+                  icon="journey"
+                >
+                  <MenuOpt on={!filter.stage} onClick={() => pilihMenu(() => ubah('stage', null))}>
+                    Semua tahap
+                  </MenuOpt>
+                  {STAGES.map((st) => (
+                    <MenuOpt key={st} on={filter.stage === st} onClick={() => pilihMenu(() => ubah('stage', st as Stage))}>
+                      <Icon name={`j-${st}`} />
+                      {STAGE_INFO[st].name}
+                    </MenuOpt>
                   ))}
-                </div>
-              </FilterGroup>
+                </Dropdown>
 
-              <FilterGroup title="Kesamaan dengan saya">
-                <Switch on={filter.sameBadges} onChange={(v) => ubah('sameBadges', v)} title="Badges yang sama" sub="Punya setidaknya satu lencana seperti Anda" />
-                <Switch on={filter.sameSkills} onChange={(v) => ubah('sameSkills', v)} title="Skills serupa" sub={profile?.skills.length ? profile.skills.slice(0, 3).join(', ') : 'Isi skills Anda dulu'} />
-                <Switch on={filter.sameRoles} onChange={(v) => ubah('sameRoles', v)} title="Roles serupa" sub={profile?.roles.length ? profile.roles.slice(0, 3).join(', ') : 'Isi roles Anda dulu'} />
-              </FilterGroup>
+                <Dropdown
+                  id="mirip"
+                  open={buka === 'mirip'}
+                  onToggle={() => setBuka((b) => (b === 'mirip' ? null : 'mirip'))}
+                  onClose={() => setBuka(null)}
+                  active={filter.sameBadges || filter.sameSkills || filter.sameRoles}
+                  label={`Kesamaan${[filter.sameBadges, filter.sameSkills, filter.sameRoles].filter(Boolean).length ? ` · ${[filter.sameBadges, filter.sameSkills, filter.sameRoles].filter(Boolean).length}` : ''}`}
+                  icon="link"
+                  wide
+                >
+                  <Switch on={filter.sameBadges} onChange={(v) => ubah('sameBadges', v)} title="Badges yang sama" sub="Punya setidaknya satu lencana seperti Anda" />
+                  <Switch on={filter.sameSkills} onChange={(v) => ubah('sameSkills', v)} title="Skills serupa" sub={profile?.skills.length ? profile.skills.slice(0, 3).join(', ') : 'Isi skills Anda dulu'} />
+                  <Switch on={filter.sameRoles} onChange={(v) => ubah('sameRoles', v)} title="Roles serupa" sub={profile?.roles.length ? profile.roles.slice(0, 3).join(', ') : 'Isi roles Anda dulu'} />
+                </Dropdown>
 
-              <FilterGroup title="Tampilkan">
-                <Switch on={filter.hideFollowing} onChange={(v) => ubah('hideFollowing', v)} title="Hanya kenalan baru" sub="Sembunyikan orang yang sudah Anda ikuti" />
-              </FilterGroup>
+                <button type="button" className={`cx-chip${filter.hideFollowing ? ' on' : ''}`} aria-pressed={filter.hideFollowing} onClick={() => ubah('hideFollowing', !filter.hideFollowing)}>
+                  <Icon name={filter.hideFollowing ? 'check' : 'user-plus'} />
+                  Hanya kenalan baru
+                </button>
 
-              <button type="button" className="ui-btn ui-btn-primary cx-panel-done" onClick={() => setPanel(false)}>
-                Lihat {fmtNumber(results.length)} hasil
-              </button>
-            </aside>
+                <span className="cx-spacer" />
+
+                <label className="cx-sort-wrap">
+                  <span>Urutkan</span>
+                  <select value={filter.sort} onChange={(e) => ubah('sort', e.target.value as PeopleFilter['sort'])}>
+                    {SORT.map((o) => (
+                      <option key={o.key} value={o.key}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </div>
 
             <section className="cx-main" aria-labelledby="cx-hasil">
-              <div className="cx-bar">
-                <div className="ps2-search cx-search">
-                  <Icon name="search" />
-                  <label htmlFor="ps2-q" className="sr-only">
-                    Cari nama atau headline
-                  </label>
-                  <input
-                    id="ps2-q"
-                    type="search"
-                    className="ui-input"
-                    placeholder="Cari nama, headline, atau peran"
-                    value={filter.query}
-                    maxLength={60}
-                    onChange={(e) => ubah('query', e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-                <button type="button" className="ui-btn ui-btn-ghost cx-filter-btn" onClick={() => setPanel(true)} aria-expanded={panel}>
-                  <Icon name="filter" />
-                  Saringan{pil.length ? ` (${pil.length})` : ''}
-                </button>
-                <div className="cx-sort" role="radiogroup" aria-label="Urutkan">
-                  {SORT.map((s) => (
-                    <button key={s.key} type="button" role="radio" aria-checked={filter.sort === s.key} className={filter.sort === s.key ? 'on' : ''} onClick={() => ubah('sort', s.key)}>
-                      {s.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <div className="cx-summary">
                 <h2 id="cx-hasil">
                   {searching ? 'Mencari…' : `${fmtNumber(results.length)} orang`}
@@ -257,6 +272,11 @@ export function ConnectionsSection() {
                 </h2>
                 {pil.length > 0 && (
                   <ul className="cx-pills" aria-label="Saringan aktif">
+                    <li>
+                      <button type="button" className="cx-pills-reset" onClick={() => setFilter({ ...DEFAULT_PEOPLE_FILTER, hideFollowing: filter.hideFollowing })}>
+                        Hapus semua
+                      </button>
+                    </li>
                     {pil.map((p) => (
                       <li key={p.key}>
                         <button type="button" onClick={p.off} aria-label={`Hapus saringan ${p.label}`}>
@@ -317,7 +337,6 @@ export function ConnectionsSection() {
                 </ul>
               )}
             </section>
-            {panel && <div className="cx-scrim" onClick={() => setPanel(false)} aria-hidden />}
           </div>
         ) : (
           <section className="ps2-card cx-network" aria-label={tab === 'following' ? 'Orang yang Anda ikuti' : 'Pengikut Anda'}>
@@ -352,21 +371,72 @@ export function ConnectionsSection() {
   );
 }
 
-/* ---------- bagian saringan ---------- */
+/* ---------- menu saringan ---------- */
 
-function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) {
+function Dropdown({
+  id,
+  open,
+  onToggle,
+  onClose,
+  active,
+  label,
+  icon,
+  wide = false,
+  children,
+}: {
+  id: string;
+  open: boolean;
+  onToggle: () => void;
+  onClose: () => void;
+  active: boolean;
+  label: string;
+  icon: string;
+  wide?: boolean;
+  children: React.ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  // Klik di luar menu atau Escape menutupnya, seperti menu di LinkedIn.
+  useEffect(() => {
+    if (!open) return;
+    const luar = (e: PointerEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+    };
+    const esc = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    document.addEventListener('pointerdown', luar);
+    document.addEventListener('keydown', esc);
+    return () => {
+      document.removeEventListener('pointerdown', luar);
+      document.removeEventListener('keydown', esc);
+    };
+  }, [open, onClose]);
+
   return (
-    <fieldset className="cx-group">
-      <legend>{title}</legend>
-      {children}
-    </fieldset>
+    <div className="cx-dd" ref={ref}>
+      <button
+        type="button"
+        className={`cx-chip${active ? ' on' : ''}${open ? ' open' : ''}`}
+        aria-expanded={open}
+        aria-controls={`cx-dd-${id}`}
+        onClick={onToggle}
+      >
+        <Icon name={icon} />
+        {label}
+        <Icon name="chevron" className="cx-chev" />
+      </button>
+      {open && (
+        <div className={`cx-menu${wide ? ' wide' : ''}`} id={`cx-dd-${id}`} role="menu">
+          {children}
+        </div>
+      )}
+    </div>
   );
 }
 
-function Opt({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {
+function MenuOpt({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
-    <button type="button" className={`cx-opt${on ? ' on' : ''}`} aria-pressed={on} onClick={onClick}>
-      {children}
+    <button type="button" role="menuitemradio" aria-checked={on} className={`cx-mopt${on ? ' on' : ''}`} onClick={onClick}>
+      <span className="cx-mopt-txt">{children}</span>
+      {on && <Icon name="check" className="cx-mopt-ok" />}
     </button>
   );
 }

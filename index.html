@@ -1175,6 +1175,9 @@
     box-shadow:inset 0 0 0 1px rgba(10,10,14,.1);transition:background .25s var(--ease),box-shadow .25s var(--ease)}
   .akun:hover{background:rgba(10,10,14,.09);box-shadow:inset 0 0 0 1px rgba(10,10,14,.2)}
   .akun[hidden]{display:none}
+  /* .btn menyetel display sendiri, yang menimpa atribut hidden; tanpa ini tombol
+     Get Passport tetap tampil walau pengguna sudah masuk. */
+  .js-tamu[hidden],.js-akun[hidden]{display:none!important}
   .akun-ava{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;overflow:hidden;
     background:#0a0a0e;color:#fff;font:500 12px var(--display);background-size:cover;background-position:50% 50%}
   .akun-nama{max-width:13ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1427,9 +1430,7 @@
 
 <!-- loader -->
 <div id="loader">
-  <svg class="mark" viewBox="-108 -118 244 236"><path d="M 79.86 -60.18 A 100 100 0 1 0 79.86 60.18 L 49.52 37.31 A 62 62 0 1 1 49.52 -37.31 Z"/><path class="spark" d="M 126.5 -87.7 Q 108.05 -84.22 104.8 -64.5 Q 101.55 -84.22 83.1 -87.7 Q 101.55 -91.18 104.8 -110.9 Q 108.05 -91.18 126.5 -87.7 Z"/></svg>
   <div class="lw"><div class="lw-in"><b>Catalyst</b><span>Society</span></div></div>
-  <div class="bar"></div>
 </div>
 
 <div class="cur"></div>
@@ -2650,14 +2651,31 @@ addEventListener('DOMContentLoaded', function(){
     akun.forEach(function(e){ e.hidden = !masuk; });
     if(!masuk) return;
     var m = sesi.user.user_metadata || {};
-    var nama = m.full_name || m.name || (sesi.user.email || '').split('@')[0] || 'Passport';
-    var foto = m.avatar_url || m.picture || '';
+    var email = (sesi.user.email || '').toLowerCase();
+    // Akun admin tidak punya Passport; tombolnya membuka dashboard admin.
+    if(email === 'info@catalystsociety.id'){ tampil('Admin', '', '/bp/admin/'); return; }
+    tampil(m.full_name || m.name || email.split('@')[0] || 'Passport', m.avatar_url || m.picture || '', '/bp/passport/');
+    // Nama dan foto terbaru ada di profil Passport, termasuk foto yang diunggah sendiri.
+    CATALYST.db.from('profiles').select('full_name, avatar_path, avatar_url').eq('id', sesi.user.id).maybeSingle()
+      .then(function(r){
+        var p = r && r.data;
+        if(!p) return;
+        var foto = p.avatar_path
+          ? CATALYST_CONFIG.SUPABASE_URL + '/storage/v1/object/public/avatars/' + p.avatar_path.split('/').map(encodeURIComponent).join('/')
+          : (p.avatar_url || '');
+        tampil(p.full_name, foto, '/bp/passport/');
+      });
+  }
+  function tampil(nama, foto, tujuan){
+    // Hanya alamat https yang dipakai sebagai gambar latar, supaya isian tidak bisa keluar dari url().
+    var aman = /^https:\/\/[^"'()\s]+$/.test(foto) ? foto : '';
+    document.querySelectorAll('.js-akun').forEach(function(e){ e.href = tujuan; });
+    document.querySelectorAll('.akun').forEach(function(e){ e.setAttribute('aria-label', nama); e.title = nama; });
     document.querySelectorAll('.akun-nama').forEach(function(e){ e.textContent = nama.split(' ')[0]; });
     document.querySelectorAll('.akun-ava').forEach(function(e){
-      if(foto){ e.style.backgroundImage = 'url("' + foto + '")'; e.textContent = ''; }
-      else e.textContent = nama.trim().charAt(0).toUpperCase();
+      if(aman){ e.style.backgroundImage = 'url("' + aman + '")'; e.textContent = ''; }
+      else { e.style.backgroundImage = ''; e.textContent = nama.trim().charAt(0).toUpperCase(); }
     });
-    document.querySelectorAll('.akun').forEach(function(e){ e.setAttribute('aria-label', nama); e.title = nama; });
   }
   /* token Supabase tersimpan di localStorage: dipakai lebih dulu supaya tombol akun
      langsung tampil tanpa menunggu jaringan. Hasil getSession tetap jadi penentu akhir. */
