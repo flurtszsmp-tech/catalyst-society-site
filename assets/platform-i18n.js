@@ -90,7 +90,7 @@ window.PI18N = (function () {
       'lg.opt.ai_technology':'AI &amp; Technology',
       'lg.opt.builders':'Builders (Developer &amp; Builder)',
       'lg.opt.social_impact':'Social Impact (Sustainability &amp; Social Impact)',
-      'lg.email':'Email atau username', 'lg.sandi':'Kata sandi', 'lg.sandiPh':'Minimal 6 karakter',
+      'lg.email':'Email', 'lg.sandi':'Kata sandi', 'lg.sandiPh':'Minimal 6 karakter',
       'lg.hint':'Gunakan minimal 6 karakter.',
       'lg.kirim.masuk':'Masuk', 'lg.kirim.daftar':'Daftar sekarang', 'lg.proses':'Memproses',
       'lg.kembali':'Kembali ke beranda',
@@ -123,7 +123,19 @@ window.PI18N = (function () {
       'lg.errBelumDaftar':'Email ini belum terdaftar. Silakan daftar dulu.',
       'lg.errBatas':'Terlalu sering meminta email. Coba lagi beberapa menit lagi.',
       'lg.errLinkKedaluwarsa':'Link sudah kedaluwarsa atau sudah dipakai. Silakan minta link baru.',
-      'lg.errSandiSama':'Kata sandi baru harus berbeda dari yang lama.'
+      'lg.errSandiSama':'Kata sandi baru harus berbeda dari yang lama.',
+      'lg.chip':'Gabung Catalyst Society',
+      'lg.l1':'Daftar atau masuk ke akun',
+      'lg.l2':'Lengkapi profil Catalyst Passport',
+      'lg.l3':'Gabung komunitas dan program',
+      'lg.atau':'atau lanjut dengan',
+      'lg.google':'Lanjut dengan Google',
+      'lg.linkedin':'Lanjut dengan LinkedIn',
+      'lg.belumAkun':'Belum punya akun?',
+      'lg.keDaftar':'Daftar sekarang',
+      'lg.sudahAkun':'Sudah punya akun?',
+      'lg.keMasuk':'Masuk',
+      'lg.errSosial':'Gagal membuka halaman masuk. Coba lagi sebentar.'
     },
 
     en: {
@@ -202,7 +214,7 @@ window.PI18N = (function () {
       'lg.opt.ai_technology':'AI &amp; Technology',
       'lg.opt.builders':'Builders (Developer &amp; Builder)',
       'lg.opt.social_impact':'Social Impact (Sustainability &amp; Social Impact)',
-      'lg.email':'Email or username', 'lg.sandi':'Password', 'lg.sandiPh':'At least 6 characters',
+      'lg.email':'Email', 'lg.sandi':'Password', 'lg.sandiPh':'At least 6 characters',
       'lg.hint':'Use at least 6 characters.',
       'lg.kirim.masuk':'Sign in', 'lg.kirim.daftar':'Sign up now', 'lg.proses':'Processing',
       'lg.kembali':'Back to home',
@@ -235,7 +247,19 @@ window.PI18N = (function () {
       'lg.errBelumDaftar':'This email is not registered yet. Please sign up first.',
       'lg.errBatas':'Too many email requests. Try again in a few minutes.',
       'lg.errLinkKedaluwarsa':'This link has expired or was already used. Please request a new one.',
-      'lg.errSandiSama':'The new password must be different from the old one.'
+      'lg.errSandiSama':'The new password must be different from the old one.',
+      'lg.chip':'Join Catalyst Society',
+      'lg.l1':'Sign up or sign in',
+      'lg.l2':'Complete your Catalyst Passport',
+      'lg.l3':'Join communities and programs',
+      'lg.atau':'or continue with',
+      'lg.google':'Continue with Google',
+      'lg.linkedin':'Continue with LinkedIn',
+      'lg.belumAkun':'No account yet?',
+      'lg.keDaftar':'Sign up now',
+      'lg.sudahAkun':'Already have an account?',
+      'lg.keMasuk':'Sign in',
+      'lg.errSosial':'Could not open the sign in page. Try again shortly.'
     },
 
     zh: {
@@ -314,7 +338,7 @@ window.PI18N = (function () {
       'lg.opt.ai_technology':'AI 与科技',
       'lg.opt.builders':'建设者（开发者与创造者）',
       'lg.opt.social_impact':'社会影响（可持续发展与社会影响）',
-      'lg.email':'邮箱或用户名', 'lg.sandi':'密码', 'lg.sandiPh':'至少 6 个字符',
+      'lg.email':'邮箱', 'lg.sandi':'密码', 'lg.sandiPh':'至少 6 个字符',
       'lg.hint':'请使用至少 6 个字符。',
       'lg.kirim.masuk':'登录', 'lg.kirim.daftar':'立即注册', 'lg.proses':'处理中',
       'lg.kembali':'返回首页',
@@ -347,7 +371,19 @@ window.PI18N = (function () {
       'lg.errBelumDaftar':'该邮箱尚未注册，请先注册。',
       'lg.errBatas':'请求邮件过于频繁，请几分钟后再试。',
       'lg.errLinkKedaluwarsa':'链接已过期或已被使用，请重新获取。',
-      'lg.errSandiSama':'新密码必须与旧密码不同。'
+      'lg.errSandiSama':'新密码必须与旧密码不同。',
+      'lg.chip':'加入 Catalyst Society',
+      'lg.l1':'注册或登录账户',
+      'lg.l2':'完善 Catalyst Passport 资料',
+      'lg.l3':'加入社区与项目',
+      'lg.atau':'或使用以下方式继续',
+      'lg.google':'使用 Google 继续',
+      'lg.linkedin':'使用 LinkedIn 继续',
+      'lg.belumAkun':'还没有账户？',
+      'lg.keDaftar':'立即注册',
+      'lg.sudahAkun':'已有账户？',
+      'lg.keMasuk':'登录',
+      'lg.errSosial':'无法打开登录页面，请稍后再试。'
     }
   };
 

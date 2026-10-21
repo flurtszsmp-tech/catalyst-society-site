@@ -180,6 +180,66 @@
     transition:transform .62s cubic-bezier(.4,0,.1,1)}
   .tirai.turun{transform:translate3d(0,100%,0)}
   @media (prefers-reduced-motion:reduce){ .tirai{display:none} }
+
+  /* ===== gaya kartu (contoh client): kartu putih mengambang, panel visual membulat di kiri ===== */
+  body{background:#e9e9ec}
+  .shell{max-width:1180px;margin:clamp(14px,4vh,44px) auto;min-height:min(780px,calc(100vh - 2 * clamp(14px,4vh,44px)));
+    grid-template-columns:1.04fr 1fr;background:#fff;border-radius:30px;padding:10px;
+    box-shadow:0 40px 90px -40px rgba(10,10,14,.35),0 0 0 1px rgba(10,10,14,.04)}
+  .brandside{border-radius:22px;background:#050507;padding:34px clamp(26px,3.2vw,44px) 30px;isolation:isolate}
+  /* tirai cahaya perak yang bergoyang pelan dari bawah, butiran halus di atasnya */
+  .brandside::before{content:"";position:absolute;inset:0;z-index:-1;
+    background:radial-gradient(120% 60% at 50% 112%,rgba(255,255,255,.30),transparent 62%),
+      repeating-linear-gradient(90deg,rgba(255,255,255,0) 0 16px,rgba(220,226,235,.13) 21px,rgba(255,255,255,0) 30px);
+    background-size:100% 100%,300px 100%;
+    -webkit-mask:linear-gradient(to top,#000 0%,rgba(0,0,0,.55) 38%,transparent 72%);mask:linear-gradient(to top,#000 0%,rgba(0,0,0,.55) 38%,transparent 72%);
+    animation:tiraiCahaya 18s ease-in-out infinite alternate}
+  .brandside::after{content:"";position:absolute;inset:0;z-index:-1;opacity:.16;mix-blend-mode:overlay;pointer-events:none;
+    background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+  @keyframes tiraiCahaya{from{background-position:0 0,0 0}to{background-position:0 0,120px 0}}
+  .bs-top{justify-content:space-between}
+  .bs-merek{display:flex;align-items:center;gap:11px}
+  .bs-top .bs-ig{font-size:11.5px}
+  .bs-mid{margin-top:auto}
+  .bs-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:100px;font-size:12px;color:#e8e8eb;
+    background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);margin-bottom:18px}
+  .bs-chip i{width:6px;height:6px;border-radius:50%;background:#3ddc84;box-shadow:0 0 0 3px rgba(61,220,132,.18)}
+  .bs-mid h1{font-size:clamp(34px,3.6vw,52px);line-height:1;font-weight:400;letter-spacing:-.02em}
+  .bs-mid p{color:#a9a9ae;margin-top:16px}
+  .bs-langkah{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:28px}
+  .bs-langkah li{list-style:none;display:flex;flex-direction:column;justify-content:space-between;gap:26px;min-height:128px;padding:14px;border-radius:16px;
+    font-size:12.5px;line-height:1.4;color:#d4d4d8;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);transition:background .4s var(--ease),color .4s var(--ease)}
+  .bs-langkah b{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:500 11px var(--mono);box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)}
+  .bs-langkah li.on{background:#fff;color:#0a0a0e;box-shadow:none}
+  .bs-langkah li.on b{background:#0a0a0e;color:#fff;box-shadow:none}
+
+  .formside{padding:40px clamp(22px,4vw,60px)}
+  .card{max-width:400px}
+  .field input,.field select{background:#f4f4f6;border-color:transparent;border-radius:12px;padding:14px 16px}
+  .field input:focus,.field select:focus{background:#fff;border-color:var(--black)}
+  .atau{display:flex;align-items:center;gap:14px;margin:22px 0 14px;font-size:11.5px;color:var(--gray)}
+  .atau::before,.atau::after{content:"";flex:1;height:1px;background:var(--line)}
+  .sosial[hidden],.btn-sosial[hidden],.ganti[hidden]{display:none}
+  .sosial-btn{display:flex;flex-direction:column;gap:10px}
+  .btn-sosial{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:13px;border-radius:100px;font-size:13px;font-weight:500;
+    background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line);transition:background .25s var(--ease),box-shadow .25s var(--ease)}
+  .btn-sosial:hover{background:#f6f6f7;box-shadow:inset 0 0 0 1px rgba(0,0,0,.24)}
+  .btn-sosial svg{width:18px;height:18px;flex:none}
+  .btn-sosial[disabled]{opacity:.55;pointer-events:none}
+  .ganti{margin-top:18px;text-align:center;font-size:12.5px;color:var(--gray)}
+  .ganti .tautan{color:var(--ink);font-weight:500}
+  @media (max-width:880px){
+    .shell{grid-template-columns:1fr;margin:0;border-radius:0;padding:8px;min-height:100vh;box-shadow:none}
+    .brandside{min-height:0;padding:22px 22px 26px}
+    .bs-mid{margin-top:40px}
+    .bs-mid h1{font-size:32px}
+    .bs-mid p{display:none}
+    .bs-langkah{display:none}
+    .formside{padding:30px 14px 48px}
+    .formside .lang{top:16px;right:14px}
+  }
+  @media (prefers-reduced-motion:reduce){ .brandside::before{animation:none} }
 </style>
 <link rel="stylesheet" href="assets/platform-lang.css">
 </head>
@@ -210,30 +270,27 @@ setTimeout(function(){
   <aside class="brandside">
     <div class="bs-glow"></div>
     <div class="bs-top">
-      <svg viewBox="-108 -118 244 236" aria-hidden="true">
+      <div class="bs-merek">
+        <svg viewBox="-108 -118 244 236" aria-hidden="true">
         <path d="M 79.86 -60.18 A 100 100 0 1 0 79.86 60.18 L 49.52 37.31 A 62 62 0 1 1 49.52 -37.31 Z"/>
         <path d="M 126.5 -87.7 Q 108.05 -84.22 104.8 -64.5 Q 101.55 -84.22 83.1 -87.7 Q 101.55 -91.18 104.8 -110.9 Q 108.05 -91.18 126.5 -87.7 Z"/>
       </svg>
-      <div class="bs-name">CATALYST<span>SOCIETY</span></div>
-    </div>
-
-    <div class="bs-mid">
-      <h1 data-i18n="lg.h1">Satu akun.<br>Seluruh<br>ekosistem.</h1>
-      <p data-i18n="lg.p">Catalyst Society adalah ekosistem kolaboratif yang menghubungkan investor, profesional, builder, innovator dan learner di Indonesia melalui lima channel industri dan lima program berjenjang.</p>
-      <div class="bs-flow">
-        <div><i>Academy</i><span data-i18n="lg.f1">Belajar lebih dalam industri melalui E-Course, Event, dan Workshop</span></div>
-        <div><i>Matchmaking</i><span data-i18n="lg.f2">Bertemu partners, mentors, workers, company, dan jobs</span></div>
-        <div><i>Labs</i><span data-i18n="lg.f3">Membangun project bersama mentor</span></div>
-        <div><i>Ventures</i><span data-i18n="lg.f4">Mencari pendanaan project hingga bertemu investor</span></div>
-        <div><i>Summit</i><span data-i18n="lg.f5">Showcase project dan sharing di event tahunan Catalyst</span></div>
+        <div class="bs-name">CATALYST<span>SOCIETY</span></div>
       </div>
-    </div>
-
-    <div class="bs-bot">
-      <span>Learn. Build. Impact.</span>
       <a class="bs-ig" href="https://www.instagram.com/catalystsociety.id/" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24"><use href="#i-ig"/></svg>catalystsociety.id
       </a>
+    </div>
+
+    <div class="bs-mid">
+      <span class="bs-chip"><i></i><span data-i18n="lg.chip">Gabung Catalyst Society</span></span>
+      <h1 data-i18n="lg.h1">Satu akun.<br>Seluruh<br>ekosistem.</h1>
+      <p data-i18n="lg.p">Catalyst Society adalah ekosistem kolaboratif yang menghubungkan investor, profesional, builder, innovator dan learner di Indonesia melalui lima channel industri dan lima program berjenjang.</p>
+      <ol class="bs-langkah" id="langkah">
+        <li class="on"><b>1</b><span data-i18n="lg.l1">Daftar atau masuk ke akun</span></li>
+        <li><b>2</b><span data-i18n="lg.l2">Lengkapi profil Catalyst Passport</span></li>
+        <li><b>3</b><span data-i18n="lg.l3">Gabung komunitas dan program</span></li>
+      </ol>
     </div>
   </aside>
 
@@ -268,7 +325,7 @@ setTimeout(function(){
         </div>
 
         <div class="field anim show" id="fEmail">
-          <label for="email" data-i18n="lg.email">Email atau username</label>
+          <label for="email" data-i18n="lg.email">Email</label>
           <input id="email" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="nama@email.com" required>
         </div>
 
@@ -288,6 +345,15 @@ setTimeout(function(){
           <svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg>
         </button>
       </form>
+
+      <div class="sosial" id="sosial" hidden>
+        <div class="atau"><span data-i18n="lg.atau">atau lanjut dengan</span></div>
+        <div class="sosial-btn">
+          <button type="button" class="btn-sosial" data-penyedia="google" hidden><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg><span data-i18n="lg.google">Lanjut dengan Google</span></button>
+          <button type="button" class="btn-sosial" data-penyedia="linkedin_oidc" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="4" fill="#0A66C2"/><path fill="#fff" d="M7.1 9.5H4.6V19h2.5V9.5zM5.9 5a1.45 1.45 0 1 0 0 2.9 1.45 1.45 0 0 0 0-2.9zM19.4 13.6c0-2.6-1.4-4.3-3.7-4.3-1.3 0-2.2.7-2.6 1.4V9.5h-2.4V19h2.5v-4.9c0-1.3.5-2.3 1.8-2.3s1.8 1 1.8 2.4V19h2.6v-5.4z"/></svg><span data-i18n="lg.linkedin">Lanjut dengan LinkedIn</span></button>
+        </div>
+      </div>
+      <p class="ganti" id="ganti"><span id="gantiTeks"></span> <button type="button" class="tautan" id="gantiTombol"></button></p>
 
       <div class="msg" id="pesan" role="status" aria-live="polite"></div>
       <button type="button" class="tautan balik" id="btnBalik" hidden data-i18n="lg.balik">Masuk dengan kata sandi</button>
@@ -349,6 +415,8 @@ setTimeout(function(){
     document.getElementById('fSandi').classList.toggle('show', m !== 'lupa' && m !== 'link');
     document.getElementById('aksiMasuk').hidden = DEMO || m !== 'masuk';
     document.getElementById('btnBalik').hidden = !(m === 'lupa' || m === 'link');
+    document.getElementById('sosial').hidden = khusus || !adaSosial;
+    document.getElementById('ganti').hidden = khusus;
 
     /* pil penanda dan warna label tab */
     document.getElementById('tabs').dataset.mode = m;
@@ -368,6 +436,8 @@ setTimeout(function(){
       document.getElementById('judul').textContent = T(JUDUL[m] + '.judul');
       document.getElementById('sub').textContent   = T(JUDUL[m] + '.sub');
       document.getElementById('labelKirim').textContent = T(KIRIM[m]);
+      document.getElementById('gantiTeks').textContent = T(daftar ? 'lg.sudahAkun' : 'lg.belumAkun');
+      document.getElementById('gantiTombol').textContent = T(daftar ? 'lg.keMasuk' : 'lg.keDaftar');
     };
 
     if(langsung){ tulis(); return; }
@@ -380,6 +450,35 @@ setTimeout(function(){
   document.getElementById('btnLupa').addEventListener('click', function(){ setMode('lupa'); });
   document.getElementById('btnLink').addEventListener('click', function(){ setMode('link'); });
   document.getElementById('btnBalik').addEventListener('click', function(){ setMode('masuk'); });
+  document.getElementById('gantiTombol').addEventListener('click', function(){ setMode(mode === 'daftar' ? 'masuk' : 'daftar'); });
+
+  /* Masuk dengan Google atau LinkedIn. Tombol hanya tampil bila penyedia itu sudah
+     diaktifkan di Supabase (dibaca dari /auth/v1/settings), jadi tidak ada tombol mati.
+     ?sosial=1 memaksa tampil untuk pratinjau desain. */
+  var adaSosial = false;
+  async function pasangSosial(){
+    if(DEMO) return;
+    var paksa = /[?&]sosial=1/.test(location.search), aktif = {};
+    try{
+      var cfg = window.CATALYST_CONFIG;
+      var r = await fetch(cfg.SUPABASE_URL + '/auth/v1/settings', { headers: { apikey: cfg.SUPABASE_ANON_KEY } });
+      aktif = (await r.json()).external || {};
+    }catch(e){}
+    document.querySelectorAll('.btn-sosial').forEach(function(b){
+      var ok = paksa || aktif[b.dataset.penyedia];
+      b.hidden = !ok; if(ok) adaSosial = true;
+    });
+    document.getElementById('sosial').hidden = !adaSosial || !(mode === 'masuk' || mode === 'daftar');
+  }
+  document.querySelectorAll('.btn-sosial').forEach(function(b){
+    b.addEventListener('click', async function(){
+      b.disabled = true;
+      var r = await CATALYST.db.auth.signInWithOAuth({ provider: b.dataset.penyedia,
+        options: { redirectTo: location.origin + '/login.html?mode=masuk-link' } });
+      if(r.error){ b.disabled = false; tampilPesan(T('lg.errSosial'), 'err'); }
+    });
+  });
+  pasangSosial();
 
   /* Sudah punya sesi aktif: langsung ke aplikasi */
   if(DEMO && CATALYST.demoAktif()) location.href = '/bp/passport/';
