@@ -3,6 +3,9 @@
    tidak tampil. Riwayat chat hanya disimpan di tab ini (sessionStorage). */
 (function () {
   var URL_CS = window.CATALYST_CS_URL || '';
+  /* Ruang menentukan pengetahuan mana yang dipakai Worker: panduan Passport di dalam dasbor,
+     info umum Catalyst di landing. Sapaan, saran, dan riwayat chatnya pun terpisah. */
+  var RUANG = window.CATALYST_CS_RUANG === 'passport' ? 'passport' : 'landing';
   if (/^(127\.0\.0\.1|localhost)$/.test(location.hostname)) URL_CS = new URLSearchParams(location.search).get('cs_url') || URL_CS;
   if (!URL_CS) return;
 
@@ -23,10 +26,29 @@
       galat: '抱歉，助手暂时无法连接。请稍后再试，或发送邮件至 info@catalystsociety.id。',
       catatan: 'AI 可能会出错。重要事项请联系 Catalyst 团队。', tutup: '关闭', kirim: '发送' }
   };
+  /* di dalam Passport pertanyaannya soal cara pakai dasbor, jadi sapaan dan sarannya diganti */
+  var TP = {
+    id: { tombol: 'Tanya Passport', judul: 'Passport Assistant', sub: 'Panduan memakai Catalyst Passport',
+      halo: 'Halo! Saya pemandu Catalyst Passport. Mau tahu soal journey, CATA Points, lencana, atau cara melengkapi profil?',
+      saran: ['Apa itu CATA Points?', 'Cara naik tahap journey', 'Cara gabung komunitas', 'Cara bagikan profil saya'],
+      catatan: 'Saya tidak bisa melihat data akun Anda. Untuk hal penting, hubungi tim Catalyst.' },
+    en: { tombol: 'Ask Passport', judul: 'Passport Assistant', sub: 'Guide to using Catalyst Passport',
+      halo: 'Hi! I am your Catalyst Passport guide. Want to know about the journey, CATA Points, badges, or completing your profile?',
+      saran: ['What are CATA Points?', 'How to reach the next stage', 'How to join a community', 'How to share my profile'],
+      catatan: 'I cannot see your account data. For anything important, contact the Catalyst team.' },
+    zh: { tombol: '咨询 Passport', judul: 'Passport 助手', sub: 'Catalyst Passport 使用指南',
+      halo: '你好！我是 Catalyst Passport 向导。想了解旅程阶段、CATA Points、徽章，或如何完善资料吗？',
+      saran: ['CATA Points 是什么？', '如何进入下一阶段', '如何加入社区', '如何分享我的资料'],
+      catatan: '我无法查看你的账户资料。重要事项请联系 Catalyst 团队。' }
+  };
   function bahasa() { var l = (document.documentElement.lang || 'id').slice(0, 2); return T[l] ? l : 'id'; }
-  function t(k) { return T[bahasa()][k]; }
+  function t(k) {
+    var l = bahasa();
+    if (RUANG === 'passport' && TP[l][k]) return TP[l][k];
+    return T[l][k];
+  }
 
-  var KUNCI = 'catalyst-cs-riwayat', riwayat = [];
+  var KUNCI = 'catalyst-cs-riwayat-' + RUANG, riwayat = [];
   try { riwayat = JSON.parse(sessionStorage.getItem(KUNCI) || '[]'); } catch (e) {}
   function simpan() { try { sessionStorage.setItem(KUNCI, JSON.stringify(riwayat.slice(-30))); } catch (e) {} }
 
@@ -115,7 +137,7 @@
     gelembung(teks, 'user'); saran.innerHTML = ''; input.value = ''; ukurInput();
     var tunggu = gelembung('', 'model'); tunggu.innerHTML = '<span class="cs-mengetik"><i></i><i></i><i></i></span>';
     fetch(URL_CS, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ bahasa: bahasa(), pesan: riwayat.slice(-10) }) })
+      body: JSON.stringify({ bahasa: bahasa(), ruang: RUANG, pesan: riwayat.slice(-10) }) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, d: d }; }); })
       .then(function (h) {
         tunggu.remove();

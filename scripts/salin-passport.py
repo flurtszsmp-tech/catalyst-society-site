@@ -30,10 +30,18 @@ LENIS = ('<style>html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scro
   "(function f(t){l.raf(t);requestAnimationFrame(f)})(performance.now());"
   "var ps=history.pushState;history.pushState=function(){l.reset();return ps.apply(this,arguments)};"
   "addEventListener('popstate',function(){l.reset()})});</script>")
+# Asisten di dalam dasbor: widget yang sama dengan landing, tapi ruang 'passport' supaya
+# Worker memakai panduan fitur Passport (assets/cs/pengetahuan-passport.md).
+# Profil publik tidak memakainya.
+CS = ('<link rel="stylesheet" href="/assets/cs/cs.css">'
+  "<script>window.CATALYST_CS_URL='https://catalyst-cs.catalystsociety.workers.dev/';"
+  "window.CATALYST_CS_RUANG='passport'</script>"
+  '<script src="/assets/cs/cs.js" defer></script>')
 g = 0
 for f in glob.glob('bp/passport/**/*.html', recursive=True) + glob.glob('bp/p/**/*.html', recursive=True):
     s2 = io.open(f, encoding='utf-8').read(); i = s2.index('</head>')
-    io.open(f, 'w', encoding='utf-8', newline='').write(s2[:i] + LENIS + s2[i:]); g += 1
+    tambah = LENIS + (CS if '/passport/' in f.replace(os.sep, '/') else '')
+    io.open(f, 'w', encoding='utf-8', newline='').write(s2[:i] + tambah + s2[i:]); g += 1
 # Sign out (mode demo) membuka "/" = /bp/: hapus sesi lalu ke landing
 io.open('bp/index.html', 'w', encoding='utf-8').write('<!doctype html><meta charset="utf-8"><title>Catalyst Society</title>'
   "<script>try{localStorage.removeItem('catalyst-demo-sesi')}catch(e){}location.replace('/')</script>")

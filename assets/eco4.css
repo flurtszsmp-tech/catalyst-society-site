@@ -56,6 +56,18 @@ html.dark-theme .e8-anda span{filter:drop-shadow(0 0 6px rgba(211,227,230,.55))}
 @media (prefers-reduced-motion:reduce){.e8-anda span{animation:none}}
 .eco4.ada3d .e8-anda{opacity:1}
 
+/* Pertanyaan pembuka: tampil penuh saat panggung hologram baru masuk, lalu meredup
+   dan naik perlahan begitu gelembung mulai bermunculan. Kemajuannya dari --maju
+   yang sudah dihitung eco4.js, jadi tidak ada pengamat gulir tambahan. */
+.e8-tanya{position:absolute;left:0;right:0;top:clamp(56px,11vh,120px);z-index:5;display:flex;flex-direction:column;align-items:center;gap:clamp(14px,2vw,22px);
+  pointer-events:none;text-align:center;padding:0 22px;
+  opacity:var(--t-o,0);transform:translate3d(0,var(--t-y,16px),0);
+  transition:opacity .5s var(--e8-ez),transform .7s var(--e8-ez)}
+.e8-tanya h3{font-family:var(--display);font-weight:400;letter-spacing:-.02em;line-height:1.1;color:var(--e8-fg);
+  font-size:clamp(26px,3.4vw,46px)}
+.e8-garis{width:1px;height:clamp(28px,4vw,52px);background:linear-gradient(rgba(var(--e8-fg-r),.4),rgba(var(--e8-fg-r),0))}
+@media (max-width:820px){.e8-tanya{top:clamp(74px,10vh,110px)}.e8-tanya h3{font-size:clamp(22px,6vw,30px)}}
+
 /* ---------- kaca cair: isi bening, garis setengah piksel, kilau sehelai di atas ---------- */
 .e8-lg{position:relative;color:var(--e8-fg);background:var(--e8-isi);
   -webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);
@@ -117,41 +129,38 @@ html.dark-theme .e8-cta i{box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
   font:500 10px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:rgba(var(--e8-fg-r),.45);transition:opacity .6s var(--e8-ez);pointer-events:none}
 .e4-hint i{width:1px;height:22px;background:linear-gradient(rgba(var(--e8-fg-r),.5),transparent)}
 
-/* ---------- gelembung: kapsul elemen jadi gelembung bening seperti lensa kursor ----------
-   Isi bening dengan pembiasan di tepi (filter SVG dari eco4.js, Chromium), pinggir pelangi tipis
-   dan kilau di atas. Tiap gelembung melayang pelan dengan arah dan tempo sendiri lewat properti
-   `translate`, terpisah dari `transform` yang dipakai animasi masuk saat gulir. Berhenti saat disentuh. */
+/* ---------- gelembung: bola hitam mengilap seperti piringan roda Catalyst ----------
+   Warna dan kilaunya meniru roda hero: hitam pekat, sorot putih tipis di kiri atas,
+   pantulan lembut di bawah. Letaknya digerakkan eco4.js lewat properti `translate`
+   (kursor mendorong, lalu memantul balik ke tempatnya), terpisah dari `transform`
+   yang dipakai animasi masuk saat gulir. */
 .e8-kol{gap:16px}
 .e8-ki .e8-el:nth-child(even){margin-right:clamp(40px,4vw,64px)}
 .e8-ka .e8-el:nth-child(even){margin-left:clamp(40px,4vw,64px)}
 .e8-el{--d:clamp(96px,8.2vw,118px);width:var(--d);height:var(--d);padding:0;border-radius:50%;flex-direction:column;justify-content:center;gap:5px;
-  background:rgba(255,255,255,.06);-webkit-backdrop-filter:blur(2px) saturate(1.5);backdrop-filter:blur(2px) saturate(1.5);
-  box-shadow:inset 0 0 0 1px rgba(10,10,14,.07),inset 6px 0 11px -5px rgba(255,60,130,.34),inset -6px 0 11px -5px rgba(30,170,255,.36),
-    inset 0 12px 18px -12px rgba(255,255,255,.95),inset 0 -10px 16px -12px rgba(10,10,14,.18),0 14px 30px -16px rgba(10,10,14,.28);
-  animation:e8Melayang var(--lama,9s) ease-in-out var(--tunda,0s) infinite alternate;
-  transition:background .6s var(--e8-ez),box-shadow .6s var(--e8-ez)}
-.e8-el::before{content:"";position:absolute;left:22%;top:13%;width:30%;height:16%;border-radius:50%;pointer-events:none;
-  background:radial-gradient(closest-side,rgba(255,255,255,.85),rgba(255,255,255,0));transform:rotate(-24deg)}
-.e8-el:nth-child(1){--lama:8.5s;--tunda:-1s;--ax:-10px;--ay:-14px;--bx:8px;--by:-26px;--cx:-4px;--cy:-8px}
-.e8-el:nth-child(2){--d:clamp(86px,7.2vw,104px);--lama:10.5s;--tunda:-4s;--ax:12px;--ay:10px;--bx:-6px;--by:22px;--cx:10px;--cy:-6px}
-.e8-el:nth-child(3){--d:clamp(100px,8.8vw,126px);--lama:9.5s;--tunda:-2.5s;--ax:-14px;--ay:8px;--bx:-22px;--by:-12px;--cx:-6px;--cy:14px}
-.e8-el:nth-child(4){--d:clamp(90px,7.6vw,110px);--lama:11.5s;--tunda:-6s;--ax:8px;--ay:-12px;--bx:18px;--by:6px;--cx:-8px;--cy:18px}
-@keyframes e8Melayang{0%{translate:0 0}33%{translate:var(--ax) var(--ay)}66%{translate:var(--bx) var(--by)}100%{translate:var(--cx) var(--cy)}}
-.e8-el:hover,.e8-el:focus-visible,.e8-el.on{animation-play-state:paused}
-.e8-el .e8-no{width:auto;height:auto;background:none;font-size:10px;letter-spacing:.14em;color:rgba(var(--e8-fg-r),.55)}
-.e8-el b{font-size:clamp(13px,1.05vw,15px);padding:0 6px;text-align:center;line-height:1.1}
+  color:#fff;will-change:translate;
+  background:
+    radial-gradient(circle at 28% 20%,rgba(255,255,255,.5),rgba(255,255,255,0) 38%),
+    radial-gradient(circle at 74% 86%,rgba(205,220,240,.4),rgba(255,255,255,0) 44%),
+    radial-gradient(circle at 50% 108%,rgba(150,175,210,.3),rgba(255,255,255,0) 40%),
+    radial-gradient(circle at 40% 34%,#34353d,#141519 54%,#050508);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),inset 0 -16px 26px -16px rgba(255,255,255,.5),
+    inset 0 14px 22px -18px rgba(255,255,255,.4),0 20px 40px -18px rgba(10,10,14,.65);
+  transition:box-shadow .5s var(--e8-ez),scale .5s var(--e8-ez)}
+/* kilap tajam di kiri atas, tanda permukaan bola */
+.e8-el::before{content:"";position:absolute;left:17%;top:10%;width:34%;height:20%;border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,.35) 45%,rgba(255,255,255,0));transform:rotate(-24deg)}
+/* kilap kedua yang kecil dan tajam, membuat permukaannya terbaca sebagai kaca */
+.e8-el::after{content:"";position:absolute;left:30%;top:26%;width:9%;height:6%;border-radius:50%;pointer-events:none;
+  background:rgba(255,255,255,.85);filter:blur(.4px)}
+.e8-el .e8-no{width:auto;height:auto;background:none;font-size:10px;letter-spacing:.14em;color:rgba(255,255,255,.5)}
+.e8-el b{font-size:clamp(13px,1.05vw,15px);padding:0 6px;text-align:center;line-height:1.1;color:#fff}
 .e8-el .e8-pn{display:none}
-.e8-el:hover{background:rgba(255,255,255,.22)}
-.e8-el.on{background:rgba(255,255,255,.4);box-shadow:inset 0 0 0 1.5px rgba(10,10,14,.5),inset 6px 0 11px -5px rgba(255,60,130,.4),inset -6px 0 11px -5px rgba(30,170,255,.42),
-  inset 0 12px 18px -12px rgba(255,255,255,.95),0 14px 30px -16px rgba(10,10,14,.32)}
-.e8-el.on .e8-no{background:none;color:var(--e8-fg)}
-html.dark-theme .e8-el{background:rgba(255,255,255,.04);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),inset 6px 0 11px -5px rgba(255,80,150,.42),inset -6px 0 11px -5px rgba(60,190,255,.44),
-    inset 0 12px 18px -12px rgba(255,255,255,.5),0 14px 30px -16px rgba(0,0,0,.7)}
-html.dark-theme .e8-el::before{background:radial-gradient(closest-side,rgba(255,255,255,.55),rgba(255,255,255,0))}
-html.dark-theme .e8-el:hover{background:rgba(255,255,255,.1)}
-html.dark-theme .e8-el.on{background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.6),inset 6px 0 11px -5px rgba(255,80,150,.5),inset -6px 0 11px -5px rgba(60,190,255,.52),0 14px 30px -16px rgba(0,0,0,.7)}
-@media (prefers-reduced-motion:reduce){.e8-el{animation-duration:calc(var(--lama,9s) * 2.5)}}
+.e8-el:hover,.e8-el:focus-visible{scale:1.05;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),inset 0 -14px 22px -16px rgba(255,255,255,.38),0 22px 44px -18px rgba(10,10,14,.7)}
+.e8-el.on{scale:1.05;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55),inset 0 -14px 22px -16px rgba(255,255,255,.4),0 22px 44px -18px rgba(10,10,14,.75)}
+.e8-el.on .e8-no{color:rgba(255,255,255,.75)}
+html.dark-theme .e8-el{box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),inset 0 -14px 22px -16px rgba(255,255,255,.26),0 18px 36px -18px rgba(0,0,0,.9)}
+html.dark-theme .e8-el.on{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.6),0 22px 44px -18px rgba(0,0,0,.9)}
 
 /* ---------- layar sempit: manekin di atas, kapsul dua kolom di bawah, papan dari bawah ---------- */
 @media (max-width:820px){
@@ -163,7 +172,7 @@ html.dark-theme .e8-el.on{background:rgba(255,255,255,.14);box-shadow:inset 0 0 
   .e8-kol{top:auto;bottom:max(18px,4svh);transform:none;gap:8px}
   .e8-ki{left:4vw;right:auto;align-items:flex-start}
   .e8-ka{right:4vw;left:auto;align-items:flex-end}
-  .e8-el,.e8-el:nth-child(n){--d:64px;gap:2px}
+  .e8-el{--d:64px;gap:2px}
   .e8-ki .e8-el:nth-child(even){margin-right:0;margin-left:28px}
   .e8-ka .e8-el:nth-child(even){margin-left:0;margin-right:28px}
   .e8-el .e8-no{font-size:8px}

@@ -860,15 +860,6 @@
      diputar oleh --spin, bukan lagi top/left tetap. */
   /* Kotak tagline: permukaan kaca (kelas .glass) */
 
-  /* Pengantar sebelum panggung hologram: satu baris pertanyaan dengan garis tipis,
-     tanpa kartu atau nomor besar. */
-  .eco-tanya{display:flex;flex-direction:column;align-items:center;gap:clamp(18px,2.4vw,28px);
-    margin:clamp(70px,9vw,130px) 0 clamp(26px,3.4vw,44px);text-align:center}
-  .eco-garis{width:1px;height:clamp(40px,5vw,64px);background:linear-gradient(var(--line),rgba(0,0,0,0))}
-  html.dark-theme .eco-garis{background:linear-gradient(rgba(255,255,255,.22),rgba(255,255,255,0))}
-  .eco-tanya h3{font-family:var(--display);font-weight:400;letter-spacing:-.02em;line-height:1.1;
-    font-size:clamp(26px,3.4vw,46px)}
-
   /* ---------- industries ----------
      Lima panel berjajar. Panel aktif (disentuh kursor, difokus keyboard, atau diketuk)
      melebar dan memperlihatkan deskripsi; panel lain tetap terbaca dari judulnya.
@@ -1168,6 +1159,19 @@
   .menu-lang button.on{background:var(--black);color:#fff;border-color:var(--black)}
   html.dark-theme .menu-lang button.on{background:#fff;color:#000;border-color:#fff}
 
+  /* Tombol akun menggantikan Get Passport begitu sesi Supabase ditemukan. Huruf depan nama
+     dipakai sebagai avatar bila pengguna belum mengunggah foto. */
+  .akun{display:inline-flex;align-items:center;gap:9px;padding:6px 14px 6px 6px;border-radius:100px;
+    font-size:12.5px;color:var(--ink);background:rgba(10,10,14,.05);
+    box-shadow:inset 0 0 0 1px rgba(10,10,14,.1);transition:background .25s var(--ease),box-shadow .25s var(--ease)}
+  .akun:hover{background:rgba(10,10,14,.09);box-shadow:inset 0 0 0 1px rgba(10,10,14,.2)}
+  .akun[hidden]{display:none}
+  .akun-ava{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;overflow:hidden;
+    background:#0a0a0e;color:#fff;font:500 12px var(--display);background-size:cover;background-position:50% 50%}
+  .akun-nama{max-width:13ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  html.dark-theme .akun{color:#fff;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+  html.dark-theme .akun:hover{background:rgba(255,255,255,.14)}
+  html.dark-theme .akun-ava{background:#fff;color:#0a0a0e}
   .nav-masuk{font-size:12.5px;color:var(--d-gray);padding:8px 4px;transition:.25s var(--ease)}
   .nav-masuk:hover{color:var(--ink)}
 
@@ -1288,7 +1292,8 @@
     .burger{display:flex}
     /* Pemilih bahasa tetap terlihat di bar. Yang dilepas hanya tautan Masuk,
        karena sudah tersedia di dalam menu. */
-    .nav .nav-right .nav-masuk{display:none}
+    .nav .nav-right .nav-masuk,.nav .nav-right .akun-nama{display:none}
+    .nav .nav-right .akun{padding:6px}
     .nav .nav-right{gap:8px}
     .lang-btn{padding:8px 11px;font-size:11px;gap:6px}
     .lang-btn svg{width:13px;height:13px}
@@ -1463,8 +1468,8 @@
         <button data-lang="zh"><svg class="bendera" viewBox="0 0 24 24"><use href="#f-zh"/></svg>中文</button>
       </div>
     </div>
-    <a href="login.html" class="nav-masuk" data-i18n="nav.masuk">Masuk</a>
-    <a href="login.html?mode=daftar" class="btn magnetic"><span data-i18n="nav.daftar">Daftar</span> <span class="panah-tukar"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>
+    <a href="login.html?mode=daftar" class="btn magnetic js-tamu"><span data-i18n="nav.passport">Get Passport</span> <span class="panah-tukar"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>
+    <a href="/bp/passport/" class="akun js-akun" hidden><span class="akun-ava" aria-hidden="true"></span><span class="akun-nama"></span></a>
     <button class="burger" aria-label="Menu"><span></span><span></span></button>
   </div>
 </nav>
@@ -1475,8 +1480,8 @@
   <a href="#community" data-i18n="nav.komunitas">Community</a>
   <a href="#programs" data-i18n="nav.program">Program</a>
   <a href="#summit" data-i18n="nav.summit">Summit</a>
-  <a href="login.html" data-i18n="nav.masuk">Masuk</a>
-  <a href="login.html?mode=daftar" class="btn"><span data-i18n="nav.daftar">Daftar</span> <span class="panah-tukar"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>
+  <a href="login.html?mode=daftar" class="btn js-tamu"><span data-i18n="nav.passport">Get Passport</span> <span class="panah-tukar"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>
+  <a href="/bp/passport/" class="btn js-akun" hidden><span data-i18n="nav.keAkun">Buka Passport saya</span> <span class="panah-tukar"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>
   <div class="menu-lang">
     <button data-lang="id"><svg class="bendera" viewBox="0 0 24 24"><use href="#f-id"/></svg>Indonesia</button>
     <button data-lang="en"><svg class="bendera" viewBox="0 0 24 24"><use href="#f-en"/></svg>English</button>
@@ -1596,15 +1601,14 @@
       <div class="vid-teks"><span class="vid-k" data-i18n="vid.kicker">Video</span><b data-i18n="vid.soon">Video coming soon</b></div>
     </div>
 
-    <div class="eco-tanya rv">
-      <span class="eco-garis" aria-hidden="true"></span>
-      <h3 data-i18n="eco.tanya">Apa yang Anda dapatkan?</h3>
-    </div>
-
     <div class="eco4" id="eco4">
       <div class="eco4-pin" id="e8Pin">
         <div class="e8-ruang">
           <canvas class="e8-lubang" id="e8Lubang" aria-hidden="true"></canvas>
+          <div class="e8-tanya" id="e8Tanya" aria-hidden="true">
+            <h3 data-i18n="eco.tanya">Apa yang Anda dapatkan?</h3>
+            <span class="e8-garis"></span>
+          </div>
           <div class="e8-lt" aria-hidden="true"><div class="e8-kata" id="e8Kata"></div></div>
           <div class="e8-panggung" id="e5Fig">
             <div class="e8-anda" id="e5Anda" aria-hidden="true"><span data-i18n="node.anda">Anda</span></div>
@@ -1781,7 +1785,7 @@
 (function(){
   var uls=[].slice.call(document.querySelectorAll('.pm-row ul'));if(!uls.length)return;
   var rm=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
-  var LAJU=rm?16:40;                       /* piksel per detik, sama untuk semua baris */
+  var LAJU=rm?26:70;                       /* piksel per detik, sama untuk semua baris */
   function ukur(){
     uls.forEach(function(u,i){
       var jarak=parseFloat(getComputedStyle(u).columnGap)||0, p=(u.scrollWidth+jarak)/2;
@@ -2621,7 +2625,35 @@
   st.forEach(function(el){el.textContent=fmt(0);io.observe(el)});
 })();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" defer></script>
+<script src="assets/catalyst.js" defer></script>
 <script src="assets/i18n.js"></script>
+<script defer>
+/* Tombol Get Passport berganti jadi tombol akun begitu sesi Supabase ditemukan, dan
+   kembali lagi setelah pengguna keluar dari Passport. Nama dan foto diambil dari profil;
+   bila profil belum terbaca, surel yang dipakai. */
+addEventListener('DOMContentLoaded', function(){
+  var tamu = document.querySelectorAll('.js-tamu'), akun = document.querySelectorAll('.js-akun');
+  if(!window.CATALYST || !CATALYST.db) return;
+  function pasang(sesi){
+    var masuk = !!sesi;
+    tamu.forEach(function(e){ e.hidden = masuk; });
+    akun.forEach(function(e){ e.hidden = !masuk; });
+    if(!masuk) return;
+    var m = sesi.user.user_metadata || {};
+    var nama = m.full_name || m.name || (sesi.user.email || '').split('@')[0] || 'Passport';
+    var foto = m.avatar_url || m.picture || '';
+    document.querySelectorAll('.akun-nama').forEach(function(e){ e.textContent = nama.split(' ')[0]; });
+    document.querySelectorAll('.akun-ava').forEach(function(e){
+      if(foto){ e.style.backgroundImage = 'url("' + foto + '")'; e.textContent = ''; }
+      else e.textContent = nama.trim().charAt(0).toUpperCase();
+    });
+    document.querySelectorAll('.akun').forEach(function(e){ e.setAttribute('aria-label', nama); e.title = nama; });
+  }
+  CATALYST.db.auth.getSession().then(function(r){ pasang(r.data.session); });
+  CATALYST.db.auth.onAuthStateChange(function(_, sesi){ pasang(sesi); });
+});
+</script>
 <!-- Tanya Catalyst (CS AI). Isi alamat Cloudflare Worker di sini; kosong = tombol tidak tampil. -->
 <script>window.CATALYST_CS_URL = 'https://catalyst-cs.catalystsociety.workers.dev/';</script>
 <script src="assets/cs/cs.js" defer></script>
