@@ -4,7 +4,6 @@ import { PassportShell } from '@/components/passport/shell/PassportShell';
 import { ToastProvider } from '@/components/ui/Toast';
 import '@/styles/ui.css';
 import '@/styles/passport.css';
-import '@/styles/passport-home.css';
 
 export const metadata: Metadata = {
   title: { absolute: 'Catalyst Passport', template: '%s — Catalyst Passport' },
