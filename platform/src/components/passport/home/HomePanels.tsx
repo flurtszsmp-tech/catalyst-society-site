@@ -17,7 +17,7 @@ import { STAGE_RULES } from '@/lib/repo/journey-rules';
 import { STAGES, type Certificate, type EarnedBadge, type PointEvent, type Profile, type Project } from '@/lib/types';
 import { Avatar } from '../cards/Avatar';
 import { CopyButton } from '../cards/CopyButton';
-import { angka, stageIndex, stageName } from '../cards/format';
+import { angka, pointsSeries, stageIndex, stageName } from '../cards/format';
 
 /* ---------- kartu identitas ---------- */
 
@@ -73,19 +73,51 @@ export function IdentityPanel({ profile: p, shareUrl }: { profile: Profile; shar
 
 /* ---------- tiga angka ---------- */
 
+/**
+ * Garis kecil enam bulan terakhir. Tanpa sumbu dan tanpa angka: gunanya
+ * menunjukkan arah, bukan dibaca persis. Datar bila riwayatnya rata.
+ */
+function Sparkline({ nilai }: { nilai: number[] }) {
+  if (nilai.length < 2) return null;
+  const maks = Math.max(...nilai);
+  const min = Math.min(...nilai);
+  const rentang = maks - min || 1;
+  const L = 108;
+  const T = 26;
+  const titik = nilai.map((v, i) => {
+    const x = (i / (nilai.length - 1)) * L;
+    const y = T - ((v - min) / rentang) * (T - 3) - 1.5;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  return (
+    <svg className="ph-spark" viewBox={`0 0 ${L} ${T}`} preserveAspectRatio="none" aria-hidden="true">
+      <polyline points={`0,${T} ${titik.join(' ')} ${L},${T}`} className="ph-spark-isi" />
+      <polyline points={titik.join(' ')} className="ph-spark-garis" />
+    </svg>
+  );
+}
+
 export function StatPanels({
   profile: p,
   communities,
   badges,
   monthPoints,
+  points,
 }: {
   profile: Profile;
   communities: number;
   badges: number;
   monthPoints: number;
+  points: PointEvent[];
 }) {
-  const baris: { label: string; nilai: string; catatan?: string }[] = [
-    { label: 'CATA Points', nilai: angka(p.cataPoints), catatan: monthPoints > 0 ? `+${monthPoints} bulan ini` : undefined },
+  const seri = pointsSeries(points, p.cataPoints).map((t) => t.value);
+  const baris: { label: string; nilai: string; catatan?: string; seri?: number[] }[] = [
+    {
+      label: 'CATA Points',
+      nilai: angka(p.cataPoints),
+      catatan: monthPoints > 0 ? `+${monthPoints} this month` : undefined,
+      seri,
+    },
     { label: 'Communities', nilai: String(communities) },
     { label: 'Badges', nilai: String(badges) },
   ];
@@ -96,6 +128,7 @@ export function StatPanels({
           <span className="ph-cap">{b.label}</span>
           <b>{b.nilai}</b>
           {b.catatan && <i>{b.catatan}</i>}
+          {b.seri && <Sparkline nilai={b.seri} />}
         </section>
       ))}
     </div>

@@ -123,6 +123,7 @@ export default function PassportHome() {
           communities={data.communities.length}
           badges={data.badges.length}
           monthPoints={monthDelta(data.points)}
+          points={data.points}
         />
         <JourneyPanel profile={profile} />
         <ChecklistPanel langkah={langkah} total={BAGIAN} />
