@@ -201,16 +201,14 @@
   }
 
   /* ---------- loader ---------- */
-  /* Logo terkunci seperti lockup resmi: tanda C di atas, CATALYST, lalu SOCIETY yang
-     merenggang. Sapuan cahaya lewat di atas hurufnya, dan saat selesai loader memudar
-     di tempat, tidak menggeser ke atas. */
+  /* Hanya tulisan: CATALYST dengan SOCIETY yang merenggang di bawahnya, dilewati
+     sapuan cahaya. Saat selesai, loader memudar di tempat, tidak menggeser ke atas. */
   #loader{
     position:fixed;inset:0;z-index:1000;background:var(--white);
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(16px,2.4vh,26px);
     transition:opacity .85s var(--ease) .1s,visibility .85s;
   }
   #loader.done{opacity:0;visibility:hidden;pointer-events:none}
-  #loader .mark{font-size:clamp(52px,6vw,74px);opacity:0;transform:scale(.7);animation:loadmark .9s var(--ease-out) forwards}
   #loader .lw{
     overflow:hidden;text-align:center;
   }
@@ -224,14 +222,7 @@
   #loader .lw-in b{font-weight:600;font-size:clamp(26px,3.4vw,40px);letter-spacing:.19em;text-indent:.19em;line-height:1}
   #loader .lw-in span{margin-top:clamp(6px,.9vh,10px);font-weight:400;font-size:clamp(9px,.95vw,11.5px);letter-spacing:.58em;text-indent:.58em}
   #loader .lw-in{display:block;transform:translateY(110%);animation:loadword .9s var(--ease-out) .3s forwards}
-  #loader .bar{width:clamp(96px,10vw,140px);height:1px;background:var(--l-gray);position:relative;overflow:hidden}
-  #loader .bar::after{
-    content:"";position:absolute;inset:0;background:var(--black);
-    transform:translateX(-100%);animation:loadbar 1.15s var(--ease) .1s forwards;
-  }
-  @keyframes loadmark{to{opacity:1;transform:scale(1)}}
   @keyframes loadword{to{transform:translateY(0)}}
-  @keyframes loadbar{to{transform:translateX(0)}}
   @keyframes loadkilap{0%{background-position:0% 0}62%,100%{background-position:100% 0}}
 
   /* ---------- cursor ---------- */
@@ -369,17 +360,17 @@
     /* Resep kaca ala iOS: isian sangat tipis, blur sedang, saturasi dan kecerahan
        dinaikkan. Blur besar justru membuat isi di belakang jadi bubur abu,
        bukan bening. Yang membuatnya terbaca sebagai kaca adalah tepi terang. */
-    background:rgba(255,255,255,.10);
-    border:1px solid rgba(255,255,255,.5);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.75),
-               inset 0 -1px 0 rgba(255,255,255,.18),
-               0 12px 40px -22px rgba(18,20,26,.28);
-    backdrop-filter:blur(18px) saturate(1.9) brightness(1.08);
-    -webkit-backdrop-filter:blur(18px) saturate(1.9) brightness(1.08);
+    background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.46);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.72),
+               inset 0 -1px 0 rgba(255,255,255,.16),
+               0 12px 40px -22px rgba(18,20,26,.24);
+    backdrop-filter:blur(7px) saturate(1.7) brightness(1.05);
+    -webkit-backdrop-filter:blur(7px) saturate(1.7) brightness(1.05);
     transition:padding .4s var(--ease),background .4s,box-shadow .4s,top .4s var(--ease);
   }
   .nav.scrolled{top:10px;padding-block:9px;
-    background:rgba(255,255,255,.16);
+    background:rgba(255,255,255,.11);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.8),
                inset 0 -1px 0 rgba(255,255,255,.2),
                0 12px 34px -20px rgba(18,20,26,.32)}
@@ -388,10 +379,10 @@
      Saat bilah melintas di atas bagian berlatar gelap, kacanya berubah terang
      dan tulisannya menjadi gelap, sehingga selalu berlawanan dengan latar. */
   .nav.di-gelap{
-    background:rgba(255,255,255,.82);
-    border-color:rgba(255,255,255,.9);
-    backdrop-filter:blur(20px) saturate(1.5) brightness(1.02);
-    -webkit-backdrop-filter:blur(20px) saturate(1.5) brightness(1.02);
+    background:rgba(255,255,255,.7);
+    border-color:rgba(255,255,255,.88);
+    backdrop-filter:blur(10px) saturate(1.4) brightness(1.02);
+    -webkit-backdrop-filter:blur(10px) saturate(1.4) brightness(1.02);
     box-shadow:inset 0 1px 0 rgba(255,255,255,1),
                0 16px 44px -22px rgba(0,0,0,.85)}
   .nav.di-gelap .lockup,
@@ -1405,7 +1396,7 @@
      Peredupan masuk, transisi hover, dan gulir halus tetap dijalankan,
      hanya dipercepat. */
   @media (prefers-reduced-motion:reduce){
-    .hero-marquee ul,.eco-orbit,.eco-ring,.node,.node-in,.blob,#loader .bar::after,
+    .hero-marquee ul,.eco-orbit,.eco-ring,.node,.node-in,.blob,
     .eco-rays,.eco-pulse,.eco-galaxy,.eco-orb-in,.eco-hub::before,.eco-hub::after,.eco-hub .mark{animation:none!important}
     .eco-rays,.eco-pulse{opacity:0!important}
     .cur,.cur-ring{display:none!important}

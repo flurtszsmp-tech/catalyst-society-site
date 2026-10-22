@@ -80,7 +80,6 @@ html.dark-theme.gb .hd-ind{background:var(--redam)}
 /* tile logo komunitas: putih diredam dan diberi garis tipis */
 html.dark-theme.gb .com-logo{background:var(--redam);box-shadow:0 0 0 1px rgba(255,255,255,.06)}
 /* logo mitra: satu warna abu terang yang sama, logo berbentuk lingkaran gelap tidak lagi jadi bola putih */
-html.dark-theme.gb .pm-logo img{opacity:.72;mix-blend-mode:lighten}   /* latar hitam pekat di file logo larut ke latar halaman */
 html.dark-theme.gb .pm-cakram img{filter:grayscale(1) brightness(1.15)}
 /* panel industri dan banner founders: tepi tipis supaya tidak tenggelam di latar */
 html.dark-theme.gb .ind-card{box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}

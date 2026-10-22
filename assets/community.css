@@ -147,15 +147,21 @@ html.dark-theme .about-cell p{color:#b5b5b5}
 /* digeser oleh skrip di index.html mengikuti arah dan kecepatan gulir */
 .pm-row ul{display:flex;align-items:center;gap:clamp(56px,7vw,124px);width:max-content;list-style:none;margin:0;padding:0;will-change:transform}
 
-/* logo lepas tanpa kotak, monokrom seperti daftar brand di lusion.co */
-.pm-logo{display:flex;align-items:center;justify-content:center;height:clamp(44px,4.6vw,66px)}
-.pm-logo img{height:100%;width:auto;max-width:clamp(120px,12vw,180px);object-fit:contain;
-  filter:grayscale(1) contrast(1.05);opacity:.82;transition:opacity .3s,filter .3s}
+/* Logo duduk di kotak bergaris: garis hitam di tema terang, putih di tema gelap.
+   Warna logonya sendiri dikunci gelap dan tidak pernah ikut berubah saat tema diganti,
+   jadi berkas logo yang aslinya putih dibalik sekali di sini, bukan per tema. */
+.pm-logo{display:flex;align-items:center;justify-content:center;height:clamp(60px,6vw,84px);
+  padding:0 clamp(16px,1.8vw,26px);border-radius:14px;
+  border:1px solid rgba(10,10,14,.16);background:transparent;
+  transition:border-color .3s,background .3s}
+.pm-logo img{height:clamp(32px,3.2vw,46px);width:auto;max-width:clamp(110px,11vw,168px);object-fit:contain;
+  filter:grayscale(1) contrast(1.05);opacity:.82;transition:opacity .3s}
+.pm-logo:hover{border-color:rgba(10,10,14,.34)}
 .pm-logo:hover img{opacity:1}
-/* logo yang aslinya putih dibalik di tema terang supaya terlihat */
 .pm-putih img{filter:grayscale(1) invert(1)}
-html.dark-theme .pm-logo img{filter:grayscale(1) invert(1) contrast(1.05)}
-html.dark-theme .pm-putih img{filter:grayscale(1)}
+/* tema gelap: hanya kotaknya yang berubah, isian terang tipis supaya logo gelap tetap terbaca */
+html.dark-theme .pm-logo{border-color:rgba(255,255,255,.34);background:rgba(255,255,255,.9)}
+html.dark-theme .pm-logo:hover{border-color:rgba(255,255,255,.6);background:#fff}
 
 @media (max-width:560px){
   .pm-logo{height:40px}
