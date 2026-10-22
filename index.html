@@ -1170,11 +1170,64 @@
 
   /* Tombol akun menggantikan Get Passport begitu sesi Supabase ditemukan. Huruf depan nama
      dipakai sebagai avatar bila pengguna belum mengunggah foto. */
-  .akun{display:inline-flex;align-items:center;gap:9px;padding:6px 14px 6px 6px;border-radius:100px;
-    font-size:12.5px;color:var(--ink);background:rgba(10,10,14,.05);
+  .akun-wrap{position:relative}
+  .akun{display:inline-flex;align-items:center;gap:10px;padding:5px 12px 5px 5px;border-radius:100px;
+    font-size:12.5px;color:var(--ink);background:rgba(10,10,14,.05);text-align:left;
     box-shadow:inset 0 0 0 1px rgba(10,10,14,.1);transition:background .25s var(--ease),box-shadow .25s var(--ease)}
-  .akun:hover{background:rgba(10,10,14,.09);box-shadow:inset 0 0 0 1px rgba(10,10,14,.2)}
+  .akun:hover,.akun[aria-expanded="true"]{background:rgba(10,10,14,.09);box-shadow:inset 0 0 0 1px rgba(10,10,14,.2)}
   .akun[hidden]{display:none}
+  /* Cincin di sekeliling foto = kemajuan Journey (tahap ke-n dari 7). */
+  .akun-cincin{--p:0;flex:none;width:34px;height:34px;border-radius:50%;padding:2px;display:grid;place-items:center;
+    background:conic-gradient(var(--ink) calc(var(--p)*1turn),rgba(10,10,14,.14) 0)}
+  .akun-cincin .akun-ava{width:100%;height:100%;box-shadow:0 0 0 2px #f4f4f6}
+  .akun-cincin.besar{width:52px;height:52px;padding:3px}
+  .akun-cincin.besar .akun-ava{font-size:17px}
+  .akun-teks{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+  .akun-tahap{font-size:10px;color:var(--d-gray);letter-spacing:.02em}
+  .akun-tahap:empty{display:none}
+  .akun-chev{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+    margin-left:-2px;transition:transform .3s var(--ease)}
+  .akun[aria-expanded="true"] .akun-chev{transform:rotate(180deg)}
+  .akun-menu{position:absolute;right:0;top:calc(100% + 10px);z-index:60;width:290px;padding:8px;border-radius:22px;
+    background:rgba(255,255,255,.985);box-shadow:inset 0 0 0 1px rgba(10,10,14,.08),0 30px 60px -28px rgba(0,0,0,.45);
+    backdrop-filter:blur(22px) saturate(1.5);-webkit-backdrop-filter:blur(22px) saturate(1.5);
+    transform-origin:top right;animation:akunBuka .28s var(--ease)}
+  .akun-menu[hidden]{display:none}
+  @keyframes akunBuka{from{opacity:0;transform:translateY(-6px) scale(.97)}}
+  .akun-kepala{display:flex;align-items:center;gap:12px;padding:10px 10px 12px}
+  .akun-kepala-t{display:flex;flex-direction:column;min-width:0}
+  .akun-kepala-t b{font-size:14.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .akun-id{margin-top:3px;font-size:11px;letter-spacing:.08em;color:var(--d-gray);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .akun-jalan{margin:0 4px 6px;padding:12px;border-radius:16px;background:#0a0a0e;color:#fff}
+  .akun-jalan-atas{display:flex;justify-content:space-between;align-items:baseline;font-size:13px}
+  .akun-tahap-nama{font-family:var(--display);font-size:17px}
+  .akun-tahap-ke{font-size:11px;color:rgba(255,255,255,.6)}
+  .akun-bar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px}
+  .akun-bar i{height:4px;border-radius:4px;background:rgba(255,255,255,.18);transition:background .4s var(--ease)}
+  .akun-bar i.on{background:#fff}
+  .akun-tahap-sum{margin-top:9px;font-size:11px;line-height:1.45;color:rgba(255,255,255,.66)}
+  .akun-links{display:flex;flex-direction:column;padding:4px 0 2px}
+  .akun-links a,.akun-links button{display:flex;align-items:center;justify-content:space-between;width:100%;padding:10px 12px;border-radius:12px;
+    font-size:13px;color:var(--ink);text-align:left;transition:background .2s var(--ease),padding .2s var(--ease)}
+  .akun-links a::after{content:"\2192";opacity:0;transform:translateX(-4px);transition:.2s var(--ease)}
+  .akun-links a:hover,.akun-links button:hover,.akun-links a:focus-visible,.akun-links button:focus-visible{background:rgba(10,10,14,.06)}
+  .akun-links a:hover::after,.akun-links a:focus-visible::after{opacity:1;transform:none}
+  .akun-links .akun-utama{background:#0a0a0e;color:#fff;margin-bottom:4px}
+  .akun-links .akun-utama:hover{background:#26262c}
+  .akun-links .akun-keluar{color:#b42318;margin-top:4px;border-top:1px solid rgba(10,10,14,.08);border-radius:0 0 12px 12px}
+  .akun-wrap.admin .akun-jalan,.akun-wrap.admin .akun-pasp,.akun-wrap.admin .akun-tahap{display:none}
+  html.dark-theme .akun-menu{background:rgba(22,22,26,.985);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1),0 30px 60px -28px rgba(0,0,0,.9)}
+  html.dark-theme .akun-links a,html.dark-theme .akun-links button{color:#fff}
+  html.dark-theme .akun-links a:hover,html.dark-theme .akun-links button:hover{background:rgba(255,255,255,.08)}
+  html.dark-theme .akun-links .akun-utama{background:#fff;color:#000}
+  html.dark-theme .akun-jalan{background:#fff;color:#000}
+  html.dark-theme .akun-jalan .akun-tahap-ke,html.dark-theme .akun-tahap-sum{color:rgba(0,0,0,.6)}
+  html.dark-theme .akun-bar i{background:rgba(0,0,0,.15)}
+  html.dark-theme .akun-bar i.on{background:#000}
+  html.dark-theme .akun-cincin{background:conic-gradient(#fff calc(var(--p)*1turn),rgba(255,255,255,.2) 0)}
+  html.dark-theme .akun-cincin .akun-ava{box-shadow:0 0 0 2px #111}
+  html.dark-theme .akun-tahap,html.dark-theme .akun-id{color:rgba(255,255,255,.6)}
+  @media (prefers-reduced-motion:reduce){.akun-menu{animation:none}}
   /* .btn menyetel display sendiri, yang menimpa atribut hidden; tanpa ini tombol
      Get Passport tetap tampil walau pengguna sudah masuk. */
   .js-tamu[hidden],.js-akun[hidden]{display:none!important}
@@ -1304,8 +1357,9 @@
     .burger{display:flex}
     /* Pemilih bahasa tetap terlihat di bar. Yang dilepas hanya tautan Masuk,
        karena sudah tersedia di dalam menu. */
-    .nav .nav-right .nav-masuk,.nav .nav-right .akun-nama{display:none}
-    .nav .nav-right .akun{padding:6px}
+    .nav .nav-right .nav-masuk,.nav .nav-right .akun-teks,.nav .nav-right .akun-chev{display:none}
+    .nav .nav-right .akun{padding:4px}
+    .akun-menu{width:min(290px,calc(100vw - 32px))}
     .nav .nav-right{gap:8px}
     .lang-btn{padding:8px 11px;font-size:11px;gap:6px}
     .lang-btn svg{width:13px;height:13px}
@@ -1478,8 +1532,32 @@
         <button data-lang="zh"><svg class="bendera" viewBox="0 0 24 24"><use href="#f-zh"/></svg>中文</button>
       </div>
     </div>
-    <a href="login.html?mode=daftar" class="btn magnetic js-tamu"><span data-i18n="nav.passport">Get Passport</span> <span class="panah-tukar"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>
-    <a href="/bp/passport/" class="akun js-akun" hidden><span class="akun-ava" aria-hidden="true"></span><span class="akun-nama"></span></a>
+    <a href="/login?mode=daftar" class="btn magnetic js-tamu"><span data-i18n="nav.passport">Get Passport</span> <span class="panah-tukar"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>
+    <div class="akun-wrap js-akun" hidden>
+      <button type="button" class="akun" aria-haspopup="true" aria-expanded="false" aria-controls="akunMenu">
+        <span class="akun-cincin" aria-hidden="true"><span class="akun-ava"></span></span>
+        <span class="akun-teks"><span class="akun-nama"></span><span class="akun-tahap"></span></span>
+        <svg class="akun-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="akun-menu" id="akunMenu" hidden>
+        <div class="akun-kepala">
+          <span class="akun-cincin besar" aria-hidden="true"><span class="akun-ava"></span></span>
+          <div class="akun-kepala-t"><b class="akun-nama-full"></b><span class="akun-id"></span></div>
+        </div>
+        <div class="akun-jalan">
+          <div class="akun-jalan-atas"><span class="akun-tahap-nama"></span><span class="akun-tahap-ke"></span></div>
+          <div class="akun-bar" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <p class="akun-tahap-sum"></p>
+        </div>
+        <nav class="akun-links" aria-label="Akun">
+          <a class="akun-utama" href="/passport/">Buka Passport</a>
+          <a class="akun-pasp" href="/passport/journey/">Journey saya</a>
+          <a class="akun-pasp akun-publik" href="/passport/">Profil publik</a>
+          <a class="akun-pasp" href="/passport/settings/">Pengaturan</a>
+          <button type="button" class="akun-keluar">Keluar</button>
+        </nav>
+      </div>
+    </div>
     <button class="burger" aria-label="Menu"><span></span><span></span></button>
   </div>
 </nav>
@@ -1490,8 +1568,8 @@
   <a href="#community" data-i18n="nav.komunitas">Community</a>
   <a href="#programs" data-i18n="nav.program">Program</a>
   <a href="#summit" data-i18n="nav.summit">Summit</a>
-  <a href="login.html?mode=daftar" class="btn js-tamu"><span data-i18n="nav.passport">Get Passport</span> <span class="panah-tukar"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>
-  <a href="/bp/passport/" class="btn js-akun" hidden><span data-i18n="nav.keAkun">Buka Passport saya</span> <span class="panah-tukar"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>
+  <a href="/login?mode=daftar" class="btn js-tamu"><span data-i18n="nav.passport">Get Passport</span> <span class="panah-tukar"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>
+  <a href="/passport/" class="btn js-akun" hidden><span data-i18n="nav.keAkun">Buka Passport saya</span> <span class="panah-tukar"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>
   <div class="menu-lang">
     <button data-lang="id"><svg class="bendera" viewBox="0 0 24 24"><use href="#f-id"/></svg>Indonesia</button>
     <button data-lang="en"><svg class="bendera" viewBox="0 0 24 24"><use href="#f-en"/></svg>English</button>
@@ -1524,7 +1602,7 @@
     <button class="ri-lengkap" id="ringLengkap" type="button" aria-expanded="false"><span>Selengkapnya</span><i aria-hidden="true"></i></button>
     <p class="ri-isi"></p>
     <div class="ri-aksi">
-      <a class="ri-buka" href="login.html?mode=daftar"><span>Buka Platform</span><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></a>
+      <a class="ri-buka" href="/login?mode=daftar"><span>Buka Platform</span><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></a>
       <button class="ri-next" id="ringNext" type="button" aria-label="Next" title="Next"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
     </div>
   </aside>
@@ -1544,7 +1622,7 @@
     <div class="hero-bottom">
       <p class="desc" data-i18n="hero.desc">Kami membangun program inklusif untuk memberdayakan generasi muda di seluruh Indonesia, dengan akses ke mentor, modal, jaringan yang luas, dan berbagai sumber daya.</p>
       <div class="hero-duo" role="group" aria-label="Aksi utama">
-        <a href="login.html?mode=daftar" class="hd-a"><span data-i18n="hero.akses">Get Access</span></a>
+        <a href="/login?mode=daftar" class="hd-a"><span data-i18n="hero.akses">Get Access</span></a>
         <span class="hd-gr" aria-hidden="true"></span>
         <a href="#community" class="hd-b"><span data-i18n="hero.komunitas">Explore Community</span></a>
       </div>
@@ -1645,7 +1723,7 @@
               <p class="ed-lead"></p>
               <h4 class="ed-sub" data-i18n="eco.dapat">Yang Anda dapatkan</h4>
               <ol class="ed-list"></ol>
-              <a class="e8-cta" href="login.html"><span data-i18n="show.buka">Buka Platform</span><i aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5"/></svg></i></a>
+              <a class="e8-cta" href="/login"><span data-i18n="show.buka">Buka Platform</span><i aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5"/></svg></i></a>
             </div>
           </div>
         </aside>
@@ -2017,8 +2095,8 @@
     <h2 class="h-lg" data-i18n="cta.judul">Satu Ekosistem.<br>Banyak Kesempatan.<br>Berdampak Nyata.</h2>
     <p class="lead" data-i18n="cta.desc">Mulai dari Passport. Tumbuh sampai Summit.</p>
     <div class="hero-cta">
-      <a href="login.html?mode=daftar" class="btn magnetic"><span data-i18n="cta.buat">Buat Catalyst Passport</span> <span class="panah-tukar"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>
-      <a href="login.html" class="btn ghost magnetic" data-i18n="cta.masuk">Sudah punya akun? Masuk</a>
+      <a href="/login?mode=daftar" class="btn magnetic"><span data-i18n="cta.buat">Buat Catalyst Passport</span> <span class="panah-tukar"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>
+      <a href="/login" class="btn ghost magnetic" data-i18n="cta.masuk">Sudah punya akun? Masuk</a>
     </div>
   </div>
 </section>
@@ -2653,24 +2731,52 @@ addEventListener('DOMContentLoaded', function(){
     var m = sesi.user.user_metadata || {};
     var email = (sesi.user.email || '').toLowerCase();
     // Akun admin tidak punya Passport; tombolnya membuka dashboard admin.
-    if(email === 'info@catalystsociety.id'){ tampil('Admin', '', '/bp/admin/'); return; }
-    tampil(m.full_name || m.name || email.split('@')[0] || 'Passport', m.avatar_url || m.picture || '', '/bp/passport/');
+    if(email === 'info@catalystsociety.id'){ tampil('Admin', '', '/admin/'); return; }
+    tampil(m.full_name || m.name || email.split('@')[0] || 'Passport', m.avatar_url || m.picture || '', '/passport/');
     // Nama dan foto terbaru ada di profil Passport, termasuk foto yang diunggah sendiri.
-    CATALYST.db.from('profiles').select('full_name, avatar_path, avatar_url').eq('id', sesi.user.id).maybeSingle()
+    CATALYST.db.from('profiles').select('full_name, avatar_path, avatar_url, catalyst_id, journey_stage, slug').eq('id', sesi.user.id).maybeSingle()
       .then(function(r){
         var p = r && r.data;
         if(!p) return;
         var foto = p.avatar_path
           ? CATALYST_CONFIG.SUPABASE_URL + '/storage/v1/object/public/avatars/' + p.avatar_path.split('/').map(encodeURIComponent).join('/')
           : (p.avatar_url || '');
-        tampil(p.full_name, foto, '/bp/passport/');
+        tampil(p.full_name, foto, '/passport/', p);
       });
   }
-  function tampil(nama, foto, tujuan){
+  /* Tujuh tahap Journey, sama dengan platform/src/lib/repo/journey-rules.ts. */
+  var TAHAP = [
+    ['explorer', 'Explorer', 'Bergabung dengan Catalyst Society'],
+    ['connector', 'Connector', 'Lima komunitas dan lima koneksi'],
+    ['challenger', 'Challenger', 'Sertifikat dan sesi bootcamp'],
+    ['innovator', 'Innovator', 'Membangun projek atau komunitas'],
+    ['contributor', 'Contributor', 'Membantu projek di Catalyst Finder'],
+    ['builder', 'Builder', 'Membangun projek di Catalyst Labs'],
+    ['founder', 'Founder', 'Bisnis bervaluasi di atas Rp100 juta']
+  ];
+  function tampil(nama, foto, tujuan, prof){
+    var admin = tujuan === '/admin/';
+    document.querySelectorAll('.akun-wrap').forEach(function(w){ w.classList.toggle('admin', admin); });
+    document.querySelectorAll('.akun-utama').forEach(function(a){ a.href = tujuan; a.textContent = admin ? 'Dashboard admin' : 'Buka Passport'; });
+    document.querySelectorAll('.akun-nama-full').forEach(function(e){ e.textContent = nama; });
+    if(prof){
+      var k = Math.max(0, TAHAP.findIndex(function(t){ return t[0] === prof.journey_stage; }));
+      document.querySelectorAll('.akun-tahap').forEach(function(e){ e.textContent = TAHAP[k][1] + ' \u00b7 ' + (prof.catalyst_id || ''); });
+      document.querySelectorAll('.akun-id').forEach(function(e){ e.textContent = prof.catalyst_id || ''; });
+      document.querySelectorAll('.akun-tahap-nama').forEach(function(e){ e.textContent = TAHAP[k][1]; });
+      document.querySelectorAll('.akun-tahap-ke').forEach(function(e){ e.textContent = 'Tahap ' + (k + 1) + ' dari 7'; });
+      document.querySelectorAll('.akun-tahap-sum').forEach(function(e){ e.textContent = TAHAP[k][2]; });
+      document.querySelectorAll('.akun-bar').forEach(function(b){ [].forEach.call(b.children, function(i, n){ i.classList.toggle('on', n <= k); }); });
+      document.querySelectorAll('.akun-cincin').forEach(function(c){ c.style.setProperty('--p', ((k + 1) / 7).toFixed(3)); });
+      if(prof.slug) document.querySelectorAll('.akun-publik').forEach(function(a){ a.href = '/pass/' + encodeURIComponent(prof.slug); });
+    }
+    tampilDasar(nama, foto, tujuan);
+  }
+  function tampilDasar(nama, foto, tujuan){
     // Hanya alamat https yang dipakai sebagai gambar latar, supaya isian tidak bisa keluar dari url().
     var aman = /^https:\/\/[^"'()\s]+$/.test(foto) ? foto : '';
-    document.querySelectorAll('.js-akun').forEach(function(e){ e.href = tujuan; });
-    document.querySelectorAll('.akun').forEach(function(e){ e.setAttribute('aria-label', nama); e.title = nama; });
+    document.querySelectorAll('a.js-akun').forEach(function(e){ e.href = tujuan; });
+    document.querySelectorAll('.akun').forEach(function(e){ e.setAttribute('aria-label', 'Akun ' + nama); });
     document.querySelectorAll('.akun-nama').forEach(function(e){ e.textContent = nama.split(' ')[0]; });
     document.querySelectorAll('.akun-ava').forEach(function(e){
       if(aman){ e.style.backgroundImage = 'url("' + aman + '")'; e.textContent = ''; }
@@ -2686,6 +2792,23 @@ addEventListener('DOMContentLoaded', function(){
       if(simpan && simpan.user) pasang(simpan);
     }
   }catch(e){}
+  /* Menu akun: dibuka dengan klik, ditutup dengan klik di luar atau Escape. */
+  var tombol = document.querySelector('.akun-wrap .akun'), menu = document.getElementById('akunMenu');
+  function setMenu(buka){
+    if(!tombol || !menu) return;
+    menu.hidden = !buka; tombol.setAttribute('aria-expanded', String(buka));
+  }
+  if(tombol){
+    tombol.addEventListener('click', function(e){ e.stopPropagation(); setMenu(menu.hidden); });
+    document.addEventListener('click', function(e){ if(!menu.hidden && !menu.contains(e.target)) setMenu(false); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !menu.hidden){ setMenu(false); tombol.focus(); } });
+    document.querySelectorAll('.akun-keluar').forEach(function(b){
+      b.addEventListener('click', function(){
+        setMenu(false);
+        CATALYST.db.auth.signOut().then(function(){ pasang(null); }, function(){ pasang(null); });
+      });
+    });
+  }
   CATALYST.db.auth.getSession().then(function(r){ pasang(r.data.session); });
   CATALYST.db.auth.onAuthStateChange(function(_, sesi){ pasang(sesi); });
 });

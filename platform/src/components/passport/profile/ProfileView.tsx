@@ -19,10 +19,10 @@ export function ProfileView() {
         lead="Foto, identitas, tautan sosial, dan CV yang tampil di Passport Anda."
       >
         {profile && (
-          <Link className="ui-btn ui-btn-ghost" href={publicPath(profile.slug)}>
+          <a className="ui-btn ui-btn-ghost" href={publicPath(profile.slug)}>
             <Icon name="user" />
             Lihat profil publik
-          </Link>
+          </a>
         )}
       </PageHead>
 

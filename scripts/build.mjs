@@ -19,13 +19,17 @@ function tulis(dst, isi) { mkdirSync(dirname(dst), { recursive: true }); writeFi
 async function proses(dir) {
   for (const nama of readdirSync(dir)) {
     if (dir === '.' && SKIP.has(nama)) continue;
-    const src = join(dir, nama), dst = join(OUT, src);
+    const src = join(dir, nama);
+    // nx/ = ekspor Next.js (Passport), dipasang langsung di akar situs: nx/passport/ -> /passport/
+    const bag = src.split(/[\\/]/);
+    if (bag[0] === 'nx' && bag.length === 2 && /^index\./.test(nama)) continue;   // akar situs tetap landing
+    const dst = bag[0] === 'nx' ? join(OUT, ...bag.slice(1)) : join(OUT, src);
     if (statSync(src).isDirectory()) { await proses(src); continue; }
     const ext = extname(nama).toLowerCase();
     const mentah = readFileSync(src);
     sebelum += mentah.length;
-    // bp/ = ekspor Next.js (Passport Bagas), sudah dipadatkan Next; disalin apa adanya
-    if (src.split(/[\\/]/)[0] === 'bp') { mkdirSync(dirname(dst), { recursive: true }); copyFileSync(src, dst); sesudah += mentah.length; continue; }
+    // ekspor Next sudah dipadatkan Next; disalin apa adanya
+    if (bag[0] === 'nx') { mkdirSync(dirname(dst), { recursive: true }); copyFileSync(src, dst); sesudah += mentah.length; continue; }
     if (ext === '.js') {
       tulis(dst, transformSync(mentah.toString('utf8'), { minify: true, target: 'es2019', legalComments: 'none' }).code);
     } else if (ext === '.css') {

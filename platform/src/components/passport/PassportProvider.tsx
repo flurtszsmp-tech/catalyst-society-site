@@ -49,7 +49,7 @@ export function PassportProvider({ children }: { children: ReactNode }) {
       if (!u) {
         // Sesi habis di tengah jalan. proxy.ts menjaga halaman ini untuk
         // tamu; sampai di sini berarti token kedaluwarsa sesudah dimuat.
-        location.replace(`/login.html?next=${encodeURIComponent(location.pathname)}`);
+        location.replace(`/login?next=${encodeURIComponent(location.pathname)}`);
         return;
       }
       setProfile(await repo.getMyProfile());
@@ -70,7 +70,8 @@ export function PassportProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     await repo.signOut();
-    router.replace('/');
+    // Beranda situs berada di luar aplikasi Next: muat penuh, bukan navigasi router.
+    window.location.replace('/');
     router.refresh();
   }, [repo, router]);
 

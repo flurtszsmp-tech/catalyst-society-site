@@ -2,6 +2,7 @@
 <html lang="id" translate="no" class="notranslate">
 <head>
 <meta charset="UTF-8">
+<script>try{if(/\/login\.html$/.test(location.pathname))history.replaceState(null,'','/login'+location.search+location.hash)}catch(e){}</script>
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Masuk ke Catalyst Society</title>
@@ -603,13 +604,13 @@ setTimeout(function(){
   /* Tujuan sesudah masuk. Akun admin ke dashboard admin; selain itu ke halaman
      yang tadinya diminta (?next=, hanya jalur internal) atau ke Passport. */
   function tujuan(email){
-    if(String(email || '').toLowerCase() === 'info@catalystsociety.id') return '/bp/admin/';
+    if(String(email || '').toLowerCase() === 'info@catalystsociety.id') return '/admin/';
     var n = new URLSearchParams(location.search).get('next') || '';
-    return /^\/bp\/[^/]/.test(n) ? n : '/bp/passport/';
+    return /^\/(passport|admin|communities)(\/|$)/.test(n) ? n : '/passport/';
   }
 
   /* Sudah punya sesi aktif: langsung ke aplikasi */
-  if(DEMO && CATALYST.demoAktif()) location.href = '/bp/passport/';
+  if(DEMO && CATALYST.demoAktif()) location.href = '/passport/';
   var MODE_URL = new URLSearchParams(location.search).get('mode');
   var GALAT_URL = new URLSearchParams(location.hash.slice(1)).get('error_code');
   if(CATALYST.db){
@@ -668,7 +669,7 @@ setTimeout(function(){
         tampilPesan(T('lg.daftarDemo', { u: CATALYST.DEMO_AKUN.username, p: CATALYST.DEMO_AKUN.sandi }), 'warn');
         return;
       }
-      if(CATALYST.demoMasuk(email, sandi)){ location.href = '/bp/passport/'; return; }
+      if(CATALYST.demoMasuk(email, sandi)){ location.href = '/passport/'; return; }
       tampilPesan(T('lg.salahDemo'), 'err');
       return;
     }

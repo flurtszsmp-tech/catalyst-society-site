@@ -435,7 +435,7 @@ html.dark-theme .pass-badge.solid .pass-hex svg.ico{stroke:#000}
 /* Berkas gambar sertifikat belum ada, jadi bidangnya digambar: kertas
    bergaris tipis dengan lambang penghargaan di tengah. Sengaja terlihat
    seperti tempat gambar, bukan seperti gambar yang gagal dimuat. */
-.pass-cert .thumb{aspect-ratio:4/2.9;overflow:hidden;
+.pass-cert .thumb{position:relative;aspect-ratio:4/2.9;overflow:hidden;
   display:flex;align-items:center;justify-content:center;
   background:
     repeating-linear-gradient(180deg,transparent 0 13px,var(--line) 13px 14px),
@@ -443,6 +443,15 @@ html.dark-theme .pass-badge.solid .pass-hex svg.ico{stroke:#000}
 .pass-cert .thumb img{width:100%;height:100%;object-fit:cover}
 .pass-cert-ok{display:inline-flex!important;align-items:center;gap:4px;margin-top:6px;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)!important}
 .pass-cert-ok svg{width:11px;height:11px}
+/* Penanda status di pojok kiri bawah gambar sertifikat (CertStatus). */
+.cert-chip,.pass-cert .cert-chip{position:absolute;left:8px;bottom:8px;z-index:1;display:inline-flex;align-items:center;gap:4px;margin:0;
+  padding:3px 8px;border-radius:999px;font-size:10px;font-weight:500;line-height:1.3;letter-spacing:0;text-transform:none;font-style:normal;
+  box-shadow:0 4px 12px -6px rgba(0,0,0,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.cert-chip svg{width:12px;height:12px;flex:none}
+.cert-chip.ok,.pass-cert .cert-chip.ok{padding-left:5px;background:rgba(255,255,255,.94);color:#0b5cad}
+.cert-chip.ok svg{fill:var(--verified,#1d9bf0)}
+.cert-chip.wait,.pass-cert .cert-chip.wait{background:#fde68a;color:#713f12}
+.cert-chip.wait::before{content:"";width:6px;height:6px;border-radius:50%;background:#d97706}
 .pass-cert-ico{width:30px;height:30px;stroke:var(--muted);fill:none;stroke-width:1.2}
 .pass-cert .meta{padding:9px 11px 11px}
 .pass-cert b{display:block;font-size:11.5px;font-weight:500;line-height:1.35}
@@ -482,6 +491,63 @@ html.dark-theme .pass-toast{background:#fff;color:#000}
 .pass-public-top .pass-brand-pill{text-decoration:none}
 .pass-public-act{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
 .pass-cv-btn svg{width:16px;height:16px}
+/* Kepala profil publik: kaca tipis yang melayang, menebal saat digulir. */
+.pub-top{position:sticky;top:12px;z-index:30;display:flex;align-items:center;gap:18px;margin-bottom:14px;padding:8px 8px 8px 8px;
+  border-radius:999px;border:1px solid transparent;transition:background .35s var(--ease),border-color .35s var(--ease),box-shadow .35s var(--ease),backdrop-filter .35s}
+.pub-top.scrolled{background:rgba(255,255,255,.72);border-color:rgba(255,255,255,.9);box-shadow:0 16px 40px -24px rgba(0,0,0,.35);
+  backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5)}
+html.dark-theme .pub-top.scrolled{background:rgba(24,24,28,.72);border-color:rgba(255,255,255,.08)}
+.pub-top .pass-brand-pill{text-decoration:none;transition:transform .35s var(--ease)}
+.pub-top .pass-brand-pill:hover{transform:translateY(-1px)}
+.pub-top .pass-brand-pill:hover .spark{transform-origin:105px -88px;animation:pubSpark .8s var(--ease)}
+@keyframes pubSpark{50%{transform:rotate(90deg) scale(1.25)}}
+.pub-nav{display:flex;gap:4px;margin-left:6px}
+.pub-nav a{position:relative;padding:9px 13px;border-radius:999px;font-size:13px;color:var(--d-gray,var(--muted));transition:color .2s var(--ease),background .2s var(--ease)}
+.pub-nav a:hover{color:var(--ink);background:rgba(127,127,127,.1)}
+.pub-act{margin-left:auto;display:flex;align-items:center;gap:8px}
+.pub-icon{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:var(--pass-surface,#fff);color:var(--ink);
+  transition:transform .25s var(--ease),border-color .25s var(--ease)}
+.pub-icon:hover{border-color:var(--ink);transform:translateY(-1px)}
+.pub-icon svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.6}
+.pub-site{display:inline-flex;align-items:center;gap:6px;height:42px;padding:0 16px;border-radius:999px;border:1px solid var(--line);
+  background:var(--pass-surface,#fff);font-size:13px;color:var(--ink);transition:border-color .25s var(--ease)}
+.pub-site:hover{border-color:var(--ink)}
+.pub-arrow{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;transform:rotate(-45deg);transition:transform .3s var(--ease)}
+.pub-site:hover .pub-arrow,.pub-cta-ghost:hover .pub-arrow{transform:rotate(-45deg) translateX(3px)}
+.pub-cta{height:42px;border-radius:999px;padding:0 20px}
+/* Pita resmi di bawah kepala. */
+.pub-badge{display:inline-flex;align-items:center;gap:10px;margin:0 0 16px 4px;padding:7px 14px 7px 12px;border-radius:999px;
+  border:1px solid var(--line);background:var(--pass-surface,#fff);font-size:12px;color:var(--d-gray,var(--muted))}
+.pub-badge b{font-weight:500;color:var(--ink)}
+.pub-dot{width:8px;height:8px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 0 rgba(22,163,74,.5);animation:pubPing 2.4s infinite}
+@keyframes pubPing{0%{box-shadow:0 0 0 0 rgba(22,163,74,.45)}70%{box-shadow:0 0 0 8px rgba(22,163,74,0)}100%{box-shadow:0 0 0 0 rgba(22,163,74,0)}}
+.pub-sep{width:1px;height:12px;background:var(--line)}
+.pub-id{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;color:var(--ink)}
+/* Ajakan di akhir profil. */
+.pub-cta-band{position:relative;overflow:hidden;isolation:isolate;max-width:1180px;margin:28px auto 0;border-radius:28px;background:#0a0a0c;color:#fff;
+  padding:clamp(36px,6vw,64px) clamp(24px,5vw,64px)}
+.pub-cta-band{margin-inline:max(var(--pass-pad),calc((100% - 1180px)/2 + var(--pass-pad)))}
+.pub-cta-glow{position:absolute;inset:-40%;z-index:-1;background:
+  radial-gradient(closest-side at 30% 40%,rgba(255,255,255,.16),transparent 70%),
+  radial-gradient(closest-side at 75% 65%,rgba(120,140,255,.18),transparent 70%);animation:pubGlow 14s ease-in-out infinite alternate}
+@keyframes pubGlow{to{transform:translate(8%,-6%) rotate(8deg)}}
+.pub-cta-in{max-width:640px}
+.pub-cta-kicker{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.pub-cta-band h2{margin-top:12px;font-family:var(--display);font-weight:400;font-size:clamp(28px,4vw,44px);line-height:1.08;letter-spacing:-.01em}
+.pub-cta-band p{margin-top:12px;font-size:14.5px;line-height:1.6;color:rgba(255,255,255,.72)}
+.pub-cta-act{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.pub-cta-main{height:46px;padding:0 22px;border-radius:999px;background:#fff;color:#000}
+.pub-cta-main:hover{opacity:.9}
+.pub-cta-ghost{height:46px;padding:0 20px;border-radius:999px;border:1px solid rgba(255,255,255,.3);color:#fff}
+.pub-cta-ghost:hover{border-color:#fff}
+@media (prefers-reduced-motion:reduce){.pub-dot,.pub-cta-glow{animation:none}}
+@media (max-width:900px){.pub-nav{display:none}}
+@media (max-width:560px){
+  .pub-top{gap:8px}
+  .pub-site{display:none}
+  .pub-cta{padding:0 14px}
+  .pub-top .pass-brand-pill{padding:8px 14px}
+}
 @media (max-width:560px){
   .pass-public-top{flex-wrap:wrap}
   .pass-public-act{width:100%;justify-content:stretch}
@@ -585,6 +651,25 @@ html.dark-theme .pass-about .pass-link:hover .pass-link-ico{color:var(--brand-in
 .pass-hex{width:34px;height:38px}
 .pass-hex svg.ico{width:14px;height:14px}
 .pass-badge span{font-size:9px;line-height:1.25}
+/* ---------- posisi Journey di profil publik ---------- */
+.jpos-top{display:flex;align-items:center;gap:14px}
+.jpos-ico{flex:none;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:var(--black);color:#fff}
+.jpos-ico svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.5}
+html.dark-theme .jpos-ico{background:#fff;color:#000}
+.jpos-name b{display:block;font-family:var(--display);font-weight:400;font-size:26px;line-height:1.1;letter-spacing:-.01em}
+.jpos-name span{display:block;margin-top:4px;font-size:12.5px;color:var(--muted)}
+.jpos-track{list-style:none;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin:20px 0 4px}
+.jpos-track li{display:flex;flex-direction:column;gap:7px;min-width:0}
+.jpos-track .bar{height:4px;border-radius:4px;background:var(--line)}
+.jpos-track li.done .bar{background:var(--ink);opacity:.45}
+.jpos-track li.now .bar{background:var(--ink)}
+.jpos-track em{font-style:normal;font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jpos-track li.now em{color:var(--ink);font-weight:500}
+.jpos-about{margin-top:16px;font-size:13.5px;line-height:1.65;color:var(--d-gray,var(--ink))}
+.jpos-signals{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.jpos-signals li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.5}
+.jpos-signals svg{flex:none;width:15px;height:15px;margin-top:2px;stroke:currentColor;fill:none;stroke-width:2}
+@media (max-width:560px){.jpos-track em{display:none}.jpos-track li.now em{display:block;overflow:visible}}
 .pass-badges-foot{margin-top:14px;padding-top:13px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
 .pass-badges-foot .ui-btn{flex:1;justify-content:center}
 
@@ -634,6 +719,14 @@ button.pass-step.can-open:focus-visible{outline:2px solid var(--ink);outline-off
 .cel-in.fresh .cel-disc{animation:cel-medali .9s var(--ease-out) .15s both}
 @keyframes cel-medali{from{transform:scale(.4) rotate(-25deg);opacity:0}to{transform:none;opacity:1}}
 .cel-disc svg{width:46px;height:46px;stroke:currentColor;fill:none;stroke-width:1.3}
+/* Foto profil di medali, lambang tahap menempel di pojok kanan bawahnya. */
+.cel-disc.foto{width:108px;height:108px;overflow:hidden;padding:3px}
+.cel-disc.foto img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.cel-badge{position:absolute;right:12px;bottom:12px;z-index:2;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;
+  background:#fff;color:#000;border:3px solid #0b0b0b;box-shadow:0 6px 16px -6px rgba(0,0,0,.6)}
+.cel-badge svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6}
+.cel-in.fresh .cel-badge{animation:cel-medali .9s var(--ease-out) .45s both}
+.cel-card.is-founder .cel-badge{background:linear-gradient(140deg,#f5e7c2,#c9a961)}
 
 .cel-unlock{margin-top:22px;font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:#9a9a9a}
 .cel-stage{font-family:var(--display);font-weight:300;font-size:46px;line-height:1.05;margin-top:6px;letter-spacing:-.01em}

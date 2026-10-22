@@ -126,7 +126,7 @@ export function Landing() {
 
             <div className="hero-bottom">
               <T as="p" className="desc" k="hero.desc" />
-              <Link href="/login.html?mode=daftar" className="btn magnetic">
+              <Link href="/login?mode=daftar" className="btn magnetic">
                 <T k="hero.gabung" /> <PanahTukar />
               </Link>
             </div>
@@ -448,10 +448,10 @@ export function Landing() {
             </h2>
             <T as="p" className="lead" k="cta.desc" />
             <div className="hero-cta">
-              <Link href="/login.html?mode=daftar" className="btn magnetic">
+              <Link href="/login?mode=daftar" className="btn magnetic">
                 <T k="cta.buat" /> <PanahTukar />
               </Link>
-              <Link href="/login.html" className="btn ghost magnetic">
+              <Link href="/login" className="btn ghost magnetic">
                 <T k="cta.masuk" />
               </Link>
             </div>

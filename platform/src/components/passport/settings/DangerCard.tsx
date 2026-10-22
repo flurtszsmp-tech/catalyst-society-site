@@ -64,7 +64,7 @@ export function DangerCard({ profile }: { profile: Profile }) {
     try {
       await repo.deleteMyAccount();
       // busy dibiarkan aktif: halaman akan berpindah, jangan sampai tombol bisa ditekan lagi.
-      router.replace('/');
+      window.location.replace('/');
       router.refresh();
     } catch (e) {
       setErr(errorText(e, 'Gagal menghapus akun. Coba lagi.'));

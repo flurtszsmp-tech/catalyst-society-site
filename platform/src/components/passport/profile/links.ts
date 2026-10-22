@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/env';
 import type { LinkKey } from '@/lib/types';
 import { normalizeLink, safeHref } from '@/lib/url';
 
@@ -49,7 +50,18 @@ export function canonicalLink(kind: LinkKey, raw: string): string {
   return resolveLink(kind, raw) ?? raw.trim();
 }
 
-/** Tautan internal ke profil publik. Slug tetap di-encode karena data mode demo bisa diubah di localStorage. */
+/**
+ * Alamat profil publik: /pass/<slug>. GitHub Pages tidak punya rute dinamis,
+ * jadi 404.html di akar situs meneruskan alamat ini ke /pass/?u=<slug> dan
+ * halaman profil mengembalikan alamat rapinya. Pakai <a> biasa, bukan Link.
+ * Slug tetap di-encode karena data mode demo bisa diubah di localStorage.
+ */
 export function publicPath(slug: string): string {
-  return `/p/?u=${encodeURIComponent(slug)}`;
+  return `/pass/${encodeURIComponent(slug)}`;
+}
+
+/** Alamat lengkap profil publik, memakai domain produksi bila SITE_URL diisi. */
+export function publicUrl(slug: string): string {
+  const origin = SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+  return origin + publicPath(slug);
 }

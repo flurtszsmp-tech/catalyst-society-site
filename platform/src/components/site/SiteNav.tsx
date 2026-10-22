@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { isSupabaseConfigured } from '@/lib/env';
 import { getBrowserSupabase } from '@/lib/supabase/client';
@@ -123,7 +122,7 @@ export function SiteNav({ active = null, onLanding = false }: Props) {
           <ThemeToggle />
           <LangSwitcher />
           {masuk && (
-            <a href="/login.html" className="nav-masuk">
+            <a href="/login" className="nav-masuk">
               <T k="nav.masuk" />
             </a>
           )}
@@ -144,7 +143,7 @@ export function SiteNav({ active = null, onLanding = false }: Props) {
       <div className={`nav-menu${menu ? ' open' : ''}`} aria-hidden={!menu}>
         {tautan}
         {masuk && (
-          <a href="/login.html" onClick={tutup}>
+          <a href="/login" onClick={tutup}>
             <T k="nav.masuk" />
           </a>
         )}

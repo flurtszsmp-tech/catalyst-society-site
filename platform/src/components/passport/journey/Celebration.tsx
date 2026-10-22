@@ -17,6 +17,7 @@ import { useToast } from '@/components/ui/Toast';
 import { SITE_URL } from '@/lib/env';
 import { STAGE_RULES } from '@/lib/repo/journey-rules';
 import { STAGES, type Profile, type Stage } from '@/lib/types';
+import { avatarSrc } from '@/lib/url';
 
 interface Ctx {
   /** Membuka kartu untuk tahap yang sudah dilewati. */
@@ -85,7 +86,31 @@ function tanggal(d = new Date()): string {
  * diunduh sebagai PNG. Huruf memakai font sistem karena SVG yang dimuat
  * sebagai gambar tidak bisa mengambil webfont.
  */
-function kartuSvg(p: Profile, stage: Stage, alamat: string): string {
+/**
+ * Foto profil sebagai data URL, supaya ikut tergambar di PNG: SVG yang dimuat
+ * sebagai gambar tidak boleh mengambil berkas dari luar. Gagal (CORS, jaringan)
+ * berarti kartu memakai ikon tahap saja.
+ */
+async function fotoData(src: string | null): Promise<string | null> {
+  if (!src) return null;
+  if (src.startsWith('data:image/')) return src;
+  try {
+    const res = await fetch(src, { mode: 'cors', cache: 'force-cache' });
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    if (!blob.type.startsWith('image/')) return null;
+    return await new Promise<string | null>((ok) => {
+      const fr = new FileReader();
+      fr.onload = () => ok(typeof fr.result === 'string' ? fr.result : null);
+      fr.onerror = () => ok(null);
+      fr.readAsDataURL(blob);
+    });
+  } catch {
+    return null;
+  }
+}
+
+function kartuSvg(p: Profile, stage: Stage, alamat: string, foto: string | null = null): string {
   const r = STAGE_RULES[stage];
   const i = rank(stage);
   const ikon = ICON_PATHS[`j-${stage}`] ?? '';
@@ -113,7 +138,14 @@ function kartuSvg(p: Profile, stage: Stage, alamat: string): string {
   <text x="200" y="160" font-family="${font}" font-size="20" letter-spacing="8" fill="#9a9a9a">PASSPORT</text>
   <text x="${W - 86}" y="140" text-anchor="end" font-family="${font}" font-size="26" letter-spacing="3" fill="#9a9a9a">${esc(p.catalystId)}</text>
   <circle cx="${W / 2}" cy="470" r="128" fill="#fff"/>
-  <g transform="translate(${W / 2 - 96} ${470 - 96}) scale(8)" fill="none" stroke="#000" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">${ikon}</g>
+  ${
+    foto
+      ? `<clipPath id="f"><circle cx="${W / 2}" cy="470" r="122"/></clipPath>
+  <image href="${esc(foto)}" x="${W / 2 - 122}" y="348" width="244" height="244" preserveAspectRatio="xMidYMid slice" clip-path="url(#f)"/>
+  <circle cx="${W / 2 + 92}" cy="562" r="48" fill="#fff" stroke="#0b0b0b" stroke-width="8"/>
+  <g transform="translate(${W / 2 + 92 - 30} ${562 - 30}) scale(2.5)" fill="none" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ikon}</g>`
+      : `<g transform="translate(${W / 2 - 96} ${470 - 96}) scale(8)" fill="none" stroke="#000" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">${ikon}</g>`
+  }
   <text x="${W / 2}" y="730" text-anchor="middle" font-family="${font}" font-size="30" letter-spacing="10" fill="#9a9a9a">JOURNEY UNLOCKED</text>
   <text x="${W / 2}" y="840" text-anchor="middle" font-family="${font}" font-size="118" font-weight="300" fill="#fff">${esc(r.name)}</text>
   <text x="${W / 2}" y="910" text-anchor="middle" font-family="${font}" font-size="32" fill="#c9c9c9">Tahap ${i + 1} dari ${STAGES.length} · ${esc(r.summary)}</text>
@@ -157,9 +189,11 @@ function CelebrationModal({ profile: p, stage, fresh, onClose }: { profile: Prof
   const r = STAGE_RULES[stage];
   const i = rank(stage);
   const origin = SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
-  const profilUrl = `${origin}/bp/p/?u=${encodeURIComponent(p.slug)}`;
+  const profilUrl = `${origin}/pass/${encodeURIComponent(p.slug)}`;
   const alamat = (SITE_URL || 'https://catalystsociety.id').replace(/^https?:\/\//, '');
   const nama = `catalyst-${stage}-${p.slug}.png`;
+  const foto = avatarSrc(p);
+  const buatPng = async () => kartuPng(kartuSvg(p, stage, alamat, await fotoData(foto)));
   const teks = `Saya baru mencapai tahap ${r.name} di Catalyst Society Journey (${i + 1}/${STAGES.length}). Lihat Catalyst Passport saya:`;
 
   useEffect(() => {
@@ -173,7 +207,7 @@ function CelebrationModal({ profile: p, stage, fresh, onClose }: { profile: Prof
   async function unduh() {
     setSibuk('unduh');
     try {
-      const blob = await kartuPng(kartuSvg(p, stage, alamat));
+      const blob = await buatPng();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -190,7 +224,7 @@ function CelebrationModal({ profile: p, stage, fresh, onClose }: { profile: Prof
   async function bagikan() {
     setSibuk('bagi');
     try {
-      const blob = await kartuPng(kartuSvg(p, stage, alamat));
+      const blob = await buatPng();
       const file = new File([blob], nama, { type: 'image/png' });
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], title: `${r.name} · Catalyst Society`, text: `${teks} ${profilUrl}` });
@@ -249,9 +283,15 @@ function CelebrationModal({ profile: p, stage, fresh, onClose }: { profile: Prof
           <div className="cel-medal">
             <span className="cel-ring r1" aria-hidden />
             <span className="cel-ring r2" aria-hidden />
-            <span className="cel-disc">
-              <Icon name={`j-${stage}`} />
+            <span className={`cel-disc${foto ? ' foto' : ''}`}>
+              {/* eslint-disable-next-line @next/next/no-img-element -- foto profil dari Storage atau penyedia login */}
+              {foto ? <img src={foto} alt={`Foto ${p.fullName}`} /> : <Icon name={`j-${stage}`} />}
             </span>
+            {foto && (
+              <span className="cel-badge" title={r.name}>
+                <Icon name={`j-${stage}`} />
+              </span>
+            )}
           </div>
 
           <p className="cel-unlock">Journey Unlocked</p>
@@ -273,7 +313,7 @@ function CelebrationModal({ profile: p, stage, fresh, onClose }: { profile: Prof
           <footer className="cel-card-foot">
             <span>
               <b>{p.fullName}</b>
-              <small>{tanggal()}</small>
+              <small>{p.headline ? `${p.headline} · ${tanggal()}` : tanggal()}</small>
             </span>
             <span className="end">
               <b>{alamat}</b>

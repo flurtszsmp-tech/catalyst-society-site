@@ -457,7 +457,7 @@ function Switch({ on, onChange, title, sub }: { on: boolean; onChange: (v: boole
 
 function profilHref(slug: string): string | null {
   // Slug dijaga CHECK di database; diperiksa ulang karena data demo bisa diubah di perangkat.
-  return SLUG_PATTERN.test(slug) ? `/p/?u=${slug}` : null;
+  return SLUG_PATTERN.test(slug) ? `/pass/${slug}` : null;
 }
 
 function PersonCard({
@@ -487,7 +487,7 @@ function PersonCard({
         </span>
         {followsYou && <span className="cx-follows">Mengikuti Anda</span>}
         <h3>
-          {href ? <Link href={href}>{p.fullName}</Link> : p.fullName}
+          {href ? <a href={href}>{p.fullName}</a> : p.fullName}
           {p.isVerified && <Icon name="verified" title="Terverifikasi" />}
         </h3>
         <p className="cx-headline">{p.headline || 'Anggota Catalyst Society'}</p>
@@ -521,9 +521,9 @@ function PersonCard({
             {busy ? 'Memproses…' : following ? 'Mengikuti' : 'Ikuti'}
           </button>
           {href && (
-            <Link className="ui-btn ui-btn-ghost ps2-btn-sm" href={href}>
+            <a className="ui-btn ui-btn-ghost ps2-btn-sm" href={href}>
               Lihat profil
-            </Link>
+            </a>
           )}
         </div>
       </div>
@@ -562,9 +562,9 @@ function PersonRow({
   return (
     <li>
       {href ? (
-        <Link className="ps2-person" href={href}>
+        <a className="ps2-person" href={href}>
           {body}
-        </Link>
+        </a>
       ) : (
         <div className="ps2-person">{body}</div>
       )}

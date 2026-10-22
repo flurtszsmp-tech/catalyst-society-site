@@ -9,6 +9,7 @@ import { Icon } from '@/components/ui/Icon';
 import { useToast } from '@/components/ui/Toast';
 import { LIMITS, assertFile } from '@/lib/repo/types';
 import type { Certificate, CertificateInput } from '@/lib/types';
+import { CertStatus } from '@/components/passport/cards/CertStatus';
 import { certificateImageSrc, safeHref } from '@/lib/url';
 import {
   Card,
@@ -202,18 +203,9 @@ function CertItem({ c, onEdit, onDelete }: { c: Certificate; onEdit: () => void;
         ) : (
           <CertPlaceholder />
         )}
+        <CertStatus verified={verified} />
       </div>
       <div className="ps2-cert-body">
-        <div>
-          {verified ? (
-            <span className="cert-ok">
-              <Icon name="verified" />
-              Terverifikasi
-            </span>
-          ) : (
-            <span className="cert-wait">Belum terverifikasi · tambahkan ID kredensial atau tautan bukti</span>
-          )}
-        </div>
         <h3 id={`ps2-cert-${c.id}`} tabIndex={-1}>
           {c.title}
         </h3>
@@ -227,6 +219,7 @@ function CertItem({ c, onEdit, onDelete }: { c: Certificate; onEdit: () => void;
           )}
         </p>
         {c.credentialId && <p>ID kredensial: {c.credentialId}</p>}
+        {!verified && <p className="cert-wait">Tambahkan ID kredensial atau tautan bukti agar terverifikasi.</p>}
         <div className="ps2-cert-foot">
           {href ? (
             <a className="ps2-link" href={href} target="_blank" rel="noopener noreferrer nofollow">

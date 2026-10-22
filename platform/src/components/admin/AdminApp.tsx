@@ -103,7 +103,7 @@ export function AdminApp() {
       const user = await repo.getSessionUser().catch(() => null);
       if (!user) {
         setAkses('tamu');
-        location.replace(`/login.html?next=${encodeURIComponent('/bp/admin/')}`);
+        location.replace(`/login?next=${encodeURIComponent('/admin/')}`);
         return;
       }
       setEmail(user.email);
@@ -135,7 +135,7 @@ export function AdminApp() {
               {email ? ` Anda masuk sebagai ${email}.` : ''}
             </p>
             <div className="adm-gate-act">
-              <a className="ui-btn ui-btn-primary" href="/bp/passport/">
+              <a className="ui-btn ui-btn-primary" href="/passport/">
                 Buka Passport
               </a>
               <button type="button" className="ui-btn ui-btn-ghost" onClick={() => void keluar()}>
@@ -809,7 +809,7 @@ function UserDetail({ id, account, onClose }: { id: string; account: AdminAccoun
                 {waktu(account?.lastSignInAt)}
               </small>
             </div>
-            <a className="ui-btn ui-btn-ghost ps2-btn-sm" href={`/bp/p/?u=${encodeURIComponent(p.slug)}`} target="_blank" rel="noopener noreferrer">
+            <a className="ui-btn ui-btn-ghost ps2-btn-sm" href={`/pass/${encodeURIComponent(p.slug)}`} target="_blank" rel="noopener noreferrer">
               Profil publik <Icon name="external" />
             </a>
           </div>

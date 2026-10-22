@@ -1,9 +1,9 @@
 import type { NextConfig } from 'next';
 
-/* Ekspor statis khusus dasbor Passport, dipasang di catalystsociety.id/bp/ (GitHub Pages). */
+/* Ekspor statis dasbor Passport. Rutenya dipasang langsung di akar catalystsociety.id
+   (/passport/, /pass/, /admin/) oleh scripts/salin-passport.py dan scripts/build.mjs. */
 const nextConfig: NextConfig = {
   output: 'export',
-  basePath: '/bp',
   trailingSlash: true,
   images: { unoptimized: true },
 };

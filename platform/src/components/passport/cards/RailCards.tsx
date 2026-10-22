@@ -8,6 +8,7 @@ import type { ReactNode } from 'react';
 import { Icon } from '@/components/ui/Icon';
 import type { Certificate, EarnedBadge, PointEvent, Profile } from '@/lib/types';
 import { certificateImageSrc } from '@/lib/url';
+import { CertStatus } from './CertStatus';
 import { angka, canOptimize, monthDelta, pointsSeries } from './format';
 
 /* ---------- CATA Points ---------- */
@@ -175,18 +176,11 @@ export function CertificatesCard({ certificates, owner = false }: { certificates
                   ) : (
                     <Icon name="award" className="pass-cert-ico" />
                   )}
+                  <CertStatus verified={c.isVerified} />
                 </div>
                 <div className="meta">
                   <b>{c.title}</b>
                   <span>{c.issuer}</span>
-                  {c.isVerified ? (
-                    <span className="pass-cert-ok">
-                      <Icon name="verified" />
-                      Terverifikasi
-                    </span>
-                  ) : (
-                    <span className="pass-cert-wait">Belum terverifikasi</span>
-                  )}
                 </div>
               </li>
             );

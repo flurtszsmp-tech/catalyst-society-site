@@ -8,7 +8,7 @@ import { ShareCard } from '@/components/passport/cards/ShareCard';
 import { CvLink } from '@/components/passport/cards/CvLink';
 import { useCelebration } from '@/components/passport/journey/Celebration';
 import { usePassport } from '@/components/passport/PassportProvider';
-import { SITE_URL } from '@/lib/env';
+import { publicUrl } from '@/components/passport/profile/links';
 import type { Certificate, EarnedBadge, JourneyEvent, PointEvent, Project } from '@/lib/types';
 
 interface Data {
@@ -25,7 +25,6 @@ export default function PassportHome() {
   const { openStage } = useCelebration();
   const [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [origin, setOrigin] = useState(SITE_URL);
 
   const muat = useCallback(async () => {
     if (!user) return;
@@ -50,12 +49,6 @@ export default function PassportHome() {
     void muat();
   }, [muat, profile?.cataPoints]);
 
-  useEffect(() => {
-    // SITE_URL dipakai bila diisi supaya tautan berbagi selalu domain produksi.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (!SITE_URL) setOrigin(window.location.origin);
-  }, []);
-
   if (!profile) return null;
 
   if (error) {
@@ -70,8 +63,7 @@ export default function PassportHome() {
     );
   }
 
-  const sharePath = `/bp/p/?u=${encodeURIComponent(profile.slug)}`;   // basePath next.config
-  const shareUrl = origin ? `${origin}${sharePath}` : sharePath;
+  const shareUrl = publicUrl(profile.slug);
 
   if (!data) {
     return (

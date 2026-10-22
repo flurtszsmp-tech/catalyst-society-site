@@ -28,6 +28,10 @@ export interface StageRule {
   summary: string;
   /** Penjelasan untuk halaman Journey. */
   about: string;
+  /** Penjelasan orang ketiga untuk pengunjung profil publik. */
+  publicAbout: string;
+  /** Tiga hal yang ditunjukkan tahap ini kepada pengunjung profil publik. */
+  signals: string[];
   requirements: Requirement[];
   /** Poin CATA saat tahap ini tercapai. Poin tidak menaikkan tahap. */
   points: number;
@@ -45,6 +49,9 @@ export const STAGE_RULES: Record<Stage, StageRule> = {
     name: 'Explorer',
     summary: 'Bergabung dengan Catalyst Society',
     about: 'Titik awal setiap anggota. Catalyst Passport Anda dibuat dan Catalyst ID diterbitkan.',
+    publicAbout:
+      'Tahap awal di Catalyst Society. Anggota pada tahap ini telah memiliki Catalyst Passport dengan Catalyst ID resmi, dan sedang memetakan minat, keahlian, serta arah pengembangan dirinya di dalam ekosistem.',
+    signals: ['Identitas profesional tercatat dengan Catalyst ID', 'Terbuka pada komunitas, program, dan kolaborasi', 'Siap membangun jaringan di ekosistem Catalyst'],
     requirements: [{ key: 'signup', label: 'Membuat Catalyst Passport' }],
     points: 0,
     steps: ['Daftar di catalystsociety.id.', 'Lengkapi foto, headline, tentang, dan tiga keahlian untuk +20 poin CATA.'],
@@ -55,6 +62,9 @@ export const STAGE_RULES: Record<Stage, StageRule> = {
     summary: 'Lima komunitas dan lima koneksi',
     about:
       'Anda mulai membangun jaringan: aktif di komunitas mitra dan terhubung dengan sesama anggota Catalyst Society.',
+    publicAbout:
+      'Aktif membangun jaringan lintas komunitas. Anggota pada tahap ini telah bergabung dengan sedikitnya lima komunitas mitra dan terhubung dengan sesama anggota, sehingga berperan sebagai penghubung antara orang, ide, dan peluang di berbagai bidang.',
+    signals: ['Terlibat di sedikitnya lima komunitas mitra', 'Jaringan aktif dengan builder, mentor, dan profesional', 'Menjembatani informasi dan peluang lintas komunitas'],
     requirements: [
       { key: 'communities', label: 'Komunitas yang diikuti', target: 5, unit: 'komunitas', href: '/passport/communities', cta: 'Buka Komunitas' },
       { key: 'following', label: 'Koneksi yang Anda ikuti', target: 5, unit: 'orang', href: '/passport/connections', cta: 'Temukan orang' },
@@ -71,6 +81,9 @@ export const STAGE_RULES: Record<Stage, StageRule> = {
     name: 'Challenger',
     summary: 'Sertifikat dan sesi bootcamp',
     about: 'Anda menantang diri untuk belajar: punya sertifikat dan menuntaskan setidaknya satu sesi bootcamp Catalyst.',
+    publicAbout:
+      'Berkomitmen pada pembelajaran yang terstruktur. Anggota pada tahap ini memiliki sertifikat kompetensi dan telah menuntaskan sesi bootcamp Catalyst yang diverifikasi tim, menunjukkan kesungguhan mengasah keahlian secara terukur.',
+    signals: ['Kompetensi dibuktikan dengan sertifikat', 'Menuntaskan bootcamp Catalyst terverifikasi', 'Konsisten meningkatkan kapasitas diri'],
     requirements: [
       { key: 'certificates', label: 'Sertifikat diunggah', target: 1, unit: 'sertifikat', href: '/passport/certificates', cta: 'Tambah sertifikat' },
       { key: 'bootcamp', label: 'Satu sesi bootcamp selesai', claim: 'bootcamp' },
@@ -87,6 +100,9 @@ export const STAGE_RULES: Record<Stage, StageRule> = {
     name: 'Innovator',
     summary: 'Membangun projek atau komunitas',
     about: 'Anda pernah membangun sesuatu: projek, produk, atau komunitas dari pengalaman sebelumnya. Tambahkan ke bagian Projects.',
+    publicAbout:
+      'Telah mewujudkan gagasan menjadi karya nyata. Anggota pada tahap ini pernah membangun projek, produk, atau komunitas, dan terbukti mampu mengeksekusi ide dari konsep hingga berjalan.',
+    signals: ['Portofolio projek atau komunitas yang dibangun sendiri', 'Berpengalaman mengeksekusi ide hingga terealisasi', 'Berorientasi pada solusi dan dampak'],
     requirements: [
       { key: 'projects', label: 'Projek atau komunitas yang pernah dibangun', target: 1, unit: 'projek', href: '/passport/projects', cta: 'Tambah projek' },
     ],
@@ -102,6 +118,9 @@ export const STAGE_RULES: Record<Stage, StageRule> = {
     name: 'Contributor',
     summary: 'Membantu projek di Catalyst Finder',
     about: 'Anda ikut membantu projek orang lain melalui Catalyst Finder, sebagai kolaborator, mentor, atau relawan.',
+    publicAbout:
+      'Berkontribusi langsung pada keberhasilan projek orang lain. Melalui Catalyst Finder, anggota pada tahap ini terlibat sebagai kolaborator, mentor, atau relawan, dan kontribusinya telah diverifikasi tim Catalyst.',
+    signals: ['Kontribusi pada projek nyata, diverifikasi tim', 'Terbiasa bekerja dalam tim lintas latar belakang', 'Membagikan keahlian untuk memperkuat ekosistem'],
     requirements: [{ key: 'finder', label: 'Kontribusi di Catalyst Finder', claim: 'finder' }],
     points: 100,
     steps: [
@@ -115,6 +134,9 @@ export const STAGE_RULES: Record<Stage, StageRule> = {
     name: 'Builder',
     summary: 'Membangun projek di Catalyst Labs',
     about: 'Anda membangun projek sendiri bersama Catalyst Labs, dari ide sampai berjalan.',
+    publicAbout:
+      'Membangun dan memimpin projek sendiri bersama Catalyst Labs. Anggota pada tahap ini membawa gagasannya dari ide, validasi, hingga berjalan dengan pendampingan program, dan diverifikasi tim Catalyst.',
+    signals: ['Memimpin projek di Catalyst Labs', 'Mengelola proses dari ide, validasi, hingga eksekusi', 'Siap untuk kolaborasi, pendanaan, dan skala lebih besar'],
     requirements: [{ key: 'labs', label: 'Projek di Catalyst Labs', claim: 'labs' }],
     points: 150,
     steps: [
@@ -128,6 +150,9 @@ export const STAGE_RULES: Record<Stage, StageRule> = {
     summary: 'Bisnis bervaluasi di atas Rp100 juta',
     about:
       'Akses eksklusif untuk pemilik bisnis dengan valuasi di atas Rp100 juta. Diverifikasi langsung oleh tim Catalyst, dan setiap Founder mendapat merchandise eksklusif Catalyst.',
+    publicAbout:
+      'Tingkat tertinggi dalam Journey Catalyst. Anggota pada tahap ini adalah pemilik bisnis dengan valuasi di atas Rp100 juta yang diverifikasi langsung oleh tim Catalyst, dan tergabung dalam jaringan Founder eksklusif Catalyst Society.',
+    signals: ['Bisnis berjalan dengan valuasi terverifikasi di atas Rp100 juta', 'Rekam jejak kepemimpinan dan keputusan bisnis', 'Anggota jaringan Founder eksklusif Catalyst'],
     requirements: [{ key: 'founder', label: 'Bisnis bervaluasi di atas Rp100 juta, diverifikasi tim', claim: 'founder' }],
     points: 300,
     perk: 'Merchandise eksklusif Catalyst',

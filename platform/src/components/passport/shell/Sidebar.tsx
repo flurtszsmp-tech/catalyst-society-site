@@ -165,7 +165,7 @@ export const Sidebar = forwardRef<HTMLElement, Props>(function Sidebar({ open, o
             <li>
               {/* Kembali ke situs utama tanpa keluar: sesi tetap tersimpan di
                   browser, jadi Passport terbuka lagi tanpa masuk ulang. <a>
-                  biasa, bukan Link, karena beranda berada di luar basePath /bp. */}
+                  biasa, bukan Link, karena beranda berada di luar aplikasi Next. */}
               <a href="/" onClick={onNavigate}>
                 <Icon name="back" />
                 Back to site

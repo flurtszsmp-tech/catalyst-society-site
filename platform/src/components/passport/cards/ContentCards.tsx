@@ -8,6 +8,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Icon } from '@/components/ui/Icon';
 import { findCommunity } from '@/lib/data/communities';
+import { STAGE_RULES } from '@/lib/repo/journey-rules';
 import { STAGES, type JourneyEvent, type LinkKey, type Profile, type Project, type Stage } from '@/lib/types';
 import { safeHref } from '@/lib/url';
 import { STAGE_DETAIL, bulanTahun, localAsset, stageIndex, stageName } from './format';
@@ -174,6 +175,58 @@ export function JourneyCard({
           );
         })}
       </ol>
+    </section>
+  );
+}
+
+/* ---------- posisi Journey (profil publik) ---------- */
+
+/**
+ * Untuk pengunjung profil publik: tahap yang sedang ditempati, posisinya di
+ * antara tujuh tahap, dan arti tahap itu dalam bahasa orang ketiga.
+ */
+export function JourneyPositionCard({ profile, journey }: { profile: Profile; journey: JourneyEvent[] }) {
+  const s = profile.journeyStage;
+  const kini = stageIndex(s);
+  const r = STAGE_RULES[s];
+  const ev = journey.find((j) => j.stage === s);
+  return (
+    <section className="pass-card jpos" aria-labelledby="pass-jpos-h">
+      <div className="pass-head">
+        <h2 id="pass-jpos-h">Journey</h2>
+        <span className="pass-all">
+          Tahap {kini + 1} dari {STAGES.length}
+        </span>
+      </div>
+      <div className="jpos-top">
+        <span className="jpos-ico" aria-hidden>
+          <Icon name={JOURNEY_ICON[s]} />
+        </span>
+        <div className="jpos-name">
+          <b>{r.name}</b>
+          <span>
+            {r.summary}
+            {ev && ` · sejak ${bulanTahun(ev.occurredAt)}`}
+          </span>
+        </div>
+      </div>
+      <ol className="jpos-track" aria-label={`Posisi ${r.name} di antara ${STAGES.length} tahap`}>
+        {STAGES.map((x, i) => (
+          <li key={x} className={i < kini ? 'done' : i === kini ? 'now' : undefined} aria-current={i === kini ? 'step' : undefined}>
+            <span className="bar" />
+            <em>{stageName(x)}</em>
+          </li>
+        ))}
+      </ol>
+      <p className="jpos-about">{r.publicAbout}</p>
+      <ul className="jpos-signals">
+        {r.signals.map((t) => (
+          <li key={t}>
+            <Icon name="check" />
+            {t}
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

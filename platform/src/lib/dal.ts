@@ -30,9 +30,9 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
   };
 });
 
-/** Untuk halaman yang wajib masuk. Mengarahkan tamu ke /login.html. */
+/** Untuk halaman yang wajib masuk. Mengarahkan tamu ke /login. */
 export async function requireUser(nextPath = '/passport'): Promise<SessionUser> {
   const user = await getSessionUser();
-  if (!user) redirect(`/login.html?next=${encodeURIComponent(nextPath)}`);
+  if (!user) redirect(`/login?next=${encodeURIComponent(nextPath)}`);
   return user;
 }

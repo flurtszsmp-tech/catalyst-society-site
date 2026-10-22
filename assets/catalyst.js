@@ -32,9 +32,9 @@ window.CATALYST_CONFIG = {
 
     /* Pengalihan halaman berdasarkan status sesi */
     async wajibLogin() {
-      if (!this.db) { location.href = 'login.html?perlu=konfigurasi'; return null; }
+      if (!this.db) { location.href = '/login?perlu=konfigurasi'; return null; }
       var { data } = await this.db.auth.getSession();
-      if (!data.session) { location.href = 'login.html'; return null; }
+      if (!data.session) { location.href = '/login'; return null; }
       return data.session.user;
     },
 

@@ -111,7 +111,7 @@ export function PassportShell({ children }: { children: ReactNode }) {
       <div className="ui-empty pass-state" role="status">
         <b>Ini akun admin Catalyst</b>
         <p>Akun admin tidak memiliki Catalyst Passport. Buka dashboard admin untuk memantau anggota.</p>
-        <a className="ui-btn ui-btn-primary" href="/bp/admin/">
+        <a className="ui-btn ui-btn-primary" href="/admin/">
           Buka dashboard admin
         </a>
       </div>

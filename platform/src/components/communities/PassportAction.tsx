@@ -11,7 +11,7 @@ type Keadaan = { tahap: 'muat' } | { tahap: 'tamu' } | { tahap: 'siap'; tersimpa
 /**
  * Tombol "Tambahkan ke Passport" di halaman detail komunitas. Membawa ke
  * halaman Komunitas di Passport, yang menambahkan komunitas ini lewat
- * ?gabung=. Tamu diarahkan ke /login.html dengan next= ke halaman itu.
+ * ?gabung=. Tamu diarahkan ke /login dengan next= ke halaman itu.
  */
 export function PassportAction({ slug }: { slug: string }) {
   const k = useCommunityCopy();
@@ -43,7 +43,7 @@ export function PassportAction({ slug }: { slug: string }) {
   if (st.tahap === 'tamu') {
     return (
       <>
-        <a className="btn ghost com-pp" href={`/login.html?next=${encodeURIComponent(`/bp${tujuan}`)}`}>
+        <a className="btn ghost com-pp" href={`/login?next=${encodeURIComponent(tujuan)}`}>
           <Icon name="plus" />
           {k.passportTambah}
         </a>

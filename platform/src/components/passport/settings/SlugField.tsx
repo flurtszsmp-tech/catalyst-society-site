@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useId, useState, type FormEvent } from 'react';
 import { usePassport } from '@/components/passport/PassportProvider';
 import { errorText } from '@/components/passport/profile/hooks';
@@ -89,7 +88,7 @@ export function SlugField({ profile }: { profile: Profile }) {
         </label>
         <div className="pf-slug">
           <span className="pf-slug-pre" id={`${id}-pre`}>
-            {HOST}/bp/p/?u=
+            {HOST}/pass/
           </span>
           <input
             id={id}
@@ -114,7 +113,7 @@ export function SlugField({ profile }: { profile: Profile }) {
 
       <p id={`${id}-warn`} className="pf-warn">
         Mengganti alamat membuat tautan lama{' '}
-        <Link href={publicPath(profile.slug)}>/bp/p/?u={profile.slug}</Link> berhenti bekerja. Perbarui tautan yang sudah
+        <a href={publicPath(profile.slug)}>/pass/{profile.slug}</a> berhenti bekerja. Perbarui tautan yang sudah
         Anda bagikan, misalnya di bio media sosial atau CV.
       </p>
 
