@@ -96,16 +96,64 @@
   pilih(0);
   clearTimeout(timer);
 
-  /* ---------- tahap Journey: satu tahap menyala bergantian sampai disentuh ---------- */
-  var jy = [].slice.call(document.querySelectorAll('#ppJy li')), jyKe = 0, jyTimer = null;
-  function nyala() {
-    jy.forEach(function (l, i) { l.classList.toggle('on', i === jyKe); });
-    jyKe = (jyKe + 1) % jy.length;
+  /* ---------- Journey: pilih tahap lewat tombol, panah, atau keyboard ---------- */
+  var JY = [
+    ['Penjelajah', 'Anda baru bergabung dan mulai memetakan minat di lima industri.', 'Buat Catalyst Passport. Catalyst ID Anda langsung terbit.', ['Catalyst ID dan profil profesional', 'Akses ke direktori komunitas mitra', 'Kartu Journey yang bisa dibagikan'], 'Catalyst Passport', '+20 poin CATA saat profil lengkap'],
+    ['Penghubung', 'Anda aktif di komunitas dan mulai membangun jaringan.', 'Ikuti lima komunitas mitra dan terhubung dengan lima anggota.', ['Jaringan lintas industri', 'Info event dan peluang lebih awal', 'Profil lebih mudah ditemukan di Connections'], 'Community dan Connections', '+25 poin CATA'],
+    ['Pembelajar', 'Anda menantang diri lewat kelas dan bootcamp.', 'Unggah sertifikat dan selesaikan satu sesi bootcamp Catalyst.', ['Kelas dari praktisi industri', 'Sertifikat terverifikasi di profil', 'Akses langsung ke mentor'], 'Catalyst Academy', '+50 poin CATA'],
+    ['Pembuat karya', 'Anda punya karya nyata: projek, produk, atau komunitas.', 'Tambahkan projek atau komunitas yang pernah Anda bangun.', ['Portofolio di profil publik', 'Kredibilitas di mata mitra dan perekrut', 'Kesempatan tampil di showcase Catalyst'], 'Projects di Catalyst Passport', '+75 poin CATA'],
+    ['Kolaborator', 'Anda membantu projek orang lain berhasil.', 'Berkontribusi di projek lewat Catalyst Finder, lalu diverifikasi tim.', ['Pengalaman kerja tim yang nyata', 'Rekomendasi dari pemilik projek', 'Akses ke projek dan peluang kerja baru'], 'Catalyst Finder', '+100 poin CATA'],
+    ['Pembangun', 'Anda memimpin projek sendiri bersama Catalyst Labs.', 'Bangun projek di Catalyst Labs, lalu ajukan verifikasi.', ['Pendampingan mentor yang intensif', 'Kerangka dari ide sampai peluncuran', 'Jalur menuju pendanaan'], 'Catalyst Labs', '+150 poin CATA'],
+    ['Pemimpin bisnis', 'Anda memimpin bisnis bervaluasi di atas Rp100 juta.', 'Ajukan verifikasi bisnis, diperiksa langsung oleh tim Catalyst.', ['Jaringan Founder eksklusif', 'Akses investor lewat Ventures dan Summit', 'Merchandise eksklusif Catalyst'], 'Catalyst Ventures dan Summit', '+300 poin CATA']
+  ];
+  var JY_NAMA = ['Explorer', 'Connector', 'Challenger', 'Innovator', 'Contributor', 'Builder', 'Founder'];
+  var jv = document.getElementById('ppJourney');
+  if (jv) {
+    var seg = [].slice.call(jv.querySelectorAll('.jv-seg button'));
+    var isi = jv.querySelector('.jv-isi'), prev = jv.querySelector('.jv-prev'), next = jv.querySelector('.jv-next');
+    var jyKe = 0;
+    var teks = function (sel, v) { jv.querySelector(sel).textContent = v; };
+    var tampilJy = function (i, animasi) {
+      jyKe = Math.max(0, Math.min(6, i));
+      var d = JY[jyKe];
+      jv.style.setProperty('--p', jyKe);
+      jv.classList.toggle('founder', jyKe === 6);
+      seg.forEach(function (b, n) {
+        b.setAttribute('aria-selected', String(n === jyKe));
+        b.tabIndex = n === jyKe ? 0 : -1;
+        b.classList.toggle('lewat', n < jyKe);
+      });
+      teks('.jv-ke', jyKe + 1);
+      teks('.jv-peran', 'Anda sebagai ' + d[0]);
+      teks('.jv-nama', JY_NAMA[jyKe]);
+      teks('.jv-ringkas', d[1]);
+      teks('.jv-syarat', d[2]);
+      teks('.jv-poin', d[5]);
+      teks('.jv-program', d[4]);
+      jv.querySelector('.jv-manfaat').innerHTML = d[3].map(function (x) { return '<li>' + x.replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }) + '</li>'; }).join('');
+      prev.disabled = jyKe === 0; next.disabled = jyKe === 6;
+      if (animasi) { isi.classList.remove('ganti'); void isi.offsetWidth; isi.classList.add('ganti'); }
+    };
+    seg.forEach(function (b, n) {
+      b.addEventListener('click', function () { tampilJy(n, true); });
+      b.addEventListener('keydown', function (e) {
+        var k = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+        if (!k) return;
+        e.preventDefault(); tampilJy(jyKe + k, true); seg[jyKe].focus();
+      });
+    });
+    prev.addEventListener('click', function () { tampilJy(jyKe - 1, true); });
+    next.addEventListener('click', function () { tampilJy(jyKe + 1, true); });
+    /* Geser kiri atau kanan di ponsel untuk berpindah tahap. */
+    var awalX = null;
+    isi.addEventListener('touchstart', function (e) { awalX = e.touches[0].clientX; }, { passive: true });
+    isi.addEventListener('touchend', function (e) {
+      if (awalX == null) return;
+      var dx = e.changedTouches[0].clientX - awalX; awalX = null;
+      if (Math.abs(dx) > 50) tampilJy(jyKe + (dx < 0 ? 1 : -1), true);
+    });
+    tampilJy(0, false);
   }
-  if (!hemat) jyTimer = setInterval(nyala, 1800);
-  jy.forEach(function (l) {
-    l.addEventListener('pointerenter', function () { clearInterval(jyTimer); jy.forEach(function (x) { x.classList.remove('on'); }); });
-  });
 
   /* ---------- sudah masuk: tombol membuka Passport ---------- */
   var masuk = false;

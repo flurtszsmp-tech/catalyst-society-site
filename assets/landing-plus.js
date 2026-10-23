@@ -563,60 +563,6 @@
   }
 
 
-  /* ------------------------------------------------------------
-     6. Catalyst Journey: geser tujuh tahap, lihat peran, cara naik, manfaat
-     ------------------------------------------------------------ */
-  var JY = {
-    id: [
-      ['Penjelajah', 'Anda baru bergabung dan mulai memetakan minat di lima industri.', 'Buat Catalyst Passport. Catalyst ID Anda langsung terbit.', ['Catalyst ID dan profil profesional', 'Akses ke direktori komunitas mitra', 'Kartu Journey yang bisa dibagikan'], 'Catalyst Passport', '+20 poin CATA saat profil lengkap'],
-      ['Penghubung', 'Anda aktif di komunitas dan mulai membangun jaringan.', 'Ikuti lima komunitas mitra dan terhubung dengan lima anggota.', ['Jaringan lintas industri', 'Info event dan peluang lebih awal', 'Profil lebih mudah ditemukan di Connections'], 'Community dan Connections', '+25 poin CATA'],
-      ['Pembelajar', 'Anda menantang diri lewat kelas dan bootcamp.', 'Unggah sertifikat dan selesaikan satu sesi bootcamp Catalyst.', ['Kelas dari praktisi industri', 'Sertifikat terverifikasi di profil', 'Akses langsung ke mentor'], 'Catalyst Academy', '+50 poin CATA'],
-      ['Pembuat karya', 'Anda punya karya nyata: projek, produk, atau komunitas.', 'Tambahkan projek atau komunitas yang pernah Anda bangun.', ['Portofolio di profil publik', 'Kredibilitas di mata mitra dan perekrut', 'Kesempatan tampil di showcase Catalyst'], 'Projects di Catalyst Passport', '+75 poin CATA'],
-      ['Kolaborator', 'Anda membantu projek orang lain berhasil.', 'Berkontribusi di projek lewat Catalyst Finder, lalu diverifikasi tim.', ['Pengalaman kerja tim yang nyata', 'Rekomendasi dari pemilik projek', 'Akses ke projek dan peluang kerja baru'], 'Catalyst Finder', '+100 poin CATA'],
-      ['Pembangun', 'Anda memimpin projek sendiri bersama Catalyst Labs.', 'Bangun projek di Catalyst Labs, lalu ajukan verifikasi.', ['Pendampingan mentor yang intensif', 'Kerangka dari ide sampai peluncuran', 'Jalur menuju pendanaan'], 'Catalyst Labs', '+150 poin CATA'],
-      ['Pemimpin bisnis', 'Anda memimpin bisnis bervaluasi di atas Rp100 juta.', 'Ajukan verifikasi bisnis, diperiksa langsung oleh tim Catalyst.', ['Jaringan Founder eksklusif', 'Akses investor lewat Ventures dan Summit', 'Merchandise eksklusif Catalyst'], 'Catalyst Ventures dan Summit', '+300 poin CATA']
-    ],
-    en: [
-      ['Explorer', 'You just joined and are mapping your interests across five industries.', 'Create your Catalyst Passport. Your Catalyst ID is issued instantly.', ['A Catalyst ID and professional profile', 'Access to the partner community directory', 'A shareable Journey card'], 'Catalyst Passport', '+20 CATA points for a complete profile'],
-      ['Connector', 'You are active in communities and building your network.', 'Follow five partner communities and connect with five members.', ['A cross-industry network', 'Early access to events and opportunities', 'Easier to discover in Connections'], 'Community and Connections', '+25 CATA points'],
-      ['Learner', 'You challenge yourself through classes and bootcamps.', 'Upload a certificate and complete one Catalyst bootcamp session.', ['Classes from industry practitioners', 'Verified certificates on your profile', 'Direct access to mentors'], 'Catalyst Academy', '+50 CATA points'],
-      ['Maker', 'You have real work: a project, product, or community.', 'Add a project or community you have built.', ['A portfolio on your public profile', 'Credibility with partners and recruiters', 'A chance to be featured in Catalyst showcases'], 'Projects on Catalyst Passport', '+75 CATA points'],
-      ['Collaborator', 'You help other people\u2019s projects succeed.', 'Contribute to a project through Catalyst Finder, verified by the team.', ['Real teamwork experience', 'Recommendations from project owners', 'Access to new projects and jobs'], 'Catalyst Finder', '+100 CATA points'],
-      ['Builder', 'You lead your own project with Catalyst Labs.', 'Build a project in Catalyst Labs, then request verification.', ['Intensive mentoring', 'A framework from idea to launch', 'A path toward funding'], 'Catalyst Labs', '+150 CATA points'],
-      ['Business leader', 'You lead a business valued above IDR 100 million.', 'Request business verification, reviewed directly by the Catalyst team.', ['An exclusive Founder network', 'Investor access through Ventures and Summit', 'Exclusive Catalyst merchandise'], 'Catalyst Ventures and Summit', '+300 CATA points']
-    ]
-  };
-  var JY_NAMA = ['Explorer', 'Connector', 'Challenger', 'Innovator', 'Contributor', 'Builder', 'Founder'];
-  function journey() {
-    var app = document.getElementById('jyApp');
-    if (!app) return;
-    var range = app.querySelector('.jy-range'), ticks = [].slice.call(app.querySelectorAll('.jy-ticks button'));
-    var ke = 0;
-    function render(animasi) {
-      var l = bahasa(), d = JY[l][ke], founder = ke === 6;
-      app.classList.toggle('founder', founder);
-      app.querySelector('.jy-no').textContent = '0' + (ke + 1) + ' / 07';
-      var nama = app.querySelector('.jy-nama');
-      nama.textContent = JY_NAMA[ke];
-      app.querySelector('.jy-peran-n').textContent = d[0];
-      app.querySelector('.jy-ringkas').textContent = d[1];
-      app.querySelector('.jy-syarat').textContent = d[2];
-      app.querySelector('.jy-poin').textContent = d[5];
-      app.querySelector('.jy-manfaat').innerHTML = d[3].map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('');
-      app.querySelector('.jy-program').textContent = d[4];
-      app.style.setProperty('--p', (ke / 6).toFixed(4));
-      range.value = ke + 1;
-      range.setAttribute('aria-valuetext', JY_NAMA[ke] + ', ' + d[0]);
-      ticks.forEach(function (b, i) { b.classList.toggle('on', i === ke); b.classList.toggle('lewat', i < ke); b.setAttribute('aria-pressed', String(i === ke)); });
-      if (animasi) { app.classList.remove('ganti'); void app.offsetWidth; app.classList.add('ganti'); }
-    }
-    function pilih(i) { if (i === ke) return; ke = Math.max(0, Math.min(6, i)); app.classList.add('disentuh'); render(true); }
-    range.addEventListener('input', function () { pilih(Number(range.value) - 1); });
-    ticks.forEach(function (b, i) { b.addEventListener('click', function () { pilih(i); range.focus({ preventScroll: true }); }); });
-    document.addEventListener('bahasa-berubah', function () { render(false); });
-    render(false);
-  }
-
-  function mulai() { pipeline(); program(); kolaborasi(); footer(); redefine(); journey(); }
+  function mulai() { pipeline(); program(); kolaborasi(); footer(); redefine(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mulai); else mulai();
 })();

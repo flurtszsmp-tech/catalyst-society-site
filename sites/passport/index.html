@@ -258,20 +258,50 @@
   <!-- ============ journey singkat ============ -->
   <section class="pp-sec pp-jy" id="journey">
     <div class="pp-sec-head">
-      <span class="pp-kicker-l">Catalyst Journey</span>
-      <h2>Mulai sebagai Explorer. Tumbuh sampai Founder.</h2>
-      <p>Passport Anda mencatat setiap tahap. Arahkan kursor atau ketuk tahap untuk melihat artinya.</p>
+      <span class="pp-kicker-l">Catalyst Journey · 7 tahap</span>
+      <h2>Seberapa jauh Anda mau melangkah?</h2>
+      <p>Pilih tahap untuk melihat peran Anda, cara mencapainya, dan manfaat yang didapat. Semua anggota memulai dari Explorer.</p>
     </div>
-    <ol class="pp-jy-list" id="ppJy">
-      <li tabindex="0"><span>01</span><b>Explorer</b><em>Bergabung dan membuat Passport</em></li>
-      <li tabindex="0"><span>02</span><b>Connector</b><em>Lima komunitas dan lima koneksi</em></li>
-      <li tabindex="0"><span>03</span><b>Challenger</b><em>Sertifikat dan sesi bootcamp</em></li>
-      <li tabindex="0"><span>04</span><b>Innovator</b><em>Membangun projek atau komunitas</em></li>
-      <li tabindex="0"><span>05</span><b>Contributor</b><em>Membantu projek di Catalyst Finder</em></li>
-      <li tabindex="0"><span>06</span><b>Builder</b><em>Membangun projek di Catalyst Labs</em></li>
-      <li tabindex="0" class="emas"><span>07</span><b>Founder</b><em>Bisnis bervaluasi di atas Rp100 juta</em></li>
-    </ol>
-    <a class="pp-link pp-jy-link" href="/#journey">Lihat detail setiap tahap di Catalyst Journey</a>
+
+    <div class="jv" id="ppJourney">
+      <ol class="jv-seg" role="tablist" aria-label="Tahap Journey"><li><button type="button" role="tab" aria-selected="true" data-i="0"><i></i><span>Explorer</span></button></li><li><button type="button" role="tab" aria-selected="false" data-i="1"><i></i><span>Connector</span></button></li><li><button type="button" role="tab" aria-selected="false" data-i="2"><i></i><span>Challenger</span></button></li><li><button type="button" role="tab" aria-selected="false" data-i="3"><i></i><span>Innovator</span></button></li><li><button type="button" role="tab" aria-selected="false" data-i="4"><i></i><span>Contributor</span></button></li><li><button type="button" role="tab" aria-selected="false" data-i="5"><i></i><span>Builder</span></button></li><li><button type="button" role="tab" aria-selected="false" data-i="6" class="emas"><i></i><span>Founder</span></button></li></ol>
+      <div class="jv-bar" aria-hidden="true"><i></i></div>
+
+      <div class="jv-isi" role="tabpanel" aria-live="polite">
+        <div class="jv-kepala">
+          <div class="jv-cincin" aria-hidden="true">
+            <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="27"/><circle class="jv-cincin-isi" cx="32" cy="32" r="27"/></svg>
+            <b class="jv-ke">1</b><small>dari 7</small>
+          </div>
+          <div class="jv-judul">
+            <span class="jv-peran"></span>
+            <h3 class="jv-nama"></h3>
+            <p class="jv-ringkas"></p>
+          </div>
+          <div class="jv-nav">
+            <button type="button" class="jv-prev" aria-label="Tahap sebelumnya"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+            <button type="button" class="jv-next" aria-label="Tahap berikutnya"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+          </div>
+        </div>
+
+        <div class="jv-grid">
+          <div class="jv-kotak">
+            <span class="jv-l">Cara mencapai</span>
+            <p class="jv-syarat"></p>
+            <span class="jv-poin"></span>
+          </div>
+          <div class="jv-kotak">
+            <span class="jv-l">Yang Anda dapatkan</span>
+            <ul class="jv-manfaat"></ul>
+          </div>
+          <div class="jv-kotak jv-gelap">
+            <span class="jv-l">Didukung oleh</span>
+            <b class="jv-program"></b>
+            <a class="jv-cta js-klaim" href="/login?mode=daftar">Mulai dari Explorer <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- ============ untuk siapa ============ -->
