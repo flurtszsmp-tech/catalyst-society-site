@@ -398,3 +398,28 @@ html.dark-theme .ft-bottom,html.dark-theme .ft-salin{border-color:rgba(255,255,2
 .kf-dd-list li[aria-selected="true"]{color:#fff;font-weight:500}
 .kf-dd-list li svg{width:15px;height:15px;flex:none;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:0}
 .kf-dd-list li[aria-selected="true"] svg{opacity:1}
+
+/* ================= Judul bagian: sedikit lebih tebal dan seimbang ================= */
+.h-lg{font-weight:400;letter-spacing:-.03em;line-height:1.04;text-wrap:balance;-webkit-font-smoothing:antialiased;font-feature-settings:"kern" 1,"liga" 1}
+.h-lg .bi{text-wrap:balance}
+.h-lg strong,.h-lg b{font-weight:600}
+.kl-judul,.fd-judul,.ft-cta h2{font-weight:400!important;letter-spacing:-.03em;text-wrap:balance}
+.pl-title,.pg-card h3{text-wrap:balance}
+.shead .kicker{font-weight:500}
+
+/* ================= Kalimat Redefine yang menyala mengikuti gulir ================= */
+.rd-teks{font-weight:400;letter-spacing:-.032em;line-height:1.16;text-wrap:pretty;max-width:22em}
+.rd-teks.rd-hidup .rw{opacity:.16;transition:opacity .45s var(--ease),color .45s var(--ease)}
+.rd-teks.rd-hidup .rw.on{opacity:1}
+.rd-teks em{font-style:normal;display:inline-block;position:relative;padding:0 .2em;margin:0 .02em;border-radius:.28em;
+  transition:background .55s var(--ease),color .55s var(--ease),transform .55s cubic-bezier(.34,1.56,.64,1),opacity .45s var(--ease)}
+.rd-teks.rd-hidup em.on{background:var(--ink);color:#fff;transform:rotate(-1.5deg)}
+.rd-teks.rd-hidup em.on:nth-of-type(2){transform:rotate(1.2deg)}
+.rd-teks em::after{content:"";position:absolute;right:-.28em;top:-.18em;width:.34em;height:.34em;opacity:0;transform:scale(.4) rotate(-30deg);
+  transition:opacity .4s .25s,transform .55s .25s cubic-bezier(.34,1.56,.64,1);
+  background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2c.6 4.9 2.5 7.4 10 10-7.5 2.6-9.4 5.1-10 10-.6-4.9-2.5-7.4-10-10 7.5-2.6 9.4-5.1 10-10z'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2c.6 4.9 2.5 7.4 10 10-7.5 2.6-9.4 5.1-10 10-.6-4.9-2.5-7.4-10-10 7.5-2.6 9.4-5.1 10-10z'/%3E%3C/svg%3E") center/contain no-repeat}
+.rd-teks.rd-hidup em.on::after{opacity:1;transform:none;color:var(--ink)}
+html.dark-theme .rd-teks.rd-hidup em.on{background:#fff;color:#000}
+html.dark-theme .rd-teks.rd-hidup em.on::after{color:#fff}
+@media (prefers-reduced-motion:reduce){.rd-teks em{transition:none}}

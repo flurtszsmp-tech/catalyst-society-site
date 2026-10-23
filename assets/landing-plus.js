@@ -518,6 +518,50 @@
     });
   }
 
-  function mulai() { pipeline(); program(); kolaborasi(); footer(); }
+
+  /* ------------------------------------------------------------
+     5. Kalimat Redefine: kata menyala satu per satu mengikuti gulir,
+        frasa kunci (em) berubah jadi pil hitam saat tercapai.
+     ------------------------------------------------------------ */
+  function redefine() {
+    var el = document.querySelector('.rd-teks');
+    if (!el) return;
+    var kata = [];
+    var POTONG = /[\u3000-\u9fff\uff00-\uffef]|[^\s\u3000-\u9fff\uff00-\uffef]+|\s+/g;
+    function pecah() {
+      if (el.querySelector('.rw')) return;
+      var hasil = document.createDocumentFragment();
+      [].slice.call(el.childNodes).forEach(function (n) {
+        if (n.nodeType === 3) {
+          (n.textContent.match(POTONG) || []).forEach(function (t) {
+            if (/^\s+$/.test(t)) { hasil.appendChild(document.createTextNode(t)); return; }
+            var sp = document.createElement('span'); sp.className = 'rw'; sp.textContent = t; hasil.appendChild(sp);
+          });
+        } else if (n.nodeType === 1) {
+          n.classList.add('rw'); hasil.appendChild(n);
+        }
+      });
+      el.innerHTML = ''; el.appendChild(hasil);
+      kata = [].slice.call(el.querySelectorAll('.rw'));
+      el.classList.add('rd-hidup');
+      perbarui();
+    }
+    function perbarui() {
+      if (!kata.length) return;
+      if (hemat) { kata.forEach(function (w) { w.classList.add('on'); }); return; }
+      var r = el.getBoundingClientRect(), vh = innerHeight;
+      var p = (vh * 0.82 - r.top) / (r.height + vh * 0.3);
+      var n = Math.round(Math.max(0, Math.min(1, p)) * kata.length);
+      kata.forEach(function (w, i) { w.classList.toggle('on', i < n); });
+    }
+    var antre = false;
+    function gulir() { if (antre) return; antre = true; requestAnimationFrame(function () { antre = false; perbarui(); }); }
+    addEventListener('scroll', gulir, { passive: true });
+    addEventListener('resize', gulir);
+    document.addEventListener('bahasa-berubah', function () { kata = []; setTimeout(pecah); });
+    pecah();
+  }
+
+  function mulai() { pipeline(); program(); kolaborasi(); footer(); redefine(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mulai); else mulai();
 })();

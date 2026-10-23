@@ -20,15 +20,15 @@ interface Item {
 const UTAMA: Item[] = [
   { href: '/passport', label: 'Home', icon: 'home' },
   { href: '/passport/profile', label: 'Profile', icon: 'user' },
-  { href: '/passport/journey', label: 'Journey', icon: 'journey' },
+  { href: '/passport/skills', label: 'Skills & Roles', icon: 'skills' },
 ];
 const SHOWCASE: Item[] = [
   { href: '/passport/communities', label: 'Communities', icon: 'users' },
   { href: '/passport/projects', label: 'Projects', icon: 'cube' },
   { href: '/passport/certificates', label: 'Certificates', icon: 'award' },
-  { href: '/passport/skills', label: 'Skills & Roles', icon: 'skills' },
 ];
 const GROWTH: Item[] = [
+  { href: '/passport/journey', label: 'Journey', icon: 'journey' },
   { href: '/passport/connections', label: 'Connections', icon: 'network' },
   { href: '/passport/analytics', label: 'Analytics', icon: 'chart' },
 ];
@@ -159,7 +159,7 @@ export const Sidebar = forwardRef<HTMLElement, Props>(function Sidebar({ open, o
             <li>
               <button type="button" onClick={onFeedback}>
                 <Icon name="chat" />
-                Kirim masukan
+                Feedback
               </button>
             </li>
             <li>
@@ -168,7 +168,7 @@ export const Sidebar = forwardRef<HTMLElement, Props>(function Sidebar({ open, o
                   biasa, bukan Link, karena beranda berada di luar aplikasi Next. */}
               <a href="/" onClick={onNavigate}>
                 <Icon name="back" />
-                Back to site
+                Back
               </a>
             </li>
             <li>
