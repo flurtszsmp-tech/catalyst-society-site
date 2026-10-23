@@ -911,9 +911,9 @@ html.dark-theme .cvv-ico{background:#fff;color:#000}
 .pass-step.next span{color:var(--stg-on);opacity:.72}
 .pass-step.next .goal{border-color:currentColor;color:var(--stg-on)}
 .pass-step.founder.done{border-color:var(--stg-text);background:var(--stg-soft)}
-/* Kartu hero: titik dan bilah kemajuan berwarna tahap kini. */
-.pass-stage-dd{display:inline-flex;align-items:center;gap:8px}
-.pass-stage-dd i{width:10px;height:10px;border-radius:50%;background:var(--stg-grad);box-shadow:0 0 0 3px rgba(255,255,255,.12)}
+/* Kartu hero: lencana dan bilah kemajuan berwarna tahap kini. */
+.pass-stage-dd{display:inline-flex;align-items:center;gap:9px}
+.pass-stage-dd .stg-seal{width:24px;height:24px;--seal-ring:transparent}
 .pass-prog-bar i{background:var(--stg-grad)!important}
 .pass-prog.stg-explorer .pass-prog-bar i{background:#fff!important}
 /* Profil publik: medali dan bilah tahap. */
@@ -935,3 +935,57 @@ html.dark-theme .jpos .jpos-ico{background:var(--stg-grad);color:var(--stg-on)}
 .cel-streak li.now{box-shadow:0 0 0 4px var(--stg-glow)}
 .cel-card.stg-explorer{background:radial-gradient(120% 80% at 50% 30%,#2b2b2b 0%,#0b0b0d 62%,#050505 100%)}
 .cel-card.stg-explorer .cel-disc:not(.foto),.cel-card.stg-explorer .cel-badge{background:#fff;color:#000}
+
+/* ===================== lencana tahap Journey (StageSeal) ===================== */
+/* Bidang bergerigi seperti tanda terverifikasi. ::before cincin pemisah dari
+   foto di bawahnya, ::after bidang bergradasi warna tahap. */
+.stg-seal{position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:22px;flex:none;color:var(--stg-on);--seal-ring:var(--pass-surface,#fff);
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.28))}
+.stg-seal::before,.stg-seal::after{content:"";position:absolute;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9.36 2.15Q12 -1.2 14.64 2.15Q18.6 .57 19.21 4.79Q23.43 5.4 21.85 9.36Q25.2 12 21.85 14.64Q23.43 18.6 19.21 19.21Q18.6 23.43 14.64 21.85Q12 25.2 9.36 21.85Q5.4 23.43 4.79 19.21Q.57 18.6 2.15 14.64Q-1.2 12 2.15 9.36Q.57 5.4 4.79 4.79Q5.4 .57 9.36 2.15Z'/%3E%3C/svg%3E") center/100% 100% no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9.36 2.15Q12 -1.2 14.64 2.15Q18.6 .57 19.21 4.79Q23.43 5.4 21.85 9.36Q25.2 12 21.85 14.64Q23.43 18.6 19.21 19.21Q18.6 23.43 14.64 21.85Q12 25.2 9.36 21.85Q5.4 23.43 4.79 19.21Q.57 18.6 2.15 14.64Q-1.2 12 2.15 9.36Q.57 5.4 4.79 4.79Q5.4 .57 9.36 2.15Z'/%3E%3C/svg%3E") center/100% 100% no-repeat}
+.stg-seal::before{inset:-12%;background:var(--seal-ring)}
+.stg-seal::after{inset:0;background:var(--stg-grad)}
+.stg-seal svg{position:relative;z-index:1;width:54%;height:54%;fill:none;stroke:currentColor;stroke-width:2.1}
+
+.ps2-ava-wrap{position:relative;display:inline-flex;flex:none;vertical-align:middle}
+.ps2-ava-seal{position:absolute;right:-3%;bottom:-3%}
+.pass-me-ava{position:relative;display:inline-flex;flex:none}
+.pass-me-seal{position:absolute;right:-4px;bottom:-4px;width:17px;height:17px;--seal-ring:var(--pass-board,#fafafa)}
+
+/* Foto di kartu hero: bingkai gradasi tahap dan lencana di pojoknya. */
+.pass-photo-wrap{position:relative;flex:none;display:inline-flex;padding:3px;border-radius:15px;
+  background:var(--stg-grad)}
+.pass-hero.stg-explorer .pass-photo-wrap{background:rgba(255,255,255,.16)}
+.pass-photo-seal{position:absolute;right:-10px;bottom:-10px;width:36px;height:36px;--seal-ring:var(--stg-deep)}
+.pass-hero .stg-seal.stg-explorer{--stg-grad:linear-gradient(135deg,#fff 0%,#c9c9cf 100%);--stg-on:#0a0a0c}
+@media (max-width:640px){.pass-photo-seal{width:30px;height:30px;right:-8px;bottom:-8px}}
+
+/* Kartu hero bernuansa tahap: cahaya dari pojok foto dan garis tepi berkilau. */
+.pass-hero:not(.stg-explorer){
+  background:
+    radial-gradient(70% 95% at 0% 0%,color-mix(in srgb,var(--stg) 34%,transparent) 0%,transparent 62%),
+    radial-gradient(55% 80% at 100% 100%,color-mix(in srgb,var(--stg) 22%,transparent) 0%,transparent 66%),
+    linear-gradient(135deg,var(--stg-deep) 0%,#0b0b0d 72%)}
+.pass-hero:not(.stg-explorer)::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
+  background:linear-gradient(135deg,var(--stg-lit) 0%,transparent 32%,transparent 68%,var(--stg-lit) 100%);opacity:.45;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.pass-hero:not(.stg-explorer)::after{border-color:color-mix(in srgb,var(--stg-lit) 20%,transparent)}
+.pass-hero:not(.stg-explorer) .pass-hero-cap{color:var(--stg-lit)}
+.pass-hero:not(.stg-explorer) .pass-skill{border-color:color-mix(in srgb,var(--stg-lit) 32%,transparent)}
+.pass-hero:not(.stg-explorer) .pass-stat{border-right-color:color-mix(in srgb,var(--stg-lit) 18%,transparent)}
+.pass-hero:not(.stg-explorer) .pass-prog-lbl span:first-child{color:var(--stg-lit)}
+.pass-hero:not(.stg-explorer) .pass-prog-bar{background:color-mix(in srgb,var(--stg-lit) 16%,transparent)}
+
+/* Founder: ungu kerajaan yang dalam, nama tahap berkilau. */
+.pass-hero.stg-founder{
+  background:
+    radial-gradient(75% 100% at 0% 0%,rgba(122,74,168,.5) 0%,transparent 60%),
+    radial-gradient(60% 85% at 100% 100%,rgba(75,29,122,.6) 0%,transparent 66%),
+    linear-gradient(135deg,#1e0836 0%,#13051f 55%,#0b0312 100%);
+  box-shadow:0 34px 70px -38px rgba(75,29,122,.75)}
+.pass-hero.stg-founder::before{opacity:.6}
+.pass-hero.stg-founder .pass-stage-dd{background:linear-gradient(120deg,#f4ecff 0%,#c3a8e6 45%,#f4ecff 75%,#a98bcf 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.pass-hero.stg-founder .pass-photo-wrap{box-shadow:0 0 0 1px rgba(169,139,207,.35),0 18px 40px -18px rgba(122,74,168,.9)}

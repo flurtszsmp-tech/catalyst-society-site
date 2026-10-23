@@ -9,6 +9,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Icon } from '@/components/ui/Icon';
 import type { ProfileSummary } from '@/lib/types';
 import { avatarSrc, initials } from '@/lib/url';
+import { StageSeal } from '../cards/StageSeal';
 
 export function errMsg(e: unknown, fallback = 'Terjadi kesalahan. Coba lagi.'): string {
   return e instanceof Error && e.message ? e.message : fallback;
@@ -182,20 +183,26 @@ export function SessionGate({
   return <>{children}</>;
 }
 
-/** Foto profil orang lain, atau inisial bila tidak ada. */
+/**
+ * Foto profil orang lain, atau inisial bila tidak ada, dengan lencana tahap
+ * Journey di pojok kanan bawah.
+ */
 export function PersonAvatar({ person, size = 40 }: { person: ProfileSummary; size?: number }) {
   const src = avatarSrc(person);
-  if (!src) {
-    return (
-      <span className="ps2-ava ps2-ava-ini" style={{ width: size, height: size }} aria-hidden>
-        {initials(person.fullName)}
-      </span>
-    );
-  }
-  return (
+  const foto = !src ? (
+    <span className="ps2-ava ps2-ava-ini" style={{ width: size, height: size }} aria-hidden>
+      {initials(person.fullName)}
+    </span>
+  ) : (
     // unoptimized: foto berasal dari data URL demo, bucket Supabase, atau
     // penyedia login, jadi tidak semuanya terdaftar di images.remotePatterns.
     <Image className="ps2-ava" src={src} alt="" width={size} height={size} unoptimized />
+  );
+  return (
+    <span className="ps2-ava-wrap">
+      {foto}
+      <StageSeal stage={person.journeyStage} size={Math.max(14, Math.round(size * 0.38))} className="ps2-ava-seal" />
+    </span>
   );
 }
 

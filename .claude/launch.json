@@ -4,8 +4,24 @@
     {
       "name": "catalyst-static",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "5173"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "5173"
+      ],
       "port": 5173
+    },
+    {
+      "name": "catalyst-dist",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "5174",
+        "-d",
+        "dist"
+      ],
+      "port": 5174
     }
   ]
 }

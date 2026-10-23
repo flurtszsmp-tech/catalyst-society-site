@@ -4,6 +4,7 @@ import { STAGES, type Profile } from '@/lib/types';
 import { Avatar } from './Avatar';
 import { CopyButton } from './CopyButton';
 import { ShareButton } from './ShareButton';
+import { StageSeal } from './StageSeal';
 import { angka, stageIndex, stageName } from './format';
 
 interface Props {
@@ -22,7 +23,7 @@ export function HeroCard({ profile: p, communities, badges, owner = false, share
   const maju = (i / (STAGES.length - 1)) * 100;
 
   return (
-    <section className="pass-hero" aria-label="Catalyst Passport">
+    <section className={`pass-hero stg-${p.journeyStage}`} aria-label="Catalyst Passport">
       <div className="pass-hero-cap">Catalyst Passport</div>
 
       {owner && (
@@ -46,7 +47,10 @@ export function HeroCard({ profile: p, communities, badges, owner = false, share
       <BrandMark className="mark pass-hero-mark" />
 
       <div className="pass-hero-top">
-        <Avatar person={p} size={232} className="pass-photo" alt={p.fullName} />
+        <span className="pass-photo-wrap">
+          <Avatar person={p} size={232} className="pass-photo" alt={p.fullName} />
+          <StageSeal stage={p.journeyStage} className="pass-photo-seal" />
+        </span>
         <div className="pass-hero-body">
           <h1>
             {p.fullName}
@@ -95,7 +99,7 @@ export function HeroCard({ profile: p, communities, badges, owner = false, share
         <div className="pass-stat">
           <dt>Journey Stage</dt>
           <dd className={`pass-stage-dd stg-${p.journeyStage}`}>
-            <i aria-hidden />
+            <StageSeal stage={p.journeyStage} label={false} />
             {stageName(p.journeyStage)}
           </dd>
         </div>

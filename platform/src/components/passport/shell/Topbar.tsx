@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Icon } from '@/components/ui/Icon';
 import type { Profile } from '@/lib/types';
 import { Avatar } from '../cards/Avatar';
+import { StageSeal } from '../cards/StageSeal';
 
 interface Props {
   profile: Profile | null;
@@ -68,7 +69,10 @@ export function Topbar({ profile, demo, menuOpen, onMenu }: Props) {
         <span className="pass-sep" aria-hidden />
         {profile && (
           <Link href="/passport/profile" className="pass-me" aria-label={`Profil ${profile.fullName}`}>
-            <Avatar person={profile} size={72} />
+            <span className="pass-me-ava">
+              <Avatar person={profile} size={72} />
+              <StageSeal stage={profile.journeyStage} className="pass-me-seal" />
+            </span>
             <span className="pass-me-txt">
               <b>{profile.fullName}</b>
               <span>{profile.catalystId}</span>
