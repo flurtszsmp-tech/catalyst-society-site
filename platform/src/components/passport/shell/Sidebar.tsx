@@ -42,13 +42,11 @@ function aktif(path: string, href: string): boolean {
 interface Props {
   open: boolean;
   onNavigate: () => void;
-  onSignOut: () => void;
-  signingOut: boolean;
   /** Membuka jendela kirim masukan. */
   onFeedback: () => void;
 }
 
-export const Sidebar = forwardRef<HTMLElement, Props>(function Sidebar({ open, onNavigate, onSignOut, signingOut, onFeedback }, ref) {
+export const Sidebar = forwardRef<HTMLElement, Props>(function Sidebar({ open, onNavigate, onFeedback }, ref) {
   const path = usePathname() ?? '/passport';
   const navRef = useRef<HTMLElement>(null);
   const pilRef = useRef<HTMLSpanElement>(null);
@@ -151,12 +149,6 @@ export const Sidebar = forwardRef<HTMLElement, Props>(function Sidebar({ open, o
               </Link>
             </li>
             <li>
-              <a href="https://www.instagram.com/catalystsociety.id/" target="_blank" rel="noopener noreferrer">
-                <Icon name="ig" />
-                <span translate="no">catalystsociety.id</span>
-              </a>
-            </li>
-            <li>
               <button type="button" onClick={onFeedback}>
                 <Icon name="chat" />
                 Feedback
@@ -170,12 +162,6 @@ export const Sidebar = forwardRef<HTMLElement, Props>(function Sidebar({ open, o
                 <Icon name="back" />
                 Back
               </a>
-            </li>
-            <li>
-              <button type="button" onClick={onSignOut} disabled={signingOut}>
-                <Icon name="logout" />
-                {signingOut ? 'Keluar…' : 'Sign out'}
-              </button>
             </li>
           </ul>
         </div>

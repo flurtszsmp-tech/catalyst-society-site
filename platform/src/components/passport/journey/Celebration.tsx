@@ -118,7 +118,7 @@ const WARNA: Record<Stage, { deep: string; a: string; b: string; lit: string; on
   innovator: { deep: '#123b2c', a: '#46a07c', b: '#0d3a2b', lit: '#5cc398', on: '#ffffff' },
   contributor: { deep: '#3a2e14', a: '#f7ecc9', b: '#a8853d', lit: '#e5c77d', on: '#2b1f05' },
   builder: { deep: '#14215e', a: '#6c8bff', b: '#142886', lit: '#8ba3ff', on: '#ffffff' },
-  founder: { deep: '#2a1352', a: '#c4a6ff', b: '#3b1a78', lit: '#b99bff', on: '#ffffff' },
+  founder: { deep: '#24093d', a: '#7a4aa8', b: '#26093f', lit: '#a98bcf', on: '#ffffff' },
 };
 
 function kartuSvg(p: Profile, stage: Stage, alamat: string, foto: string | null = null): string {

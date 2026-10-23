@@ -3,7 +3,6 @@
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { usePassport } from '@/components/passport/PassportProvider';
-import { useToast } from '@/components/ui/Toast';
 import { ValueStrip } from '../cards/RailCards';
 import { CelebrationProvider } from '../journey/Celebration';
 import { FeedbackDialog } from './FeedbackDialog';
@@ -19,11 +18,9 @@ import { Topbar } from './Topbar';
  * yang perlu menangani keadaan "belum dimuat" sendiri.
  */
 export function PassportShell({ children }: { children: ReactNode }) {
-  const { profile, loading, error, reload, signOut, repo, user } = usePassport();
-  const toast = useToast();
+  const { profile, loading, error, reload, repo, user } = usePassport();
   const path = usePathname();
   const [open, setOpen] = useState(false);
-  const [keluar, setKeluar] = useState(false);
   const side = useRef<HTMLElement>(null);
   const work = useRef<HTMLDivElement>(null);
   const burger = useRef<HTMLElement | null>(null);
@@ -75,16 +72,6 @@ export function PassportShell({ children }: { children: ReactNode }) {
       burger.current?.focus();
     };
   }, [open]);
-
-  async function onSignOut() {
-    setKeluar(true);
-    try {
-      await signOut();
-    } catch (e) {
-      toast(e instanceof Error ? e.message : 'Gagal keluar.', 'error');
-      setKeluar(false);
-    }
-  }
 
   let isi: ReactNode;
   if (loading) {
@@ -139,8 +126,6 @@ export function PassportShell({ children }: { children: ReactNode }) {
         ref={side}
         open={open}
         onNavigate={tutup}
-        onSignOut={onSignOut}
-        signingOut={keluar}
         onFeedback={() => {
           setOpen(false);
           setMasukan(true);

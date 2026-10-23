@@ -374,7 +374,7 @@ html.dark-theme .jr-stage-btn:hover{background:rgba(255,255,255,.04)}
 .jg-tag.is-team{border-color:var(--ink);color:var(--ink)}
 .jg-tag.is-done{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 .jg-tag.is-goal{border-style:dashed;border-color:var(--ink);color:var(--ink)}
-.jg-tag.is-gold{border-color:rgba(109,63,196,.55);color:#6d3fc4;background:rgba(109,63,196,.08)}
+.jg-tag.is-gold{border-color:rgba(75,29,122,.45);color:#4b1d7a;background:rgba(75,29,122,.07)}
 html.dark-theme .jg-tag.is-gold{color:#e3c77d}
 .jg-about{font-size:13px;line-height:1.7;color:var(--d-gray);margin:12px 0 0;max-width:80ch}
 .jg-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px;margin-top:14px}
