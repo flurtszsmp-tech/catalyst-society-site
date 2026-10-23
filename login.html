@@ -595,7 +595,13 @@ setTimeout(function(){
       });
     });
     ind.addEventListener('pointerleave', function(){ sorot = null; taruh(); });
-    pilih(tombol[0]);
+    /* Dari halaman Catalyst Passport: nama dan industri yang sudah diketik ikut terisi
+       (lewat sessionStorage, bukan alamat, supaya nama tidak tercatat di URL). */
+    var bawaan = {};
+    try{ bawaan = JSON.parse(sessionStorage.getItem('catalyst-daftar') || '{}') || {}; sessionStorage.removeItem('catalyst-daftar'); }catch(e){}
+    var awal = tombol.filter(function(b){ return b.dataset.v === bawaan.ch; })[0] || tombol[0];
+    if(typeof bawaan.nama === 'string' && bawaan.nama.trim()) document.getElementById('nama').value = bawaan.nama.trim().slice(0, 80);
+    pilih(awal);
     taruh(true);
     addEventListener('resize', function(){ taruh(true); });
     if(window.ResizeObserver) new ResizeObserver(function(){ taruh(true); }).observe(ind);
