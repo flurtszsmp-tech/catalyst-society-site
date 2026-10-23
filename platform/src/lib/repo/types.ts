@@ -6,6 +6,8 @@ import type {
   Certificate,
   CertificateInput,
   ClaimInput,
+  Collaboration,
+  CollaborationStatus,
   Feedback,
   FeedbackKind,
   FeedbackStatus,
@@ -147,6 +149,9 @@ export interface PassportRepo {
   adminActivity(limit?: number): Promise<AdminActivity[]>;
   adminFeedback(): Promise<Feedback[]>;
   adminSetFeedbackStatus(id: number, status: FeedbackStatus): Promise<void>;
+  /** Permintaan kolaborasi dari landing, terbaru dulu. Hanya terbaca admin. */
+  adminCollaborations(): Promise<Collaboration[]>;
+  adminUpdateCollaboration(id: string, patch: { status?: CollaborationStatus; adminNote?: string | null }): Promise<void>;
   adminUserDetail(userId: string): Promise<AdminUserDetail>;
 
   // ---------- akun ----------

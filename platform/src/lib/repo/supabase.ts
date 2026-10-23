@@ -19,6 +19,8 @@ import type {
   Certificate,
   CertificateInput,
   ClaimInput,
+  Collaboration,
+  CollaborationStatus,
   Feedback,
   FeedbackKind,
   FeedbackStatus,
@@ -686,6 +688,46 @@ export class SupabaseRepo implements PassportRepo {
   async adminSetFeedbackStatus(id: number, status: FeedbackStatus): Promise<void> {
     const { error } = await this.db.from('feedback').update({ status }).eq('id', id);
     if (error) fail(error, 'Gagal menyimpan status masukan.');
+  }
+
+  async adminCollaborations(): Promise<Collaboration[]> {
+    const { data, error } = await this.db
+      .from('collaboration_requests')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(1000);
+    if (error) fail(error, 'Gagal memuat permintaan kolaborasi.');
+    return ((data ?? []) as Row[]).map((r) => ({
+      id: r.id as string,
+      refNo: r.ref_no as string,
+      userId: (r.user_id as string) ?? null,
+      fullName: r.full_name as string,
+      jobTitle: (r.job_title as string) ?? null,
+      email: r.email as string,
+      phone: (r.phone as string) ?? null,
+      organization: (r.organization as string) ?? null,
+      orgType: (r.org_type as string) ?? null,
+      website: (r.website as string) ?? null,
+      kinds: (r.kinds as string[]) ?? [],
+      industries: (r.industries as string[]) ?? [],
+      budget: (r.budget as string) ?? null,
+      timeline: (r.timeline as string) ?? null,
+      contactPref: (r.contact_pref as string) ?? null,
+      source: (r.source as string) ?? null,
+      message: r.message as string,
+      status: r.status as CollaborationStatus,
+      adminNote: (r.admin_note as string) ?? null,
+      createdAt: r.created_at as string,
+      updatedAt: r.updated_at as string,
+    }));
+  }
+
+  async adminUpdateCollaboration(id: string, patch: { status?: CollaborationStatus; adminNote?: string | null }): Promise<void> {
+    const isi: Record<string, unknown> = {};
+    if (patch.status) isi.status = patch.status;
+    if (patch.adminNote !== undefined) isi.admin_note = patch.adminNote?.trim() || null;
+    const { error } = await this.db.from('collaboration_requests').update(isi).eq('id', id);
+    if (error) fail(error, 'Gagal menyimpan tindak lanjut.');
   }
 
   async adminUserDetail(userId: string): Promise<AdminUserDetail> {

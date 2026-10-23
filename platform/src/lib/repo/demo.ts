@@ -509,6 +509,12 @@ export class DemoRepo implements PassportRepo {
   async adminSetFeedbackStatus(): Promise<void> {
     this.tanpaAdmin();
   }
+  async adminCollaborations() {
+    return [];
+  }
+  async adminUpdateCollaboration(): Promise<void> {
+    this.tanpaAdmin();
+  }
   async adminUserDetail(): Promise<AdminUserDetail> {
     this.tanpaAdmin();
   }

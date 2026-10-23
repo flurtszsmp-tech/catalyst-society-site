@@ -281,6 +281,33 @@ export interface Feedback {
   createdAt: string;
 }
 
+export type CollaborationStatus = 'baru' | 'ditinjau' | 'dihubungi' | 'berjalan' | 'selesai' | 'ditolak';
+
+/** Permintaan kolaborasi dari formulir di landing (public.collaboration_requests). */
+export interface Collaboration {
+  id: string;
+  refNo: string;
+  userId: string | null;
+  fullName: string;
+  jobTitle: string | null;
+  email: string;
+  phone: string | null;
+  organization: string | null;
+  orgType: string | null;
+  website: string | null;
+  kinds: string[];
+  industries: string[];
+  budget: string | null;
+  timeline: string | null;
+  contactPref: string | null;
+  source: string | null;
+  message: string;
+  status: CollaborationStatus;
+  adminNote: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 /** Data akun yang aman dibaca admin. Kata sandi dan token tidak pernah ikut. */
 export interface AdminAccount {
   id: string;

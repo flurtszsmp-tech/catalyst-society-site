@@ -14,6 +14,7 @@ import { FormError, TextArea } from '@/components/ui/form';
 import { BrandMark, Icon } from '@/components/ui/Icon';
 import { useToast } from '@/components/ui/Toast';
 import { PersonAvatar } from '@/components/passport/sections/common';
+import { Collaborations } from './Collaborations';
 import { CHANNELS, findCommunity } from '@/lib/data/communities';
 import { getRepo } from '@/lib/repo';
 import { CLAIM_INFO, STAGE_RULES } from '@/lib/repo/journey-rules';
@@ -22,6 +23,7 @@ import {
   type AdminAccount,
   type AdminActivity,
   type AdminUserDetail,
+  type Collaboration,
   type Feedback,
   type FeedbackStatus,
   type Profile,
@@ -30,7 +32,7 @@ import {
 } from '@/lib/types';
 import { safeHref } from '@/lib/url';
 
-type Tab = 'ringkasan' | 'pengguna' | 'aktivitas' | 'verifikasi' | 'masukan';
+type Tab = 'ringkasan' | 'pengguna' | 'aktivitas' | 'verifikasi' | 'kolaborasi' | 'masukan';
 
 interface Data {
   accounts: AdminAccount[];
@@ -38,6 +40,7 @@ interface Data {
   activity: AdminActivity[];
   queue: ReviewQueue;
   feedback: Feedback[];
+  collabs: Collaboration[];
 }
 
 const CHANNEL_LABEL = new Map<string, string>(CHANNELS.map((c) => [c.key, c.label.id]));
@@ -85,14 +88,15 @@ export function AdminApp() {
   const muat = useCallback(async () => {
     setGalat(null);
     try {
-      const [accounts, profiles, activity, queue, feedback] = await Promise.all([
+      const [accounts, profiles, activity, queue, feedback, collabs] = await Promise.all([
         repo.adminAccounts(),
         repo.adminProfiles(),
         repo.adminActivity(500),
         repo.getReviewQueue(),
         repo.adminFeedback(),
+        repo.adminCollaborations(),
       ]);
-      setData({ accounts, profiles, activity, queue, feedback });
+      setData({ accounts, profiles, activity, queue, feedback, collabs });
     } catch (e) {
       setGalat(e instanceof Error ? e.message : 'Gagal memuat data admin.');
     }
@@ -150,11 +154,13 @@ export function AdminApp() {
 
   const menunggu = data?.queue.claims.length ?? 0;
   const masukanBaru = data?.feedback.filter((f) => f.status === 'baru').length ?? 0;
+  const kolaborasiBaru = data?.collabs.filter((c) => c.status === 'baru').length ?? 0;
   const TABS: { key: Tab; label: string; icon: string; n?: number }[] = [
     { key: 'ringkasan', label: 'Ringkasan', icon: 'chart' },
     { key: 'pengguna', label: 'Pengguna', icon: 'users', n: data?.profiles.length },
     { key: 'aktivitas', label: 'Aktivitas', icon: 'journey' },
     { key: 'verifikasi', label: 'Verifikasi Journey', icon: 'shield-check', n: menunggu || undefined },
+    { key: 'kolaborasi', label: 'Kolaborasi', icon: 'briefcase', n: kolaborasiBaru || undefined },
     { key: 'masukan', label: 'Masukan', icon: 'chat', n: masukanBaru || undefined },
   ];
 
@@ -215,6 +221,30 @@ export function AdminApp() {
             data={data}
             onOpen={setDetail}
             onDone={(id) => setData((d) => (d ? { ...d, queue: { claims: d.queue.claims.filter((c) => c.claim.id !== id) } } : d))}
+          />
+        ) : tab === 'kolaborasi' ? (
+          <Collaborations
+            items={data.collabs}
+            onUpdate={async (id, patch) => {
+              try {
+                await repo.adminUpdateCollaboration(id, patch);
+                setData((d) =>
+                  d
+                    ? {
+                        ...d,
+                        collabs: d.collabs.map((c) =>
+                          c.id === id ? { ...c, ...(patch.status ? { status: patch.status } : {}), ...(patch.adminNote !== undefined ? { adminNote: patch.adminNote?.trim() || null } : {}) } : c,
+                        ),
+                      }
+                    : d,
+                );
+                toast('Tersimpan', 'ok');
+                return true;
+              } catch (e) {
+                toast(e instanceof Error ? e.message : 'Gagal menyimpan.', 'error');
+                return false;
+              }
+            }}
           />
         ) : (
           <Masukan

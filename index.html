@@ -1422,6 +1422,7 @@
 <link rel="stylesheet" href="assets/polish.css">
 <link rel="stylesheet" href="assets/hero-ring.css">
 <link rel="stylesheet" href="assets/eco4.css">
+<link rel="stylesheet" href="assets/landing-plus.css">
 </head>
 <body class="locked">
 
@@ -1465,6 +1466,7 @@
   <g id="i-flask" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3M7 15h10"/></g>
   <g id="i-rocket" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3.5 2 5 5.5 5 9l-3 3H10l-3-3c0-3.5 1.5-7 5-9zM10 18c-1 1-1.5 3-1.5 3s2-.5 3-1.5M14 18c1 1 1.5 3 1.5 3s-2-.5-3-1.5"/><circle cx="12" cy="10" r="1.6"/></g>
   <g id="i-globe" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 2.6 15.2 0 18M12 3c-2.6 2.8-2.6 15.2 0 18"/></g>
+  <g id="i-mail"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></g>
   <g id="i-wa" class="isi" fill="currentColor" stroke="none"><path d="M12.04 2.4a9.5 9.5 0 0 0-8.1 14.44L2.6 21.6l4.87-1.28a9.5 9.5 0 1 0 4.57-17.92zm0 1.66a7.84 7.84 0 1 1-4 14.58l-.29-.17-2.9.76.78-2.82-.19-.3A7.84 7.84 0 0 1 12.04 4.06zm-2.1 3.96c-.16 0-.4.06-.61.28-.21.22-.8.78-.8 1.9 0 1.13.82 2.21.93 2.37.12.15 1.6 2.43 3.87 3.4.54.23.96.36 1.28.47.54.17 1.03.15 1.42.09.43-.06 1.34-.55 1.53-1.07.19-.53.19-.98.13-1.08-.06-.1-.21-.15-.43-.26-.22-.11-1.33-.66-1.54-.73-.2-.08-.35-.11-.5.1-.16.23-.59.74-.72.9-.13.14-.26.16-.48.05-.22-.1-.94-.34-1.8-1.1-.66-.6-1.11-1.33-1.24-1.55-.13-.22-.02-.34.1-.45.1-.1.21-.26.32-.39.11-.13.14-.22.22-.37.07-.15.03-.28-.02-.39-.06-.11-.5-1.22-.69-1.67-.18-.44-.36-.38-.5-.39h-.42z"/></g>
   <g id="i-discord" class="isi" fill="currentColor" stroke="none"><path d="M19.3 5.4a15.7 15.7 0 0 0-3.9-1.2l-.2.4c-.13.23-.27.52-.38.76a14.6 14.6 0 0 0-4.44 0 8.6 8.6 0 0 0-.4-.76l-.2-.4a15.7 15.7 0 0 0-3.9 1.2C3.6 8.6 2.9 11.7 3.2 14.8a15.8 15.8 0 0 0 4.77 2.4c.38-.52.72-1.07 1-1.65-.55-.2-1.06-.45-1.55-.74l.38-.3a11.3 11.3 0 0 0 9.6 0l.38.3c-.49.29-1 .54-1.55.74.29.58.62 1.13 1 1.65a15.8 15.8 0 0 0 4.78-2.4c.35-3.6-.58-6.68-2.71-9.4zM8.6 13.5c-.93 0-1.7-.85-1.7-1.9s.75-1.91 1.7-1.91c.96 0 1.73.86 1.71 1.9 0 1.06-.75 1.91-1.71 1.91zm6.8 0c-.93 0-1.7-.85-1.7-1.9s.75-1.91 1.7-1.91c.96 0 1.73.86 1.71 1.9 0 1.06-.75 1.91-1.71 1.91z"/></g>
   <g id="i-tiktok" class="isi" fill="currentColor" stroke="none"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 1 1-1.82-2.47V9.7a5.66 5.66 0 1 0 4.88 5.6V9.01a7.35 7.35 0 0 0 4.29 1.38V7.3a4.29 4.29 0 0 1-3.2-1.48z"/></g>
@@ -1896,90 +1898,79 @@
 
     <div class="rule-spark rv"><svg viewBox="0 0 24 24"><use href="#i-spark4"/></svg></div>
 
-    <div class="prog-grid stagger">
-      <div class="flip" id="prog-1"><div class="flip-in">
-        <div class="flip-face flip-front">
-          <span class="pn">01</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-passport"/></svg></span>
-          <h3 translate="no">Catalyst Passport</h3>
-          <p data-i18n="p1.d">Bangun identitas profesional dalam satu digital profile.</p>
-        </div>
-        <div class="flip-face flip-back">
-          <span class="pn">01</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-passport"/></svg></span>
+    <div class="pg-bento">
+      <article class="pg-card pg-passport rv" id="prog-1">
+        <div class="pg-txt">
+          <span class="pg-no">01</span><span class="pg-tag" data-i18n="pc.1">Digital Identity</span>
           <h3 translate="no">Catalyst Passport</h3>
           <p data-i18n="p1.b">Satu profil untuk semua pencapaian, skill, badge, dan journey. Bagikan sekali, terhubung ke mana saja.</p>
-          <span class="more" data-i18n="pc.1">Digital Identity</span>
+          <a class="pg-go" href="/login?mode=daftar"><span data-i18n="pg.buat">Buat Passport</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5"/></svg></a>
         </div>
-      </div></div>
+        <div class="pg-vis" aria-hidden="true">
+          <div class="pgv-card">
+            <div class="pgv-card-top"><svg viewBox="-108 -118 244 236"><path d="M 79.86 -60.18 A 100 100 0 1 0 79.86 60.18 L 49.52 37.31 A 62 62 0 1 1 49.52 -37.31 Z"/><path d="M 126.5 -87.7 Q 108.05 -84.22 104.8 -64.5 Q 101.55 -84.22 83.1 -87.7 Q 101.55 -91.18 104.8 -110.9 Q 108.05 -91.18 126.5 -87.7 Z"/></svg><span>PASSPORT</span><em>CP-00001</em></div>
+            <div class="pgv-card-mid"><i class="pgv-ava"></i><span><b></b><b></b></span></div>
+            <div class="pgv-skill"><i>AI</i><i>Business</i><i>Design</i></div>
+            <div class="pgv-dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div>
+          </div>
+        </div>
+      </article>
 
-      <div class="flip" id="prog-2"><div class="flip-in">
-        <div class="flip-face flip-front">
-          <span class="pn">02</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-search"/></svg></span>
-          <h3 translate="no">Catalyst Finder</h3>
-          <p data-i18n="p2.d">Temukan peluang dan dukung inovasi yang berdampak.</p>
-        </div>
-        <div class="flip-face flip-back">
-          <span class="pn">02</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-search"/></svg></span>
+      <article class="pg-card pg-finder rv" id="prog-2">
+        <div class="pg-txt">
+          <span class="pg-no">02</span><span class="pg-tag" data-i18n="pc.2">Opportunity Hub</span>
           <h3 translate="no">Catalyst Finder</h3>
           <p data-i18n="p2.b">Marketplace peluang: hiring, partner, fundraising, dan support project dalam satu tempat.</p>
-          <span class="more" data-i18n="pc.2">Opportunity Hub</span>
         </div>
-      </div></div>
+        <div class="pg-vis" aria-hidden="true">
+          <div class="pgv-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span class="pgv-type"></span></div>
+          <ul class="pgv-opps"><li><b>Hiring</b><em>Product Intern</em></li><li><b>Co-founder</b><em>AI Startup</em></li><li><b>Funding</b><em>Pre-seed</em></li><li><b>Mentor</b><em>Go-to-market</em></li></ul>
+        </div>
+      </article>
 
-      <div class="flip" id="prog-3"><div class="flip-in">
-        <div class="flip-face flip-front">
-          <span class="pn">03</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-cap"/></svg></span>
-          <h3 translate="no">Catalyst Academy</h3>
-          <p data-i18n="p3.d">Belajar langsung dari praktisi industri.</p>
-        </div>
-        <div class="flip-face flip-back">
-          <span class="pn">03</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-cap"/></svg></span>
+      <article class="pg-card pg-academy rv" id="prog-3">
+        <div class="pg-txt">
+          <span class="pg-no">03</span><span class="pg-tag" data-i18n="pg.learn">Learn from Practitioners</span>
           <h3 translate="no">Catalyst Academy</h3>
           <p data-i18n="p3.b">Kelas Investing, AI, Business, dan Coding dipandu mentor berpengalaman.</p>
-          <span class="more" data-i18n="foot.tagline"><span translate="no">Learn. Earn. Impact.</span></span>
         </div>
-      </div></div>
+        <div class="pg-vis" aria-hidden="true">
+          <ul class="pgv-courses"><li><span>Investing</span><i style="--w:.86"></i></li><li><span>AI</span><i style="--w:.64"></i></li><li><span>Business</span><i style="--w:.92"></i></li><li><span>Coding</span><i style="--w:.48"></i></li></ul>
+        </div>
+      </article>
 
-      <div class="flip" id="prog-4"><div class="flip-in">
-        <div class="flip-face flip-front">
-          <span class="pn">04</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-flask"/></svg></span>
-          <h3 translate="no">Catalyst Labs</h3>
-          <p data-i18n="p4.d">Bangun bisnis dari ide hingga siap berkembang.</p>
-        </div>
-        <div class="flip-face flip-back">
-          <span class="pn">04</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-flask"/></svg></span>
+      <article class="pg-card pg-labs rv" id="prog-4">
+        <div class="pg-txt">
+          <span class="pg-no">04</span><span class="pg-tag" data-i18n="pc.4">Incubation</span>
           <h3 translate="no">Catalyst Labs</h3>
           <p data-i18n="p4.b">Inkubasi ide sampai produk siap tumbuh, dengan pendampingan penuh.</p>
-          <span class="more" data-i18n="pc.4">Incubation</span>
         </div>
-      </div></div>
+        <div class="pg-vis" aria-hidden="true">
+          <div class="pgv-blocks"><i><span>Idea</span></i><i><span>MVP</span></i><i><span>Launch</span></i></div>
+        </div>
+      </article>
 
-      <div class="flip" id="prog-5"><div class="flip-in">
-        <div class="flip-face flip-front">
-          <span class="pn">05</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-rocket"/></svg></span>
-          <h3 translate="no">Catalyst Ventures</h3>
-          <p data-i18n="p5.d">Membuka akses menuju pendanaan dan pertumbuhan bisnis.</p>
-        </div>
-        <div class="flip-face flip-back">
-          <span class="pn">05</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-rocket"/></svg></span>
+      <article class="pg-card pg-ventures rv" id="prog-5">
+        <div class="pg-txt">
+          <span class="pg-no">05</span><span class="pg-tag" data-i18n="pc.5">Funding</span>
           <h3 translate="no">Catalyst Ventures</h3>
           <p data-i18n="p5.b">Jembatan ke investor dan modal untuk scale up ide yang sudah terbukti.</p>
-          <span class="more" data-i18n="pc.5">Funding</span>
         </div>
-      </div></div>
+        <div class="pg-vis" aria-hidden="true">
+          <svg class="pgv-chart" viewBox="0 0 240 110"><path class="g" d="M0 100H240M0 66H240M0 33H240"/><path class="l" d="M4 96 C40 92 58 84 86 74 S132 62 150 44 S196 22 236 10"/><circle cx="150" cy="44" r="4.5"/><circle cx="236" cy="10" r="5.5"/><text x="150" y="30">Seed</text><text x="200" y="28">Series A</text></svg>
+        </div>
+      </article>
 
-      <div class="flip" id="prog-6"><div class="flip-in">
-        <div class="flip-face flip-front">
-          <span class="pn">06</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-spark"/></svg></span>
-          <h3 translate="no">Catalyst Summit</h3>
-          <p data-i18n="p6.d">Panggung kolaborasi terbesar bagi ekosistem masa depan.</p>
-        </div>
-        <div class="flip-face flip-back">
-          <span class="pn">06</span><span class="pico-ring"><svg class="pico" viewBox="0 0 24 24"><use href="#i-spark"/></svg></span>
+      <article class="pg-card pg-summit rv" id="prog-6">
+        <div class="pg-spot" aria-hidden="true"></div>
+        <div class="pg-txt">
+          <span class="pg-no">06</span><span class="pg-tag" data-i18n="pc.6">The Stage</span>
           <h3 translate="no">Catalyst Summit</h3>
           <p data-i18n="p6.b">Pertemuan tahunan builders, mentor, dan investor. Tempat pendanaan dimulai.</p>
-          <span class="more" data-i18n="pc.6">The Stage</span>
+          <a class="pg-go" href="#summit"><span data-i18n="pg.summit">Lihat Summit 2027</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5"/></svg></a>
         </div>
-      </div></div>
+        <div class="pg-prize" aria-hidden="true"><span>Best Project Innovation</span><b>Rp100.000.000</b><em data-i18n="pg.prize">Pendanaan tahap awal</em></div>
+      </article>
     </div>
   </div>
 </section>
@@ -2012,22 +2003,6 @@
   </div>
 </section>
 
-<!-- founders: banner panjang seperti kotak kutipan, nama di kiri, foto memudar di kanan -->
-<section class="band fd fd-v-b" id="founders">
-<script>(function(){var v=new URLSearchParams(location.search).get("fd");if(/^[abcd]$/.test(v)){var e=document.currentScript.parentNode;e.classList.remove("fd-v-b");e.classList.add("fd-v-"+v)}})();</script>
-  <div class="wrap">
-    <div class="fd-banner rv">
-      <img class="fd-bg" src="assets/img/founders-banner.webp" alt="Madani Al Fairuz, Co-Founder dan CTO, bersama Bagas Dwi Putra, Founder dan CEO Catalyst Society" loading="lazy" decoding="async" width="980" height="612">
-      <div class="fd-isi">
-        <div class="ab-label"><span class="snum">07</span><span class="rd-l" data-i18n="fd.label">Founders</span></div>
-        <ul class="fd-nama">
-          <li><img class="fd-ava" src="assets/img/fd-bagas.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><div class="fd-t"><b translate="no">Bagas Dwi Putra</b><span data-i18n="fd.ceo">Founder &amp; CEO</span></div></li>
-          <li><img class="fd-ava" src="assets/img/fd-madani.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><div class="fd-t"><b translate="no">Madani Al Fairuz</b><span data-i18n="fd.cto">Co-Founder &amp; CTO</span></div></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
 
 
 <!-- alur ekosistem -->
@@ -2042,16 +2017,40 @@
       <p class="lead" data-i18n="alur.desc">5 Sektor Industri berkembang melalui program yang terstruktur. We are not building a community. We are building infrastructure that connects communities.</p>
     </div>
 
-    <div class="flow stagger">
-      <div class="flow-step"><div class="n">01</div><b translate="no">Community</b><i>Join</i><p data-i18n="f1.d">Join Komunitas di Industri yang diinginkan.</p></div>
-      <div class="flow-step"><div class="n">02</div><b translate="no">Academy</b><i>Learn</i><p data-i18n="f2.d">Belajar lebih dalam Industri melalui E-Course, Event, Workshop dan sebagainya.</p></div>
-      <div class="flow-step"><div class="n">03</div><b translate="no">Matchmaking</b><i>Connect</i><p data-i18n="f3.d">Bertemu Partners, Mentors, Workers, Company, Jobs.</p></div>
-      <div class="flow-step"><div class="n">04</div><b translate="no">Labs</b><i>Build</i><p data-i18n="f4.d">Next Level dengan membangun suatu Project di Labs bersama Mentor.</p></div>
-      <div class="flow-step"><div class="n">05</div><b translate="no">Ventures</b><i>Scale</i><p data-i18n="f5.d">Mencari Pendanaan Project melalui Ventures hingga bertemu investor.</p></div>
-      <div class="flow-step"><div class="n">06</div><b translate="no">Summit</b><i>Showcase</i><p data-i18n="f6.d">Showcase project dan sharing di Event Tahunan Catalyst.</p></div>
+    <div class="pl" id="pipeline">
+      <div class="pl-head">
+        <div class="pl-view" role="tablist" aria-label="Sudut pandang">
+          <span class="pl-view-pil" aria-hidden="true"></span>
+          <button type="button" role="tab" aria-selected="true" data-view="talenta" data-i18n="pl.v1">Untuk talenta muda</button>
+          <button type="button" role="tab" aria-selected="false" data-view="mitra" data-i18n="pl.v2">Untuk mitra &amp; korporat</button>
+        </div>
+        <p class="pl-hint" data-i18n="pl.hint">Pilih tahap untuk melihat apa yang dipelajari, didapatkan, dan difasilitasi.</p>
+      </div>
+      <ol class="pl-steps" role="tablist" aria-label="Tahap alur Catalyst">
+        <li><button type="button" role="tab" data-i="0"><span class="pl-n">01</span><b translate="no">Community</b><i>Join</i></button></li>
+        <li><button type="button" role="tab" data-i="1"><span class="pl-n">02</span><b translate="no">Academy</b><i>Learn</i></button></li>
+        <li><button type="button" role="tab" data-i="2"><span class="pl-n">03</span><b translate="no">Matchmaking</b><i>Connect</i></button></li>
+        <li><button type="button" role="tab" data-i="3"><span class="pl-n">04</span><b translate="no">Labs</b><i>Build</i></button></li>
+        <li><button type="button" role="tab" data-i="4"><span class="pl-n">05</span><b translate="no">Ventures</b><i>Scale</i></button></li>
+        <li><button type="button" role="tab" data-i="5"><span class="pl-n">06</span><b translate="no">Summit</b><i>Showcase</i></button></li>
+      </ol>
+      <div class="pl-track" aria-hidden="true"><i></i></div>
+      <div class="pl-panel" role="tabpanel" aria-live="polite">
+        <div class="pl-intro">
+          <span class="pl-big"></span>
+          <div>
+            <h3 class="pl-title"></h3>
+            <p class="pl-sum"></p>
+            <div class="pl-stage"></div>
+          </div>
+        </div>
+        <div class="pl-cols"></div>
+        <div class="pl-out"><span data-i18n="pl.out">Hasil tahap ini</span><b></b></div>
+      </div>
+      <noscript><p class="pl-sum" data-i18n="alur.desc">5 Sektor Industri berkembang melalui program yang terstruktur.</p></noscript>
     </div>
 
-    <div class="kicker" style="margin-top:38px" data-i18n="get.judul">What They Will Get</div>
+    <div class="kicker" style="margin-top:44px" data-i18n="get.judul">What They Will Get</div>
     <div class="get stagger">
       <span data-i18n="get.1">Join the Community</span><span data-i18n="get.2">Access to the Event</span><span data-i18n="get.3">Collaboration</span>
       <span data-i18n="get.4">Growing a Business</span><span data-i18n="get.5">Fundraising</span><span data-i18n="get.6">Job Opportunities</span>
@@ -2078,6 +2077,23 @@
   </div>
 </section>
 
+<!-- founders: banner panjang seperti kotak kutipan, nama di kiri, foto memudar di kanan -->
+<section class="band fd fd-v-b" id="founders">
+<script>(function(){var v=new URLSearchParams(location.search).get("fd");if(/^[abcd]$/.test(v)){var e=document.currentScript.parentNode;e.classList.remove("fd-v-b");e.classList.add("fd-v-"+v)}})();</script>
+  <div class="wrap">
+    <div class="fd-banner rv">
+      <img class="fd-bg" src="assets/img/founders-banner.webp" alt="Madani Al Fairuz, Co-Founder dan CTO, bersama Bagas Dwi Putra, Founder dan CEO Catalyst Society" loading="lazy" decoding="async" width="980" height="612">
+      <div class="fd-isi">
+        <div class="ab-label"><span class="snum">07</span><span class="rd-l" data-i18n="fd.label">Founders</span></div>
+        <ul class="fd-nama">
+          <li><img class="fd-ava" src="assets/img/fd-bagas.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><div class="fd-t"><b translate="no">Bagas Dwi Putra</b><span data-i18n="fd.ceo">Founder &amp; CEO</span></div></li>
+          <li><img class="fd-ava" src="assets/img/fd-madani.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><div class="fd-t"><b translate="no">Madani Al Fairuz</b><span data-i18n="fd.cto">Co-Founder &amp; CTO</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- cta -->
 <section class="cta band" id="join">
   <div class="blobs"><div class="blob a"></div><div class="blob b"></div></div>
@@ -2092,58 +2108,94 @@
   </div>
 </section>
 
-<!-- open collaboration (acuan pola berco-inc.com) -->
-<section class="band kl" id="kolaborasi">
+<!-- open collaboration: formulir bertahap, terkirim ke dashboard admin -->
+<section class="band kl kl2" id="kolaborasi">
   <div class="wrap">
-    <div class="kl-blok rv">
-      <div class="kl-kiri">
+    <div class="kl-blok">
+      <div class="kl-kiri rv">
         <div class="ab-label"><span class="snum">09</span><span class="rd-l" data-i18n="kl.label">Open Collaboration</span></div>
-        <h2 class="kl-judul" data-i18n="kl.judul">Punya ide? Mari bangun bersama.</h2>
-        <p class="kl-lead" data-i18n="kl.lead">Komunitas, perusahaan, mentor, dan investor yang ingin berkolaborasi dengan Catalyst Society, ceritakan rencanamu.</p>
+        <h2 class="kl-judul" data-i18n="kf.judul">Bangun dampak bersama Catalyst Society.</h2>
+        <p class="kl-lead" data-i18n="kf.lead">Kami bermitra dengan perusahaan, komunitas, kampus, investor, dan pemerintah untuk membuka akses bagi generasi muda Indonesia. Pilih model kemitraan, ceritakan rencana Anda, dan tim kemitraan kami akan menindaklanjuti.</p>
+        <p class="kl-sub" data-i18n="kf.model">Model kemitraan</p>
+        <ul class="kl-models"><li><button type="button" class="kl-model" data-kind="Corporate Partnership"><svg viewBox="0 0 24 24"><use href="#i-briefcase"/></svg><b data-i18n="kf.m1">Corporate Partnership</b><span data-i18n="kf.m1d">Program bersama, employer branding, dan akses talenta muda.</span><i class="kl-model-ok" aria-hidden="true"></i></button></li><li><button type="button" class="kl-model" data-kind="Sponsorship Event &amp; Summit"><svg viewBox="0 0 24 24"><use href="#i-spark"/></svg><b data-i18n="kf.m2">Sponsorship</b><span data-i18n="kf.m2d">Hadir di Catalyst Summit, workshop, dan event komunitas.</span><i class="kl-model-ok" aria-hidden="true"></i></button></li><li><button type="button" class="kl-model" data-kind="Community Partner"><svg viewBox="0 0 24 24"><use href="#i-users"/></svg><b data-i18n="kf.m3">Community Partner</b><span data-i18n="kf.m3d">Kolaborasi program dan event antarkomunitas.</span><i class="kl-model-ok" aria-hidden="true"></i></button></li><li><button type="button" class="kl-model" data-kind="Mentor / Speaker"><svg viewBox="0 0 24 24"><use href="#i-cap"/></svg><b data-i18n="kf.m4">Mentor &amp; Speaker</b><span data-i18n="kf.m4d">Berbagi pengalaman di Academy, Labs, dan Summit.</span><i class="kl-model-ok" aria-hidden="true"></i></button></li><li><button type="button" class="kl-model" data-kind="Investor / Venture Partner"><svg viewBox="0 0 24 24"><use href="#i-chart"/></svg><b data-i18n="kf.m5">Investor &amp; Venture</b><span data-i18n="kf.m5d">Akses deal flow startup yang sudah tervalidasi.</span><i class="kl-model-ok" aria-hidden="true"></i></button></li><li><button type="button" class="kl-model" data-kind="Talent &amp; Hiring"><svg viewBox="0 0 24 24"><use href="#i-search"/></svg><b data-i18n="kf.m6">Talent &amp; Hiring</b><span data-i18n="kf.m6d">Rekrut talenta muda terkurasi lewat Catalyst Finder.</span><i class="kl-model-ok" aria-hidden="true"></i></button></li></ul>
+        <p class="kl-sub" data-i18n="kf.proses">Bagaimana prosesnya</p>
+        <ol class="kl-proses">
+          <li><b>01</b><span data-i18n="kf.pr1">Anda mengirim permintaan dan menerima nomor referensi.</span></li>
+          <li><b>02</b><span data-i18n="kf.pr2">Tim kemitraan meninjau dan menghubungi Anda.</span></li>
+          <li><b>03</b><span data-i18n="kf.pr3">Diskusi kebutuhan dan penyusunan proposal kerja sama.</span></li>
+          <li><b>04</b><span data-i18n="kf.pr4">Kesepakatan, lalu program berjalan bersama.</span></li>
+        </ol>
         <ul class="kl-kontak">
           <li><span class="rd-l" data-i18n="kl.email">Email</span><a href="mailto:info@catalystsociety.id">info@catalystsociety.id</a></li>
+          <li><span class="rd-l">WhatsApp</span><a href="https://wa.me/6285123350235" target="_blank" rel="noopener">+62 851-2335-0235</a></li>
           <li><span class="rd-l">Instagram</span><a href="https://www.instagram.com/catalystsociety.id/" target="_blank" rel="noopener">@catalystsociety.id</a></li>
-          <li><span class="rd-l">Website</span><a href="https://catalystsociety.id" target="_blank" rel="noopener">catalystsociety.id</a></li>
         </ul>
       </div>
-      <form class="kl-form" id="klForm" novalidate>
-        <p class="kl-form-j" data-i18n="kl.formj">Ceritakan tentang kamu dan kolaborasi yang kamu bayangkan.</p>
-        <label class="kl-isian"><span data-i18n="kl.nama">Nama</span><input name="nama" type="text" autocomplete="name" required></label>
-        <label class="kl-isian"><span data-i18n="kl.mail">Email</span><input name="email" type="email" autocomplete="email" required></label>
-        <label class="kl-isian"><span data-i18n="kl.org">Organisasi atau perusahaan</span><input name="organisasi" type="text" autocomplete="organization"></label>
-        <fieldset class="kl-jenis">
-          <legend data-i18n="kl.jenis">Jenis kolaborasi</legend>
-          <label><input type="radio" name="jenis" value="Community Partner" checked><span>Community Partner</span></label>
-          <label><input type="radio" name="jenis" value="Corporate Partner"><span>Corporate Partner</span></label>
-          <label><input type="radio" name="jenis" value="Mentor"><span>Mentor</span></label>
-          <label><input type="radio" name="jenis" value="Investor"><span>Investor</span></label>
-          <label><input type="radio" name="jenis" value="Lainnya"><span data-i18n="kl.lain">Lainnya</span></label>
-        </fieldset>
-        <label class="kl-isian"><span data-i18n="kl.pesan">Ceritakan idemu</span><textarea name="pesan" rows="3" required></textarea></label>
-        <button class="kl-kirim" type="submit"><span data-i18n="kl.kirim">Kirim kolaborasi</span><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-        <p class="kl-status" id="klStatus" role="status" aria-live="polite"></p>
-      </form>
+
+      <div class="kl-form kf" id="klForm2">
+        <form id="klForm" novalidate>
+          <div class="kf-progress" aria-hidden="true"><i></i></div>
+          <ol class="kf-steps">
+            <li class="on"><b>1</b><span data-i18n="kf.t1">Tentang Anda</span></li>
+            <li><b>2</b><span data-i18n="kf.t2">Kolaborasi</span></li>
+            <li><b>3</b><span data-i18n="kf.t3">Rencana</span></li>
+          </ol>
+
+          <fieldset class="kf-page on" data-page="0">
+            <legend class="sr-only" data-i18n="kf.t1">Tentang Anda</legend>
+            <div class="kf-grid">
+              <label class="kf-f"><span data-i18n="kf.nama">Nama lengkap *</span><input name="full_name" type="text" autocomplete="name" maxlength="120" required></label>
+              <label class="kf-f"><span data-i18n="kf.jabatan">Jabatan</span><input name="job_title" type="text" autocomplete="organization-title" maxlength="120"></label>
+              <label class="kf-f"><span data-i18n="kf.email">Email kerja *</span><input name="email" type="email" autocomplete="email" maxlength="200" required></label>
+              <label class="kf-f"><span data-i18n="kf.wa">WhatsApp / telepon</span><input name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="40" placeholder="08xx"></label>
+              <label class="kf-f"><span data-i18n="kf.org">Organisasi / perusahaan</span><input name="organization" type="text" autocomplete="organization" maxlength="160"></label>
+              <label class="kf-f"><span data-i18n="kf.web">Situs / LinkedIn</span><input name="website" type="text" inputmode="url" maxlength="300" placeholder="https://"></label>
+            </div>
+            <div class="kf-g"><p class="kf-l" data-i18n="kf.jenisorg">Jenis organisasi</p><div class="kf-chips"><label><input type="radio" name="org_type" value="Korporasi"><span data-i18n="kf.o1">Korporasi</span></label><label><input type="radio" name="org_type" value="Startup"><span data-i18n="kf.o2">Startup</span></label><label><input type="radio" name="org_type" value="UMKM"><span data-i18n="kf.o3">UMKM</span></label><label><input type="radio" name="org_type" value="BUMN / Pemerintah"><span data-i18n="kf.o4">BUMN / Pemerintah</span></label><label><input type="radio" name="org_type" value="Kampus / Sekolah"><span data-i18n="kf.o5">Kampus / Sekolah</span></label><label><input type="radio" name="org_type" value="Komunitas"><span data-i18n="kf.o6">Komunitas</span></label><label><input type="radio" name="org_type" value="NGO / Yayasan"><span data-i18n="kf.o7">NGO / Yayasan</span></label><label><input type="radio" name="org_type" value="Media"><span data-i18n="kf.o8">Media</span></label><label><input type="radio" name="org_type" value="Investor / VC"><span data-i18n="kf.o9">Investor / VC</span></label><label><input type="radio" name="org_type" value="Individu"><span data-i18n="kf.o10">Individu</span></label></div></div>
+          </fieldset>
+
+          <fieldset class="kf-page" data-page="1">
+            <legend class="sr-only" data-i18n="kf.t2">Kolaborasi</legend>
+            <div class="kf-g"><p class="kf-l"><span data-i18n="kf.jenis">Jenis kolaborasi *</span> <em data-i18n="kf.boleh">boleh lebih dari satu</em></p><div class="kf-chips"><label><input type="checkbox" name="kinds" value="Corporate Partnership"><span>Corporate Partnership</span></label><label><input type="checkbox" name="kinds" value="Sponsorship Event & Summit"><span>Sponsorship Event &amp; Summit</span></label><label><input type="checkbox" name="kinds" value="Community Partner"><span>Community Partner</span></label><label><input type="checkbox" name="kinds" value="Mentor / Speaker"><span>Mentor / Speaker</span></label><label><input type="checkbox" name="kinds" value="Investor / Venture Partner"><span>Investor / Venture Partner</span></label><label><input type="checkbox" name="kinds" value="Talent & Hiring"><span>Talent &amp; Hiring</span></label><label><input type="checkbox" name="kinds" value="Program Kampus"><span data-i18n="kf.k7">Program Kampus</span></label><label><input type="checkbox" name="kinds" value="CSR & Social Impact"><span>CSR &amp; Social Impact</span></label><label><input type="checkbox" name="kinds" value="Media Partner"><span>Media Partner</span></label><label><input type="checkbox" name="kinds" value="Co-host Workshop / Event"><span>Co-host Workshop / Event</span></label><label><input type="checkbox" name="kinds" value="Lainnya"><span data-i18n="kl.lain">Lainnya</span></label></div></div>
+            <div class="kf-g"><p class="kf-l" data-i18n="kf.industri">Fokus industri</p><div class="kf-chips"><label><input type="checkbox" name="industries" value="business"><span>Business</span></label><label><input type="checkbox" name="industries" value="investments"><span>Investments</span></label><label><input type="checkbox" name="industries" value="ai"><span>AI &amp; Technology</span></label><label><input type="checkbox" name="industries" value="builder"><span>Builders</span></label><label><input type="checkbox" name="industries" value="impact"><span>Social Impact</span></label></div></div>
+            <div class="kf-grid"><label class="kf-f"><span data-i18n="kf.nilai">Perkiraan nilai kerja sama</span><select name="budget"><option value="" data-i18n="kf.pilih">Pilih</option><option value="Belum ditentukan" data-i18n="kf.b1">Belum ditentukan</option><option value="Non-finansial / in-kind" data-i18n="kf.b2">Non-finansial / in-kind</option><option value="< Rp10 juta" data-i18n="kf.b3">&lt; Rp10 juta</option><option value="Rp10-50 juta" data-i18n="kf.b4">Rp10–50 juta</option><option value="Rp50-200 juta" data-i18n="kf.b5">Rp50–200 juta</option><option value="> Rp200 juta" data-i18n="kf.b6">&gt; Rp200 juta</option></select></label><label class="kf-f"><span data-i18n="kf.waktu">Target waktu mulai</span><select name="timeline"><option value="" data-i18n="kf.pilih">Pilih</option><option value="Secepatnya (< 1 bulan)" data-i18n="kf.w1">Secepatnya (&lt; 1 bulan)</option><option value="1-3 bulan" data-i18n="kf.w2">1–3 bulan</option><option value="3-6 bulan" data-i18n="kf.w3">3–6 bulan</option><option value="Fleksibel" data-i18n="kf.w4">Fleksibel</option></select></label></div>
+          </fieldset>
+
+          <fieldset class="kf-page" data-page="2">
+            <legend class="sr-only" data-i18n="kf.t3">Rencana</legend>
+            <label class="kf-f kf-pesan"><span data-i18n="kf.pesan">Ceritakan rencana Anda *</span>
+              <textarea name="message" rows="5" maxlength="4000" required data-i18n-ph="kf.pesanph" placeholder="Tujuan kolaborasi, sasaran peserta, bentuk dukungan yang Anda bayangkan, dan hasil yang diharapkan."></textarea>
+              <small class="kf-count"><b>0</b>/4000</small>
+            </label>
+            <div class="kf-g"><p class="kf-l" data-i18n="kf.pref">Lebih nyaman dihubungi lewat</p><div class="kf-chips"><label><input type="radio" name="contact_pref" value="Email"><span>Email</span></label><label><input type="radio" name="contact_pref" value="WhatsApp"><span>WhatsApp</span></label><label><input type="radio" name="contact_pref" value="Telepon"><span data-i18n="kf.p3">Telepon</span></label><label><input type="radio" name="contact_pref" value="Meeting online"><span data-i18n="kf.p4">Meeting online</span></label></div></div>
+            <div class="kf-grid"><label class="kf-f"><span data-i18n="kf.sumber">Mengetahui kami dari</span><select name="source"><option value="" data-i18n="kf.pilih">Pilih</option><option value="Instagram">Instagram</option><option value="LinkedIn">LinkedIn</option><option value="Teman / rekan" data-i18n="kf.s3">Teman / rekan</option><option value="Event Catalyst" data-i18n="kf.s4">Event Catalyst</option><option value="Mesin pencari" data-i18n="kf.s5">Mesin pencari</option><option value="Lainnya" data-i18n="kl.lain">Lainnya</option></select></label></div>
+            <label class="kf-setuju"><input type="checkbox" name="setuju" required><span data-i18n="kf.setuju">Saya setuju data ini dipakai tim Catalyst Society untuk menindaklanjuti permintaan kolaborasi.</span></label>
+            <label class="kf-jebak" aria-hidden="true">Situs web<input name="situs_web" type="text" tabindex="-1" autocomplete="off"></label>
+          </fieldset>
+
+          <p class="kl-status" id="klStatus" role="status" aria-live="polite"></p>
+          <div class="kf-nav">
+            <button type="button" class="kf-back" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg><span data-i18n="kf.kembali">Kembali</span></button>
+            <button type="button" class="kl-kirim kf-next"><span data-i18n="kf.lanjut">Lanjut</span><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+            <button type="submit" class="kl-kirim kf-send" hidden><span data-i18n="kl.kirim">Kirim kolaborasi</span><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+          </div>
+        </form>
+
+        <div class="kf-done" hidden tabindex="-1">
+          <span class="kf-done-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5 10 17l9-10"/></svg></span>
+          <h3><span data-i18n="kf.terima">Terima kasih,</span> <span class="kf-done-nama"></span></h3>
+          <p data-i18n="kf.diterima">Permintaan kolaborasi Anda sudah kami terima dan masuk ke tim kemitraan Catalyst Society.</p>
+          <div class="kf-ref"><span data-i18n="kf.ref">Nomor referensi</span><b class="kf-ref-no"></b><button type="button" class="kf-salin" data-i18n="kf.salin">Salin</button></div>
+          <p class="kf-done-next" data-i18n="kf.lanjutan">Simpan nomor ini. Tim kami akan menghubungi Anda melalui kontak yang Anda berikan.</p>
+          <div class="kf-done-act">
+            <a class="kl-kirim kf-wa" href="https://wa.me/6285123350235" target="_blank" rel="noopener"><span data-i18n="kf.chat">Konfirmasi via WhatsApp</span><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            <button type="button" class="kf-lagi" data-i18n="kf.lagi">Kirim permintaan lain</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
-<script>
-/* Belum ada server penerima: isi form dikirim lewat email (aplikasi email pengunjung terbuka
-   dengan subjek dan isi yang sudah terisi). Ganti ke Supabase atau layanan form bila sudah ada. */
-(function(){
-  var f=document.getElementById('klForm'),st=document.getElementById('klStatus');if(!f)return;
-  function t(k,a){var K=window.CATALYST_I18N,l=(document.documentElement.lang||'id').slice(0,2);return(K&&((K[l]&&K[l][k])||(K.id&&K.id[k])))||a}
-  f.addEventListener('submit',function(e){
-    e.preventDefault();
-    var kosong=[].slice.call(f.querySelectorAll('[required]')).filter(function(x){return !x.value.trim()||(x.type==='email'&&!x.checkValidity())});
-    f.querySelectorAll('.kl-isian').forEach(function(l){l.classList.remove('salah')});
-    if(kosong.length){kosong.forEach(function(x){x.closest('.kl-isian').classList.add('salah')});kosong[0].focus();st.textContent=t('kl.salah','Lengkapi nama, email yang valid, dan ide kolaborasimu.');return}
-    var d=new FormData(f),jenis=d.get('jenis')||'';
-    var isi='Nama: '+d.get('nama')+'\nEmail: '+d.get('email')+'\nOrganisasi: '+(d.get('organisasi')||'-')+'\nJenis kolaborasi: '+jenis+'\n\n'+d.get('pesan');
-    location.href='mailto:info@catalystsociety.id?subject='+encodeURIComponent('Kolaborasi Catalyst Society: '+jenis+' ('+d.get('nama')+')')+'&body='+encodeURIComponent(isi);
-    st.textContent=t('kl.ok','Aplikasi email kamu terbuka dengan isi form. Tinggal tekan kirim.');
-  });
-})();
-</script>
 
 </main>
 
@@ -2157,47 +2209,74 @@
   </div>
 </div>
 
-<footer>
-  <div class="wrap foot-grid">
-    <div class="foot-brand">
-      <a href="#top" class="lockup">
-        <svg class="mark" viewBox="-108 -118 244 236"><path d="M 79.86 -60.18 A 100 100 0 1 0 79.86 60.18 L 49.52 37.31 A 62 62 0 1 1 49.52 -37.31 Z"/><path class="spark" d="M 126.5 -87.7 Q 108.05 -84.22 104.8 -64.5 Q 101.55 -84.22 83.1 -87.7 Q 101.55 -91.18 104.8 -110.9 Q 108.05 -91.18 126.5 -87.7 Z"/></svg>
-        <span class="word" translate="no"><b>CATALYST</b><span>SOCIETY</span></span>
-      </a>
-      <p><span translate="no">Learn. Earn. Impact.</span></p>
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft-cta rv">
+      <div>
+        <span class="ft-kicker" data-i18n="ft.kicker">Mari terhubung</span>
+        <h2 data-i18n="ft.judul">Siap bertumbuh bersama Catalyst Society?</h2>
+      </div>
+      <div class="ft-cta-act">
+        <a class="btn magnetic" href="#kolaborasi"><span data-i18n="ft.ajukan">Ajukan kolaborasi</span> <span class="panah-tukar"><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg><svg viewBox="0 0 24 24"><use href="#i-arrow"/></svg></span></a>
+        <a class="btn ghost magnetic" href="https://wa.me/6285123350235" target="_blank" rel="noopener"><svg class="ft-ic" viewBox="0 0 24 24"><use href="#i-wa"/></svg><span data-i18n="ft.wa">Chat WhatsApp</span></a>
+      </div>
     </div>
-    <div class="foot-cols">
-      <div class="fc">
-        <b data-i18n="foot.eko">Ekosistem</b>
+
+    <div class="ft-grid">
+      <div class="ft-brand">
+        <a href="#top" class="lockup" aria-label="Catalyst Society"><svg class="mark" viewBox="-108 -118 244 236"><path d="M 79.86 -60.18 A 100 100 0 1 0 79.86 60.18 L 49.52 37.31 A 62 62 0 1 1 49.52 -37.31 Z"/><path class="spark" d="M 126.5 -87.7 Q 108.05 -84.22 104.8 -64.5 Q 101.55 -84.22 83.1 -87.7 Q 101.55 -91.18 104.8 -110.9 Q 108.05 -91.18 126.5 -87.7 Z"/></svg><span class="word" translate="no"><b>CATALYST</b><span>SOCIETY</span></span></a>
+        <p class="ft-tag" translate="no">Learn. Earn. Impact.</p>
+        <p class="ft-desc" data-i18n="ft.desc">Ekosistem yang menghubungkan generasi muda Indonesia dengan mentor, komunitas, perusahaan, dan investor, dari belajar sampai membangun bisnis.</p>
+        <div class="ft-sosial">
+          <a href="https://www.instagram.com/catalystsociety.id/" target="_blank" rel="noopener" aria-label="Instagram Catalyst Society"><svg viewBox="0 0 24 24"><use href="#i-ig"/></svg></a>
+          <a href="https://wa.me/6285123350235" target="_blank" rel="noopener" aria-label="WhatsApp Catalyst Society"><svg viewBox="0 0 24 24"><use href="#i-wa"/></svg></a>
+          <a href="mailto:info@catalystsociety.id" aria-label="Email Catalyst Society"><svg viewBox="0 0 24 24"><use href="#i-mail"/></svg></a>
+        </div>
+      </div>
+
+      <div class="ft-col ft-perusahaan">
+        <b class="ft-h" data-i18n="ft.perusahaan">Perusahaan</b>
+        <p class="ft-pt">PT Katalis Akselerasi Indonesia</p>
+        <p class="ft-legal"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-shield"/></svg><span data-i18n="ft.legal">Badan hukum resmi, terdaftar dengan NIB dan Akta Pendirian</span></p>
+        <b class="ft-h ft-h2" data-i18n="ft.kantor">Kantor</b>
+        <address class="ft-alamat">Cibubur Country, RBOD 012<br>Cikeas Udik, Kec. Gunung Putri<br>Kab. Bogor, Jawa Barat 16966</address>
+        <a class="ft-arah" href="https://www.google.com/maps/search/?api=1&amp;query=Cibubur+Country+Cikeas+Udik+Gunung+Putri+Bogor+16966" target="_blank" rel="noopener"><span data-i18n="ft.arah">Petunjuk arah</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5"/></svg></a>
+      </div>
+
+      <div class="ft-col">
+        <b class="ft-h" data-i18n="ft.kontak">Kontak</b>
+        <ul class="ft-kontak">
+          <li><span data-i18n="ft.cp">Contact person &amp; WhatsApp</span><a href="https://wa.me/6285123350235" target="_blank" rel="noopener">+62 851-2335-0235</a></li>
+          <li><span data-i18n="ft.telp">Telepon</span><a href="tel:+6285123350235">0851-2335-0235</a></li>
+          <li><span>Email</span><span class="ft-mail"><a href="mailto:info@catalystsociety.id">info@catalystsociety.id</a><button type="button" class="ft-salin" data-salin="info@catalystsociety.id" aria-label="Salin alamat email"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button></span></li>
+        </ul>
+      </div>
+
+      <div class="ft-col">
+        <b class="ft-h" data-i18n="ft.jelajah">Jelajahi</b>
         <a href="#about" data-i18n="nav.tentang">About Us</a>
         <a href="#ecosystem" data-i18n="nav.ekosistem">Ekosistem</a>
         <a href="#industries" data-i18n="nav.industri">Industri</a>
+        <a href="#community" data-i18n="ft.komunitas">Komunitas</a>
+        <a href="#kolaborasi" data-i18n="ft.kolab">Kolaborasi</a>
       </div>
-      <div class="fc">
-        <b data-i18n="foot.prog">Program</b>
-        <a href="#programs">Passport &amp; Finder</a>
-        <a href="#programs">Academy &amp; Labs</a>
-        <a href="#summit">Ventures &amp; Summit</a>
-      </div>
-      <div class="fc">
-        <b data-i18n="foot.aksi">Aksi</b>
-        <a href="#join">Connect</a>
-        <a href="#join">Collaborate</a>
-        <a href="#join">Create</a>
-        <a href="#join">Change</a>
-      </div>
-      <div class="fc">
-        <b data-i18n="foot.terhubung">Terhubung</b>
-        <a class="sosial" href="https://www.instagram.com/catalystsociety.id/" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24"><use href="#i-ig"/></svg><span translate="no">catalystsociety.id</span></a>
-        <a href="https://catalystsociety.id" target="_blank" rel="noopener"><span translate="no">catalystsociety.id</span></a>
+
+      <div class="ft-col">
+        <b class="ft-h" data-i18n="foot.prog">Program</b>
+        <a href="#prog-1" translate="no">Catalyst Passport</a>
+        <a href="#prog-2" translate="no">Catalyst Finder</a>
+        <a href="#prog-3" translate="no">Catalyst Academy</a>
+        <a href="#prog-4" translate="no">Catalyst Labs</a>
+        <a href="#prog-5" translate="no">Catalyst Ventures</a>
+        <a href="#summit" translate="no">Catalyst Summit</a>
       </div>
     </div>
-  </div>
-  <div class="foot-bottom">
-    <span data-i18n="foot.hak">© 2026 Catalyst Society. Accelerating Future Builders.</span>
-    <a class="sosial" href="https://www.instagram.com/catalystsociety.id/" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24"><use href="#i-ig"/></svg><span translate="no">catalystsociety.id</span></a>
+
+    <div class="ft-bottom">
+      <span>© 2026 PT Katalis Akselerasi Indonesia. <span translate="no">Catalyst Society</span>, <span data-i18n="ft.hak">hak cipta dilindungi.</span></span>
+      <span class="ft-motto" translate="no">Accelerating Future Builders.</span>
+      <button type="button" class="ft-top" data-i18n-aria="ft.atas" aria-label="Kembali ke atas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+    </div>
   </div>
 </footer>
 
@@ -2707,6 +2786,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" defer></script>
 <script src="assets/catalyst.js" defer></script>
 <script src="assets/i18n.js"></script>
+<script src="assets/i18n-plus.js"></script>
+<script src="assets/landing-plus.js" defer></script>
 <script defer>
 /* Tombol Get Passport berganti jadi tombol akun begitu sesi Supabase ditemukan, dan
    kembali lagi setelah pengguna keluar dari Passport. Nama dan foto diambil dari profil;
