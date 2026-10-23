@@ -1422,6 +1422,7 @@
 <link rel="stylesheet" href="assets/polish.css">
 <link rel="stylesheet" href="assets/hero-ring.css">
 <link rel="stylesheet" href="assets/eco4.css">
+<link rel="stylesheet" href="assets/stages.css">
 <link rel="stylesheet" href="assets/landing-plus.css">
 </head>
 <body class="locked">
@@ -2838,7 +2839,8 @@ addEventListener('DOMContentLoaded', function(){
       document.querySelectorAll('.akun-tahap-nama').forEach(function(e){ e.textContent = TAHAP[k][1]; });
       document.querySelectorAll('.akun-tahap-ke').forEach(function(e){ e.textContent = 'Tahap ' + (k + 1) + ' dari 7'; });
       document.querySelectorAll('.akun-tahap-sum').forEach(function(e){ e.textContent = TAHAP[k][2]; });
-      document.querySelectorAll('.akun-bar').forEach(function(b){ [].forEach.call(b.children, function(i, n){ i.classList.toggle('on', n <= k); }); });
+      document.querySelectorAll('.akun-bar').forEach(function(b){ [].forEach.call(b.children, function(i, n){ i.classList.toggle('on', n <= k); i.className = 'stg-' + TAHAP[n][0] + (n <= k ? ' on' : ''); }); });
+      document.querySelectorAll('.akun-wrap, .akun-jalan').forEach(function(w){ w.className = w.className.replace(/\s?stg-\w+/g, '') + ' stg-' + TAHAP[k][0]; });
       document.querySelectorAll('.akun-cincin').forEach(function(c){ c.style.setProperty('--p', ((k + 1) / 7).toFixed(3)); });
       if(prof.slug) document.querySelectorAll('.akun-publik').forEach(function(a){ a.href = '/pass/' + encodeURIComponent(prof.slug); });
     }

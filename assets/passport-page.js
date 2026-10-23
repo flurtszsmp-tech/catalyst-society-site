@@ -117,7 +117,7 @@
       jyKe = Math.max(0, Math.min(6, i));
       var d = JY[jyKe];
       jv.style.setProperty('--p', jyKe);
-      jv.classList.toggle('founder', jyKe === 6);
+      jv.className = 'jv stg-' + JY_NAMA[jyKe].toLowerCase();
       seg.forEach(function (b, n) {
         b.setAttribute('aria-selected', String(n === jyKe));
         b.tabIndex = n === jyKe ? 0 : -1;

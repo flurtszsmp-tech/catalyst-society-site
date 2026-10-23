@@ -94,11 +94,14 @@ export function HeroCard({ profile: p, communities, badges, owner = false, share
         </div>
         <div className="pass-stat">
           <dt>Journey Stage</dt>
-          <dd>{stageName(p.journeyStage)}</dd>
+          <dd className={`pass-stage-dd stg-${p.journeyStage}`}>
+            <i aria-hidden />
+            {stageName(p.journeyStage)}
+          </dd>
         </div>
       </dl>
 
-      <div className="pass-prog">
+      <div className={`pass-prog stg-${p.journeyStage}`}>
         <div className="pass-prog-lbl">
           <span>{stageName(p.journeyStage)}</span>
           <span>{stageName(STAGES[STAGES.length - 1])}</span>

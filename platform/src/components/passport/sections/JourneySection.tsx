@@ -315,7 +315,7 @@ function GuideStage({
   const keadaan = index <= current ? 'done' : index === current + 1 ? 'goal' : 'locked';
 
   return (
-    <li className={`jg-stage is-${keadaan}${r.exclusive ? ' is-exclusive' : ''}`}>
+    <li className={`jg-stage stg-${stage} is-${keadaan}${r.exclusive ? ' is-exclusive' : ''}`}>
       <span className="jg-rail" aria-hidden>
         <span className="jg-dot">{index <= current ? <Icon name="check" /> : index + 1}</span>
       </span>
@@ -460,7 +460,7 @@ function StageTrack({
             </>
           );
           return (
-            <li key={s} className={`ps2-stage is-${st}${r.exclusive ? ' is-exclusive' : ''}`} aria-current={st === 'current' ? 'step' : undefined}>
+            <li key={s} className={`ps2-stage stg-${s} is-${st}${r.exclusive ? ' is-exclusive' : ''}`} aria-current={st === 'current' ? 'step' : undefined}>
               {i <= currentIdx ? (
                 <button type="button" className="jr-stage-btn" onClick={() => onOpen(s)} aria-label={`Buka kartu ${r.name}`}>
                   {isi}

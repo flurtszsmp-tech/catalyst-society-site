@@ -216,7 +216,7 @@
       var j = TAHAP[kini].j;
       root.querySelector('.pl-stage').innerHTML = view === 'talenta'
         ? '<span>' + (l === 'id' ? 'Tahap Journey' : 'Journey stage') + '</span>' +
-          (j.length ? j.map(function (x) { return '<em>' + esc(x) + '</em>'; }).join('') : '<em>' + (l === 'id' ? 'Semua tahap' : 'All stages') + '</em>')
+          (j.length ? j.map(function (x) { return '<em class="stg-' + x.toLowerCase() + '">' + esc(x) + '</em>'; }).join('') : '<em>' + (l === 'id' ? 'Semua tahap' : 'All stages') + '</em>')
         : '';
       root.querySelector('.pl-cols').innerHTML = [1, 2, 3].map(function (n, k) {
         return '<div class="pl-col"><h4>' + esc(kol[k]) + '</h4><ul>' +

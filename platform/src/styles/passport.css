@@ -281,7 +281,7 @@ html.dark-theme .pass-photo.pass-ini{background:#22222a;color:#e8e8e8}
 .pass-prog{margin-top:20px}
 .pass-prog-lbl{display:flex;justify-content:space-between;font-size:11.5px;color:#c9c9c9;margin-bottom:9px}
 .pass-prog-bar{height:5px;border-radius:100px;background:rgba(255,255,255,.16);overflow:hidden}
-.pass-prog-bar i{display:block;height:100%;border-radius:100px;background:#fff;
+.pass-prog-bar i{display:block;height:100%;border-radius:100px;background:var(--stg-lit,#fff);
   transition:width 1.1s var(--ease)}
 
 /* ---------- tentang ---------- */
@@ -755,7 +755,7 @@ button.pass-step.can-open:focus-visible{outline:2px solid var(--ink);outline-off
   background:#fff;color:#000;border:3px solid #0b0b0b;box-shadow:0 6px 16px -6px rgba(0,0,0,.6)}
 .cel-badge svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6}
 .cel-in.fresh .cel-badge{animation:cel-medali .9s var(--ease-out) .45s both}
-.cel-card.is-founder .cel-badge{background:linear-gradient(140deg,#f5e7c2,#c9a961)}
+
 
 .cel-unlock{margin-top:22px;font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:#9a9a9a}
 .cel-stage{font-family:var(--display);font-weight:300;font-size:46px;line-height:1.05;margin-top:6px;letter-spacing:-.01em}
@@ -782,8 +782,7 @@ button.pass-step.can-open:focus-visible{outline:2px solid var(--ink);outline-off
 .cel-card-foot b{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cel-card-foot small{font-size:9.5px;color:#9a9a9a;margin-top:2px}
 
-.cel-card.is-founder{background:radial-gradient(120% 80% at 50% 30%,#3a3324 0%,#120f0a 62%,#050505 100%)}
-.cel-card.is-founder .cel-disc{background:linear-gradient(140deg,#f5e7c2,#c9a961);box-shadow:0 0 0 8px rgba(201,169,97,.14),0 0 70px rgba(201,169,97,.4)}
+
 
 .cel-reward{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:#fff;
   padding:7px 14px;border-radius:100px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16)}
@@ -901,3 +900,38 @@ html.dark-theme .cvv-ico{background:#fff;color:#000}
 .fb-kind:hover{border-color:var(--ink)}
 .fb-kind.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 @media (max-width:440px){.fb-kinds{grid-template-columns:minmax(0,1fr)}}
+
+/* ===================== warna tahap Journey (lihat stages.css) ===================== */
+/* Kartu Journey di Home: tahap yang sudah dilewati diberi garis atas berwarna tahap. */
+.pass-step.done{box-shadow:inset 0 3px 0 var(--stg-text)}
+.pass-step.done svg.ico{color:var(--stg-text)}
+.pass-step.now{border-color:var(--stg-text);background:var(--stg-soft)}
+.pass-step.next{background:var(--stg-grad);border-color:transparent;color:var(--stg-on)}
+.pass-step.next svg.ico{color:var(--stg-on)}
+.pass-step.next span{color:var(--stg-on);opacity:.72}
+.pass-step.next .goal{border-color:currentColor;color:var(--stg-on)}
+.pass-step.founder.done{border-color:var(--stg-text);background:var(--stg-soft)}
+/* Kartu hero: titik dan bilah kemajuan berwarna tahap kini. */
+.pass-stage-dd{display:inline-flex;align-items:center;gap:8px}
+.pass-stage-dd i{width:10px;height:10px;border-radius:50%;background:var(--stg-grad);box-shadow:0 0 0 3px rgba(255,255,255,.12)}
+.pass-prog-bar i{background:var(--stg-grad)!important}
+.pass-prog.stg-explorer .pass-prog-bar i{background:#fff!important}
+/* Profil publik: medali dan bilah tahap. */
+.jpos .jpos-ico{background:var(--stg-grad);color:var(--stg-on);box-shadow:0 10px 24px -12px var(--stg)}
+html.dark-theme .jpos .jpos-ico{background:var(--stg-grad);color:var(--stg-on)}
+.jpos-track li.done .bar,.jpos-track li.now .bar{background:var(--stg-grad);opacity:1}
+.jpos-track li.done .bar{opacity:.55}
+.jpos-track li.now em{color:var(--stg-text)}
+.jpos-name b{color:var(--stg-text)}
+.jpos.stg-explorer .jpos-name b{color:var(--ink)}
+/* Kartu ucapan: latar, medali, lencana, dan titik mengikuti warna tahap. */
+.cel-card[class*="stg-"]{background:radial-gradient(120% 80% at 50% 30%,var(--stg-deep) 0%,#0b0b0d 62%,#050505 100%)}
+.cel-card[class*="stg-"] .cel-disc:not(.foto){background:var(--stg-grad);color:var(--stg-on);box-shadow:0 0 0 8px rgba(255,255,255,.06),0 0 70px var(--stg-glow)}
+.cel-card[class*="stg-"] .cel-disc.foto{background:var(--stg-grad);box-shadow:0 0 0 8px rgba(255,255,255,.06),0 0 70px var(--stg-glow)}
+.cel-card[class*="stg-"] .cel-badge{background:var(--stg-grad);color:var(--stg-on)}
+.cel-card[class*="stg-"] .cel-unlock{color:var(--stg-lit)}
+.cel-card[class*="stg-"] .cel-ring{border-color:var(--stg-glow)}
+.cel-streak li.on{background:var(--stg-lit);border-color:var(--stg-lit);color:#000}
+.cel-streak li.now{box-shadow:0 0 0 4px var(--stg-glow)}
+.cel-card.stg-explorer{background:radial-gradient(120% 80% at 50% 30%,#2b2b2b 0%,#0b0b0d 62%,#050505 100%)}
+.cel-card.stg-explorer .cel-disc:not(.foto),.cel-card.stg-explorer .cel-badge{background:#fff;color:#000}

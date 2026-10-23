@@ -1,0 +1,31 @@
+/* ===========================================================
+   Warna tujuh tahap Journey. Satu kelas .stg-<tahap> menyetel variabel
+   yang dipakai semua tampilan tahap (kartu, popup, profil publik, dasbor).
+   Salinan dari platform/src/styles/stages.css. Ubah keduanya bersamaan.
+
+   --stg       warna utama tahap
+   --stg-grad  gradasi untuk bidang (medali, pil aktif)
+   --stg-on    warna teks di atas --stg / --stg-grad
+   --stg-text  warna tahap yang terbaca di latar terang
+   --stg-lit   warna tahap yang terbaca di latar gelap
+   --stg-soft  latar lembut bernuansa tahap
+   --stg-deep  latar gelap bernuansa tahap (kartu ucapan)
+   =========================================================== */
+.stg-explorer{--stg:#0a0a0c;--stg-grad:linear-gradient(135deg,#3a3a42 0%,#0a0a0c 100%);--stg-on:#fff;--stg-text:#0a0a0c;--stg-lit:#ffffff;
+  --stg-soft:#f1f1f2;--stg-deep:#0b0b0d;--stg-glow:rgba(255,255,255,.22)}
+.stg-connector{--stg:#c4c8cf;--stg-grad:linear-gradient(135deg,#fbfbfc 0%,#d5d8de 50%,#a3a8b2 100%);--stg-on:#1c1e22;--stg-text:#6b717c;--stg-lit:#e4e7ec;
+  --stg-soft:#f2f3f5;--stg-deep:#23262c;--stg-glow:rgba(220,224,231,.3)}
+.stg-challenger{--stg:#3b3e45;--stg-grad:linear-gradient(135deg,#6a6e77 0%,#33363c 55%,#1a1c20 100%);--stg-on:#fff;--stg-text:#3b3e45;--stg-lit:#a7acb5;
+  --stg-soft:#ececee;--stg-deep:#17181b;--stg-glow:rgba(167,172,181,.25)}
+.stg-innovator{--stg:#1f6b4f;--stg-grad:linear-gradient(135deg,#46a07c 0%,#1f6b4f 50%,#0d3a2b 100%);--stg-on:#fff;--stg-text:#1f6b4f;--stg-lit:#5cc398;
+  --stg-soft:#e7f3ed;--stg-deep:#0a2219;--stg-glow:rgba(92,195,152,.3)}
+.stg-contributor{--stg:#c9a961;--stg-grad:linear-gradient(135deg,#f7ecc9 0%,#d8bb72 45%,#a8853d 100%);--stg-on:#2b1f05;--stg-text:#8a6d2b;--stg-lit:#e5c77d;
+  --stg-soft:#faf3e0;--stg-deep:#221a0b;--stg-glow:rgba(229,199,125,.32)}
+.stg-builder{--stg:#2a4bd7;--stg-grad:linear-gradient(135deg,#6c8bff 0%,#2a4bd7 50%,#142886 100%);--stg-on:#fff;--stg-text:#2a4bd7;--stg-lit:#8ba3ff;
+  --stg-soft:#e9eeff;--stg-deep:#0a1238;--stg-glow:rgba(139,163,255,.32)}
+.stg-founder{--stg:#6d3fc4;--stg-grad:linear-gradient(135deg,#c4a6ff 0%,#7c4ddb 45%,#3b1a78 100%);--stg-on:#fff;--stg-text:#6d3fc4;--stg-lit:#b99bff;
+  --stg-soft:#f1ebfd;--stg-deep:#170a30;--stg-glow:rgba(185,155,255,.35)}
+html.dark-theme [class*="stg-"]{--stg-text:var(--stg-lit)}
+html.dark-theme .stg-explorer{--stg:#ffffff;--stg-grad:linear-gradient(135deg,#ffffff 0%,#c9c9cf 100%);--stg-on:#0a0a0c;--stg-soft:rgba(255,255,255,.08)}
+html.dark-theme .stg-connector,html.dark-theme .stg-challenger,html.dark-theme .stg-innovator,
+html.dark-theme .stg-contributor,html.dark-theme .stg-builder,html.dark-theme .stg-founder{--stg-soft:rgba(255,255,255,.06)}

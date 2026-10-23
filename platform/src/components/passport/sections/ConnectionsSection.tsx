@@ -492,7 +492,7 @@ function PersonCard({
         </h3>
         <p className="cx-headline">{p.headline || 'Anggota Catalyst Society'}</p>
         <div className="cx-tags">
-          <span className="cx-tag">
+          <span className={`cx-tag cx-stage stg-${p.journeyStage}`}>
             <Icon name={`j-${p.journeyStage}`} />
             {STAGE_INFO[p.journeyStage]?.name}
           </span>

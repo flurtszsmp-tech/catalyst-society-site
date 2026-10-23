@@ -152,7 +152,7 @@ export function JourneyCard({
                     )}
                   </>
                 );
-                const kelas = `pass-step${next ? ' next' : ''}${lewat ? ' done' : ''}${s === 'founder' ? ' founder' : ''}`;
+                const kelas = `pass-step stg-${s}${next ? ' next' : ''}${lewat ? ' done' : ''}${i === kini ? ' now' : ''}${s === 'founder' ? ' founder' : ''}`;
                 // Tahap yang sudah dilewati bisa diklik pemiliknya untuk membuka
                 // kartu ucapan lagi, misalnya untuk diunggah ke media sosial.
                 return owner && lewat && onOpenStage ? (
@@ -191,7 +191,7 @@ export function JourneyPositionCard({ profile, journey }: { profile: Profile; jo
   const r = STAGE_RULES[s];
   const ev = journey.find((j) => j.stage === s);
   return (
-    <section className="pass-card jpos" aria-labelledby="pass-jpos-h">
+    <section className={`pass-card jpos stg-${s}`} aria-labelledby="pass-jpos-h">
       <div className="pass-head">
         <h2 id="pass-jpos-h">Journey</h2>
         <span className="pass-all">
@@ -212,7 +212,7 @@ export function JourneyPositionCard({ profile, journey }: { profile: Profile; jo
       </div>
       <ol className="jpos-track" aria-label={`Posisi ${r.name} di antara ${STAGES.length} tahap`}>
         {STAGES.map((x, i) => (
-          <li key={x} className={i < kini ? 'done' : i === kini ? 'now' : undefined} aria-current={i === kini ? 'step' : undefined}>
+          <li key={x} className={`stg-${x}${i < kini ? ' done' : i === kini ? ' now' : ''}`} aria-current={i === kini ? 'step' : undefined}>
             <span className="bar" />
             <em>{stageName(x)}</em>
           </li>

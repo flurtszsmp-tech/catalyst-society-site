@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import { LanguageProvider } from '@/lib/i18n/provider';
 import { SITE_URL } from '@/lib/env';
 import '@/styles/tokens.css';
+import '@/styles/stages.css';
 import './globals.css';
 
 // Di-host sendiri oleh Next.js saat build; browser tidak meminta apa pun ke Google.

@@ -110,7 +110,19 @@ async function fotoData(src: string | null): Promise<string | null> {
   }
 }
 
+/** Warna tahap untuk gambar PNG, sama dengan src/styles/stages.css. */
+const WARNA: Record<Stage, { deep: string; a: string; b: string; lit: string; on: string }> = {
+  explorer: { deep: '#2b2b2b', a: '#ffffff', b: '#cfcfd4', lit: '#ffffff', on: '#000000' },
+  connector: { deep: '#3a3e46', a: '#fbfbfc', b: '#a3a8b2', lit: '#e4e7ec', on: '#1c1e22' },
+  challenger: { deep: '#2c2e33', a: '#8d929b', b: '#33363c', lit: '#a7acb5', on: '#ffffff' },
+  innovator: { deep: '#123b2c', a: '#46a07c', b: '#0d3a2b', lit: '#5cc398', on: '#ffffff' },
+  contributor: { deep: '#3a2e14', a: '#f7ecc9', b: '#a8853d', lit: '#e5c77d', on: '#2b1f05' },
+  builder: { deep: '#14215e', a: '#6c8bff', b: '#142886', lit: '#8ba3ff', on: '#ffffff' },
+  founder: { deep: '#2a1352', a: '#c4a6ff', b: '#3b1a78', lit: '#b99bff', on: '#ffffff' },
+};
+
 function kartuSvg(p: Profile, stage: Stage, alamat: string, foto: string | null = null): string {
+  const w = WARNA[stage];
   const r = STAGE_RULES[stage];
   const i = rank(stage);
   const ikon = ICON_PATHS[`j-${stage}`] ?? '';
@@ -118,12 +130,14 @@ function kartuSvg(p: Profile, stage: Stage, alamat: string, foto: string | null 
   const titik = STAGES.map((s, k) => {
     const x = W / 2 - ((STAGES.length - 1) * 74) / 2 + k * 74;
     const isi = k <= i;
-    return `<circle cx="${x}" cy="1010" r="${k === i ? 21 : 15}" fill="${isi ? '#fff' : 'none'}" stroke="${isi ? '#fff' : '#4a4a4a'}" stroke-width="3"/>`;
+    const c = WARNA[s].lit;
+    return `<circle cx="${x}" cy="1010" r="${k === i ? 21 : 15}" fill="${isi ? c : 'none'}" stroke="${isi ? c : '#4a4a4a'}" stroke-width="3"/>`;
   }).join('');
   const nama = esc(p.fullName.length > 30 ? `${p.fullName.slice(0, 29)}…` : p.fullName);
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <defs>
-    <radialGradient id="g" cx="50%" cy="34%" r="62%"><stop offset="0" stop-color="#2b2b2b"/><stop offset="1" stop-color="#050505"/></radialGradient>
+    <radialGradient id="g" cx="50%" cy="34%" r="62%"><stop offset="0" stop-color="${w.deep}"/><stop offset="1" stop-color="#050505"/></radialGradient>
+    <linearGradient id="m" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${w.a}"/><stop offset="1" stop-color="${w.b}"/></linearGradient>
     <radialGradient id="h" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
   </defs>
   <rect width="${W}" height="${H}" fill="url(#g)"/>
@@ -137,16 +151,16 @@ function kartuSvg(p: Profile, stage: Stage, alamat: string, foto: string | null 
   <text x="200" y="128" font-family="${font}" font-size="30" font-weight="700" letter-spacing="5" fill="#fff">CATALYST</text>
   <text x="200" y="160" font-family="${font}" font-size="20" letter-spacing="8" fill="#9a9a9a">PASSPORT</text>
   <text x="${W - 86}" y="140" text-anchor="end" font-family="${font}" font-size="26" letter-spacing="3" fill="#9a9a9a">${esc(p.catalystId)}</text>
-  <circle cx="${W / 2}" cy="470" r="128" fill="#fff"/>
+  <circle cx="${W / 2}" cy="470" r="128" fill="url(#m)"/>
   ${
     foto
       ? `<clipPath id="f"><circle cx="${W / 2}" cy="470" r="122"/></clipPath>
   <image href="${esc(foto)}" x="${W / 2 - 122}" y="348" width="244" height="244" preserveAspectRatio="xMidYMid slice" clip-path="url(#f)"/>
-  <circle cx="${W / 2 + 92}" cy="562" r="48" fill="#fff" stroke="#0b0b0b" stroke-width="8"/>
-  <g transform="translate(${W / 2 + 92 - 30} ${562 - 30}) scale(2.5)" fill="none" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ikon}</g>`
-      : `<g transform="translate(${W / 2 - 96} ${470 - 96}) scale(8)" fill="none" stroke="#000" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">${ikon}</g>`
+  <circle cx="${W / 2 + 92}" cy="562" r="48" fill="url(#m)" stroke="#0b0b0b" stroke-width="8"/>
+  <g transform="translate(${W / 2 + 92 - 30} ${562 - 30}) scale(2.5)" fill="none" stroke="${w.on}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ikon}</g>`
+      : `<g transform="translate(${W / 2 - 96} ${470 - 96}) scale(8)" fill="none" stroke="${w.on}" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">${ikon}</g>`
   }
-  <text x="${W / 2}" y="730" text-anchor="middle" font-family="${font}" font-size="30" letter-spacing="10" fill="#9a9a9a">JOURNEY UNLOCKED</text>
+  <text x="${W / 2}" y="730" text-anchor="middle" font-family="${font}" font-size="30" letter-spacing="10" fill="${w.lit}">JOURNEY UNLOCKED</text>
   <text x="${W / 2}" y="840" text-anchor="middle" font-family="${font}" font-size="118" font-weight="300" fill="#fff">${esc(r.name)}</text>
   <text x="${W / 2}" y="910" text-anchor="middle" font-family="${font}" font-size="32" fill="#c9c9c9">Tahap ${i + 1} dari ${STAGES.length} · ${esc(r.summary)}</text>
   ${titik}
@@ -265,7 +279,7 @@ function CelebrationModal({ profile: p, stage, fresh, onClose }: { profile: Prof
         )}
         <p className="cel-kicker">{fresh ? 'Selamat!' : 'Tahap yang sudah Anda lewati'}</p>
 
-        <article className={`cel-card is-${stage}`} aria-label={`Kartu Journey ${r.name}`}>
+        <article className={`cel-card is-${stage} stg-${stage}`} aria-label={`Kartu Journey ${r.name}`}>
           <header className="cel-card-top">
             <span className="cel-brand">
               <svg viewBox="-108 -118 244 236" aria-hidden>
@@ -304,7 +318,7 @@ function CelebrationModal({ profile: p, stage, fresh, onClose }: { profile: Prof
 
           <ol className="cel-streak" aria-label={`${i + 1} dari ${STAGES.length} tahap tercapai`}>
             {STAGES.map((s, k) => (
-              <li key={s} className={`${k <= i ? 'on' : ''}${k === i ? ' now' : ''}`} title={STAGE_RULES[s].name}>
+              <li key={s} className={`stg-${s}${k <= i ? ' on' : ''}${k === i ? ' now' : ''}`} title={STAGE_RULES[s].name}>
                 {k < i && <Icon name="check" />}
               </li>
             ))}
