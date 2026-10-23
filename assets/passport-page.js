@@ -31,11 +31,17 @@
       perbarui();
     });
   });
+  /* Di passport.catalystsociety.id, halaman daftar dan Passport ada di domain utama. */
+  var UTAMA = location.hostname === 'passport.catalystsociety.id' ? 'https://catalystsociety.id' : '';
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    /* Nama dan industri dibawa ke formulir daftar lewat sessionStorage, bukan alamat. */
-    try { sessionStorage.setItem('catalyst-daftar', JSON.stringify({ nama: input.value.trim(), ch: kanal })); } catch (err) {}
-    location.href = masuk ? '/passport/' : '/login?mode=daftar';
+    var bawa = { nama: input.value.trim(), ch: kanal };
+    if (masuk) { location.href = UTAMA + '/passport/'; return; }
+    /* Nama dan industri dibawa ke formulir daftar tanpa masuk ke alamat yang dikirim ke server:
+       sessionStorage di domain yang sama, fragmen # bila pindah domain. */
+    if (UTAMA) { location.href = UTAMA + '/login?mode=daftar#daftar=' + encodeURIComponent(JSON.stringify(bawa)); return; }
+    try { sessionStorage.setItem('catalyst-daftar', JSON.stringify(bawa)); } catch (err) {}
+    location.href = '/login?mode=daftar';
   });
   if (!hemat && matchMedia('(pointer: fine)').matches) {
     document.querySelector('.pp-hero').addEventListener('pointermove', function (e) {

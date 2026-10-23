@@ -599,6 +599,11 @@ setTimeout(function(){
        (lewat sessionStorage, bukan alamat, supaya nama tidak tercatat di URL). */
     var bawaan = {};
     try{ bawaan = JSON.parse(sessionStorage.getItem('catalyst-daftar') || '{}') || {}; sessionStorage.removeItem('catalyst-daftar'); }catch(e){}
+    /* Dari passport.catalystsociety.id: data datang di fragmen #daftar=..., lalu dihapus dari bilah alamat. */
+    try{
+      var m = /^#daftar=(.+)$/.exec(location.hash);
+      if(m){ bawaan = JSON.parse(decodeURIComponent(m[1])) || {}; history.replaceState(null, '', location.pathname + location.search); }
+    }catch(e){}
     var awal = tombol.filter(function(b){ return b.dataset.v === bawaan.ch; })[0] || tombol[0];
     if(typeof bawaan.nama === 'string' && bawaan.nama.trim()) document.getElementById('nama').value = bawaan.nama.trim().slice(0, 80);
     pilih(awal);
