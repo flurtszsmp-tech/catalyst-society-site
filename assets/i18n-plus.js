@@ -55,14 +55,26 @@
     'kf.boleh': ['boleh lebih dari satu', 'choose one or more'],
     'kf.k7': ['Program Kampus', 'Campus Program'],
     'kf.industri': ['Fokus industri', 'Industry focus'],
-    'kf.nilai': ['Perkiraan nilai kerja sama', 'Estimated partnership value'],
+    'kf.nilai': ['Perkiraan nilai', 'Estimated value'],
     'kf.waktu': ['Target waktu mulai', 'Target start'],
     'kf.pilih': ['Pilih', 'Select'],
-    'kf.b1': ['Belum ditentukan', 'Not decided yet'], 'kf.b2': ['Non-finansial / in-kind', 'Non-financial / in-kind'],
-    'kf.b3': ['&lt; Rp10 juta', '&lt; IDR 10 million'], 'kf.b4': ['Rp10–50 juta', 'IDR 10–50 million'],
-    'kf.b5': ['Rp50–200 juta', 'IDR 50–200 million'], 'kf.b6': ['&gt; Rp200 juta', '&gt; IDR 200 million'],
-    'kf.w1': ['Secepatnya (&lt; 1 bulan)', 'As soon as possible (&lt; 1 month)'], 'kf.w2': ['1–3 bulan', '1–3 months'],
+    'kf.b1': ['Belum ditentukan', 'Not decided yet'], 'kf.b2': ['Non-finansial (barang atau jasa)', 'Non-financial (in-kind)'],
+    'kf.b3': ['Di bawah Rp10 juta', 'Under IDR 10 million'], 'kf.b4': ['Rp10–50 juta', 'IDR 10–50 million'],
+    'kf.b5': ['Rp50–200 juta', 'IDR 50–200 million'], 'kf.b6': ['Di atas Rp200 juta', 'Over IDR 200 million'],
+    'kf.w1': ['Dalam 1 bulan', 'Within 1 month'], 'kf.w2': ['1–3 bulan', '1–3 months'],
     'kf.w3': ['3–6 bulan', '3–6 months'], 'kf.w4': ['Fleksibel', 'Flexible'],
+    'kf.pnilai': ['Pilih perkiraan nilai', 'Choose an estimate'], 'kf.pwaktu': ['Pilih waktu mulai', 'Choose a start time'],
+    'kf.psumber': ['Pilih salah satu', 'Choose one'],
+    'kd.mitra': ['Community Partner Catalyst Society', 'Catalyst Society Community Partner', 'Catalyst Society 社群合作伙伴'],
+    'alur.kicker': ['Alur Catalyst · 6 Tahap', 'The Catalyst Path · 6 Stages', 'Catalyst 路径 · 6 个阶段'],
+    'alur.judul': ['Dari bergabung sampai didanai.', 'From joining to getting funded.', '从加入到获得融资。'],
+    'alur.desc': ['Ikuti perjalanan builder tahap demi tahap: apa yang dipelajari, didapatkan, dan difasilitasi Catalyst, untuk talenta muda maupun mitra dan korporat.',
+      'Follow the builder journey stage by stage: what is learned, gained, and provided by Catalyst, for young talent as well as partners and corporates.',
+      '逐步了解建设者的成长旅程：每个阶段学到什么、获得什么，以及 Catalyst 提供哪些支持，适用于青年人才与合作伙伴。'],
+    's4.judul': ['Enam program. Satu jalan untuk bertumbuh.', 'Six programs. One path to grow.', '六大项目，一条成长之路。'],
+    's4.sub': ['Dari identitas digital sampai panggung pendanaan, setiap program saling terhubung untuk membantu generasi muda menjadi Founder, Entrepreneur, Pebisnis, dan Changemaker.',
+      'From a digital identity to the funding stage, every program connects to help young people become Founders, Entrepreneurs, Business leaders, and Changemakers.',
+      '从数字身份到融资舞台，每个项目环环相扣，帮助年轻人成为创始人、企业家、商业领袖与变革者。'],
     'kf.pesan': ['Ceritakan rencana Anda *', 'Tell us your plan *'],
     'kf.pesanph': ['Tujuan kolaborasi, sasaran peserta, bentuk dukungan yang Anda bayangkan, dan hasil yang diharapkan.', 'Goals, target participants, the support you have in mind, and expected outcomes.'],
     'kf.pref': ['Lebih nyaman dihubungi lewat', 'Preferred contact'],
@@ -108,7 +120,7 @@
   Object.keys(T).forEach(function (k) {
     if (K.id) K.id[k] = T[k][0];
     if (K.en) K.en[k] = T[k][1];
-    if (K.zh && K.zh[k] == null) K.zh[k] = T[k][1];
+    if (K.zh && (T[k][2] || K.zh[k] == null)) K.zh[k] = T[k][2] || T[k][1];
   });
 
   function atribut(e) {

@@ -154,8 +154,22 @@
     'AIESEC':'aiesec', 'Young On Top':'yot', 'Young Leaders Indonesia':'yli'
   };
 
-  /* Bentuk kartu meniru CommunityCard.tsx di repo Bagas: logo dan panah, nama, satu baris
-     bidang (topik), lalu garis meta berisi kanal. Klik membuka halaman detail komunitas. */
+  /* Sampul kartu dan halaman detail. Bila komunitas punya foto sampul (field cover,
+     berkas di assets/communities/covers/), foto itu yang dipakai. Tanpa foto, sampul
+     dibentuk dari logo komunitas yang diperbesar dan dikaburkan di atas warna kanal,
+     jadi setiap komunitas tetap punya latar yang khas. */
+  function sampul(k, kelas) {
+    var foto = k.cover ? 'assets/communities/covers/' + k.cover : '';
+    return '<span class="com-cover' + (kelas ? ' ' + kelas : '') + (foto ? ' foto' : '') + '" aria-hidden="true">' +
+      (foto
+        ? '<img class="com-cover-img" src="' + aman(foto) + '" alt="" loading="lazy" decoding="async">'
+        : '<img class="com-cover-blur" src="assets/communities/' + aman(k.logo) + '" alt="" loading="lazy" decoding="async">') +
+      '<i class="com-cover-grid"></i><i class="com-cover-shade"></i></span>';
+  }
+
+  /* Bentuk kartu: sampul di atas, logo menumpang di tepi bawah sampul sebelah kiri,
+     lalu nama, satu baris bidang (topik), dan garis meta berisi kanal. Klik membuka
+     halaman detail komunitas. */
   function kartu(k) {
     var slug = SLUG[k.nama];
     var url = slug ? '?k=' + slug : tautanGabung(k);
@@ -163,11 +177,12 @@
     var buka = url
       ? '<a class="com-card glass" href="' + aman(url) + '"' + (luar ? ' target="_blank" rel="noopener"' : '') + ' data-kanal="' + k.kanal + '">'
       : '<div class="com-card glass" data-kanal="' + k.kanal + '">';
-    return buka +
+    return buka.replace('class="com-card glass"', 'class="com-card glass com2"') +
+      sampul(k) +
       '<span class="com-card-top">' +
         '<span class="com-logo"><img src="assets/communities/' + k.logo + '" alt="' + aman(k.nama) + '" ' +
           'loading="lazy" decoding="async" width="52" height="52"></span>' +
-        (url ? '<svg class="com-out" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg>' : '') +
+        (url ? '<span class="com-out-wrap"><svg class="com-out" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg></span>' : '') +
       '</span>' +
       '<h3 class="com-title" translate="no">' + aman(k.nama) +
         '<svg class="com-verified" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-spark4"/></svg></h3>' +
@@ -271,9 +286,13 @@
     panel.innerHTML =
       '<div class="wrap">' +
         '<a class="kd-back" href="#community"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow"/></svg><span>' + tx('kd.semua', 'Semua Komunitas') + '</span></a>' +
+        '<div class="kd-hero" data-kanal="' + k.kanal + '">' + sampul(k, 'kd-cover') +
+          '<span class="kd-hero-tag"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-spark4"/></svg>' + tx('kd.mitra', 'Community Partner Catalyst Society') + '</span>' +
+          '<span class="kd-hero-kanal" translate="no">' + aman(KANAL[k.kanal]) + '</span>' +
+        '</div>' +
         '<div class="kd-grid">' +
           '<div class="kd-utama">' +
-            '<div class="kd-id"><span class="com-logo kd-logo"><img src="assets/communities/' + k.logo + '" alt="' + aman(k.nama) + '" width="76" height="76"></span>' +
+            '<div class="kd-id kd-id2"><span class="com-logo kd-logo"><img src="assets/communities/' + k.logo + '" alt="' + aman(k.nama) + '" width="76" height="76"></span>' +
               '<div><h1 class="kd-nama" translate="no">' + aman(k.nama) + '<svg class="com-verified" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-spark4"/></svg></h1>' +
               '<div class="kd-meta" translate="no">' + [KANAL[k.kanal], d.kat, 'Community'].filter(Boolean).map(aman).join('<i></i>') + '</div></div></div>' +
             (full ? '<p class="kd-desk">' + aman(full) + '</p>' : '') +
@@ -333,6 +352,16 @@
       tutup(false);
     }
   }, true);
+  /* Sorotan lembut mengikuti kursor di atas kartu komunitas. */
+  if (matchMedia('(pointer: fine)').matches) {
+    document.addEventListener('pointermove', function (e) {
+      var c = e.target.closest && e.target.closest('.com2');
+      if (!c) return;
+      var r = c.getBoundingClientRect();
+      c.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+      c.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+    }, { passive: true });
+  }
   window.addEventListener('popstate', dariAlamat);
   document.addEventListener('bahasa-berubah', function () { if (slugAktif) isiDetail(slugAktif); });
   dariAlamat();

@@ -480,3 +480,73 @@ html.dark-theme #founders:is(.fd-v-a,.fd-v-c) .fd-nama b{color:#fff}
 /* logo partner: geser ke kanan dengan kecepatan tetap (panjang dan durasi diisi skrip di index.html) */
 .pm-row ul.pm-jalan{animation-name:pmKanan;animation-timing-function:linear;animation-iteration-count:infinite;will-change:transform}
 @keyframes pmKanan{from{transform:translate3d(calc(-1 * var(--geser)),0,0)}to{transform:translate3d(0,0,0)}}
+
+/* ---------- kartu komunitas bersampul (com2) dan halaman detail bersampul ----------
+   Sampul memakai foto komunitas bila ada; tanpa foto, logo diperbesar dan dikaburkan di
+   atas warna kanal. Logo menumpang di tepi bawah sampul, sebelah kiri. */
+.com2{--tint:linear-gradient(135deg,#15151a,#3a3a44)}
+[data-kanal="investments"]{--tint:linear-gradient(135deg,#0d2a1e,#2f6b4f)}
+[data-kanal="ai_technology"]{--tint:linear-gradient(135deg,#0f1838,#3b4fa3)}
+[data-kanal="business"]{--tint:linear-gradient(135deg,#2a1a0e,#8a5a2b)}
+[data-kanal="builders"]{--tint:linear-gradient(135deg,#1e1030,#6b3fa0)}
+[data-kanal="social_impact"]{--tint:linear-gradient(135deg,#0d2a2a,#2f8a86)}
+:is(#community,#komunitasDetail) .com2{position:relative;overflow:hidden;isolation:isolate;padding:0 22px 20px;gap:12px;
+  transition:transform .45s var(--ease),box-shadow .45s var(--ease),border-color .45s var(--ease)}
+:is(#community,#komunitasDetail) .com2:hover{transform:translateY(-6px);box-shadow:0 30px 60px -36px rgba(0,0,0,.55)}
+:is(#community,#komunitasDetail) .com2::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .35s;
+  background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.22),transparent 70%)}
+:is(#community,#komunitasDetail) .com2:hover::after{opacity:1}
+.com-cover{position:relative;display:block;overflow:hidden;background:var(--tint)}
+:is(#community,#komunitasDetail) .com2 .com-cover{height:104px;margin:0 -22px}
+.com-cover-blur{position:absolute;left:50%;top:50%;width:150%;height:auto;aspect-ratio:1;max-width:none;object-fit:cover;
+  transform:translate(-50%,-50%) scale(1);filter:blur(26px) saturate(1.7) brightness(1.05);opacity:.7;mix-blend-mode:screen;transition:transform .8s var(--ease)}
+.com-cover-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease)}
+.com-cover-grid{position:absolute;inset:0;opacity:.35;
+  background-image:radial-gradient(rgba(255,255,255,.35) 1px,transparent 1.2px);background-size:14px 14px;
+  -webkit-mask-image:linear-gradient(180deg,#000,transparent 85%);mask-image:linear-gradient(180deg,#000,transparent 85%)}
+.com-cover.foto .com-cover-grid{display:none}
+.com-cover-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.28))}
+:is(#community,#komunitasDetail) .com2:hover .com-cover-blur{transform:translate(-50%,-50%) scale(1.18) rotate(6deg)}
+:is(#community,#komunitasDetail) .com2:hover .com-cover-img{transform:scale(1.06)}
+:is(#community,#komunitasDetail) .com2 .com-card-top{position:relative;z-index:2;margin-top:-30px;align-items:flex-end}
+:is(#community,#komunitasDetail) .com2 .com-logo{width:60px;height:60px;border-radius:16px;box-shadow:0 0 0 3px #fff,0 10px 24px -12px rgba(0,0,0,.45);
+  transition:transform .45s var(--ease)}
+:is(#community,#komunitasDetail) .com2:hover .com-logo{transform:translateY(-3px) rotate(-3deg)}
+.com-out-wrap{position:absolute;right:-8px;top:-62px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  transition:background .35s var(--ease),transform .35s var(--ease)}
+:is(#community,#komunitasDetail) .com2 .com-out{color:#fff;opacity:1;width:14px;height:14px}
+:is(#community,#komunitasDetail) .com2:hover .com-out-wrap{background:#fff;transform:scale(1.06)}
+:is(#community,#komunitasDetail) .com2:hover .com-out{color:#000;transform:rotate(-45deg)}
+:is(#community,#komunitasDetail) .com2 .com-title{margin-top:4px}
+html.dark-theme :is(#community,#komunitasDetail) .com2 .com-logo{box-shadow:0 0 0 3px #1a1a1f,0 10px 24px -12px rgba(0,0,0,.8)}
+html.dark-theme :is(#community,#komunitasDetail) .com2::after{background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.08),transparent 70%)}
+
+/* detail: sampul lebar di atas, logo dan nama menumpang di tepi bawahnya */
+.kd-hero{position:relative;height:clamp(170px,20vw,250px);border-radius:clamp(20px,2.4vw,30px);overflow:hidden;margin-bottom:0;isolation:isolate;
+  box-shadow:0 30px 60px -40px rgba(0,0,0,.6)}
+.kd-hero .kd-cover{position:absolute;inset:0;height:auto}
+.kd-hero .com-cover-blur{width:120%;filter:blur(40px) saturate(1.8);opacity:.75;animation:kdNapas 16s ease-in-out infinite alternate}
+@keyframes kdNapas{to{transform:translate(-46%,-54%) scale(1.15) rotate(8deg)}}
+.kd-hero-tag{position:absolute;left:clamp(18px,2.4vw,30px);top:clamp(16px,2vw,24px);z-index:2;display:inline-flex;align-items:center;gap:8px;
+  padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.kd-hero-tag svg{width:12px;height:12px;fill:#fff}
+.kd-hero-kanal{position:absolute;right:clamp(18px,2.4vw,30px);bottom:clamp(14px,2vw,22px);z-index:2;font-family:var(--display);font-weight:300;
+  font-size:clamp(28px,4.6vw,64px);letter-spacing:-.04em;color:rgba(255,255,255,.88);line-height:1}
+.kd-id2{position:relative;z-index:2;margin-top:clamp(-56px,-4vw,-40px);align-items:flex-end}
+.kd-id2 .kd-logo{width:96px!important;height:96px!important;border-radius:24px!important;background:#fff;
+  box-shadow:0 0 0 4px #fff,0 18px 36px -18px rgba(0,0,0,.5)!important}
+.kd-id2 .kd-nama{margin-top:56px}
+.kd-sisi{position:sticky;top:110px;margin-top:clamp(24px,3vw,36px);transition:box-shadow .4s var(--ease)}
+.kd-sisi:hover{box-shadow:0 34px 70px -44px rgba(0,0,0,.5)}
+.kd-plat a{transition:padding .3s var(--ease),background .3s var(--ease)}
+.kd-plat a:hover{padding-left:10px}
+html.dark-theme .kd-id2 .kd-logo{box-shadow:0 0 0 4px #111,0 18px 36px -18px rgba(0,0,0,.9)!important}
+@media (max-width:900px){
+  .kd-sisi{position:static}
+  .kd-id2{flex-direction:column;align-items:flex-start;gap:12px}
+  .kd-id2 .kd-nama{margin-top:0}
+  .kd-hero-kanal{font-size:28px}
+}
+@media (prefers-reduced-motion:reduce){.kd-hero .com-cover-blur{animation:none}.com2::after{display:none}}

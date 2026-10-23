@@ -355,6 +355,77 @@
     });
     pesan.addEventListener('input', function () { hitung.textContent = pesan.value.length; });
 
+    /* Pilihan bawaan browser (kotak putih, sorotan biru) diganti daftar gelap yang
+       sesuai formulir. Select asli tetap ada sebagai sumber nilai dan cadangan. */
+    function dropdown(sel) {
+      var id = 'kfdd-' + sel.name;
+      var lab = sel.closest('.kf-f').querySelector('span');
+      if (lab && !lab.id) lab.id = id + '-l';
+      sel.classList.add('kf-native');
+      sel.tabIndex = -1;
+      var wrap = document.createElement('div'); wrap.className = 'kf-dd';
+      var btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'kf-dd-btn';
+      btn.setAttribute('aria-haspopup', 'listbox'); btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-controls', id);
+      btn.innerHTML = '<span class="kf-dd-v" id="' + id + '-v"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+      if (lab) btn.setAttribute('aria-labelledby', lab.id + ' ' + id + '-v');
+      var list = document.createElement('ul');
+      list.className = 'kf-dd-list'; list.id = id; list.setAttribute('role', 'listbox'); list.hidden = true;
+      if (lab) list.setAttribute('aria-labelledby', lab.id);
+      sel.insertAdjacentElement('afterend', wrap);
+      wrap.appendChild(btn); wrap.appendChild(list);
+      var aktif = -1;
+      function opsi() { return [].slice.call(sel.options).filter(function (o) { return o.value; }); }
+      function render() {
+        var o = sel.options[sel.selectedIndex];
+        btn.querySelector('.kf-dd-v').textContent = o ? o.textContent : '';
+        btn.classList.toggle('kosong', !sel.value);
+        list.innerHTML = opsi().map(function (o, i) {
+          return '<li role="option" id="' + id + '-' + i + '" aria-selected="' + (o.value === sel.value) + '"><span>' + esc(o.textContent) +
+            '</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17l9-10"/></svg></li>';
+        }).join('');
+      }
+      function sorot() {
+        [].forEach.call(list.children, function (li, i) { li.classList.toggle('sorot', i === aktif); });
+        var li = list.children[aktif];
+        if (li) { btn.setAttribute('aria-activedescendant', li.id); li.scrollIntoView({ block: 'nearest' }); }
+      }
+      function buka(b) {
+        list.hidden = !b; btn.setAttribute('aria-expanded', String(b)); wrap.classList.toggle('buka', b);
+        if (b) { aktif = Math.max(0, opsi().map(function (o) { return o.value; }).indexOf(sel.value)); sorot(); }
+        else btn.removeAttribute('aria-activedescendant');
+      }
+      function pilih(i) {
+        var o = opsi()[i]; if (!o) return;
+        sel.value = o.value; sel.dispatchEvent(new Event('change', { bubbles: true }));
+        render(); buka(false); btn.focus();
+      }
+      btn.addEventListener('click', function () { buka(list.hidden); });
+      btn.addEventListener('keydown', function (e) {
+        var n = opsi().length;
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (list.hidden) { buka(true); return; }
+          aktif = (aktif + (e.key === 'ArrowDown' ? 1 : -1) + n) % n; sorot();
+        } else if ((e.key === 'Enter' || e.key === ' ') && !list.hidden) { e.preventDefault(); pilih(aktif); }
+        else if (e.key === 'Escape' && !list.hidden) { e.preventDefault(); e.stopPropagation(); buka(false); }
+        else if (e.key === 'Tab') buka(false);
+      });
+      list.addEventListener('pointerdown', function (e) { e.preventDefault(); });
+      list.addEventListener('click', function (e) {
+        e.preventDefault();
+        var li = e.target.closest('li'); if (li) pilih([].indexOf.call(list.children, li));
+      });
+      list.addEventListener('pointermove', function (e) {
+        var li = e.target.closest('li'); if (li) { aktif = [].indexOf.call(list.children, li); sorot(); }
+      });
+      document.addEventListener('pointerdown', function (e) { if (!wrap.contains(e.target)) buka(false); });
+      document.addEventListener('bahasa-berubah', function () { setTimeout(render); });
+      f.addEventListener('reset', function () { setTimeout(render); });
+      render();
+    }
+    [].forEach.call(f.querySelectorAll('.kf-f select'), dropdown);
+
     /* Kartu model kemitraan memilih jenis kolaborasi di formulir. */
     var model = [].slice.call(document.querySelectorAll('.kl-model'));
     function sinkronModel() {
