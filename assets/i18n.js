@@ -69,7 +69,7 @@ window.CATALYST_I18N = {
     'hero.gabung':'Gabung Ekosistem',
     'hero.akses':'Dapatkan Akses', 'hero.komunitas':'Jelajahi Komunitas',
     /* blok sesudah About Us: kalimat pembuka dan angka. Draf teks, perlu dicek Bagas */
-    'rd.teks':'Di Catalyst Society, kami mendefinisikan ulang inovasi dengan memberdayakan komunitas dan anak muda agar mencapai potensi terbaiknya. Dari awal sebuah ide hingga menjadi bisnis yang berkelanjutan, kami adalah mitra Anda untuk bertumbuh.',
+    'rd.teks':'Dari ide menjadi perusahaan. Dari anak muda menjadi pemimpin.<br><br>Catalyst Society adalah mitra bertumbuh bagi generasi muda.',
     'rd.akses':'Orang Terjangkau',
     'rd.komunitas':'Komunitas Mitra',
     'rd.ekosistem':'Mitra Ekosistem &amp; Industri',
@@ -290,7 +290,7 @@ window.CATALYST_I18N = {
     'hero.gabung':'Join the Ecosystem',
     'hero.akses':'Get Access', 'hero.komunitas':'Explore Community',
     /* blok sesudah About Us: kalimat pembuka dan angka. Draf teks, perlu dicek Bagas */
-    'rd.teks':'At Catalyst Society, we\'re redefining innovation by empowering communities and young people to reach their full potential. From the beginning of an idea to a sustainable business, we\'re your partner in growth.',
+    'rd.teks':'From ideas to companies. From young people to leaders.<br><br>Catalyst Society is the growth partner for the next generation.',
     'rd.akses':'Access People',
     'rd.komunitas':'Community Partners',
     'rd.ekosistem':'Ecosystem &amp; Industry Partners',
@@ -500,7 +500,7 @@ window.CATALYST_I18N = {
     'hero.gabung':'加入生态',
     'hero.akses':'立即加入', 'hero.komunitas':'探索社群',
     /* blok sesudah About Us: kalimat pembuka dan angka. Draf teks, perlu dicek Bagas */
-    'rd.teks':'在 Catalyst Society，我们通过赋能社群与年轻人发挥全部潜力，重新定义创新。从一个想法的萌芽到可持续的事业，我们都是你成长路上的伙伴。',
+    'rd.teks':'从创意到企业，从年轻人到领导者。<br><br>Catalyst Society 是年轻一代的成长伙伴。',
     'rd.akses':'触达人群',
     'rd.komunitas':'合作社群',
     'rd.ekosistem':'生态与行业合作伙伴',

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { copyText } from '@/components/passport/cards/copy';
+import { NILAI } from '@/components/passport/cards/RailCards';
 import { BrandMark, Icon } from '@/components/ui/Icon';
 import { useToast } from '@/components/ui/Toast';
 import { publicUrl } from '@/components/passport/profile/links';
@@ -93,25 +94,54 @@ export function PublicBadge({ catalystId }: { catalystId: string }) {
   );
 }
 
-/** Ajakan di akhir profil, mengarahkan pengunjung ke situs dan pendaftaran. */
+/**
+ * Penutup profil: ajakan membuat Passport dan empat nilai Catalyst dalam satu
+ * kartu gelap, lalu baris hak cipta. Menggantikan pita nilai yang dulu menempel
+ * langsung di bawah kartu ajakan.
+ */
 export function PublicCta() {
   return (
-    <section className="pub-cta-band" aria-labelledby="pub-cta-h">
-      <div className="pub-cta-glow" aria-hidden />
-      <div className="pub-cta-in">
-        <span className="pub-cta-kicker">Catalyst Society</span>
-        <h2 id="pub-cta-h">Bangun Passport dan Journey Anda sendiri</h2>
-        <p>Satu profil untuk keahlian, projek, komunitas, dan setiap langkah Anda di ekosistem builder Indonesia.</p>
-        <div className="pub-cta-act">
-          <a href="/login?mode=daftar" className="ui-btn pub-cta-main">
-            Buat Passport gratis
-          </a>
-          <a href="/" className="ui-btn pub-cta-ghost">
-            Jelajahi catalystsociety.id
-            <Icon name="arrow" className="pub-arrow" />
-          </a>
+    <section className="pub-end" aria-labelledby="pub-cta-h">
+      <div className="pub-end-card">
+        <div className="pub-cta-glow" aria-hidden />
+        <div className="pub-end-top">
+          <div className="pub-end-copy">
+            <span className="pub-cta-kicker">Catalyst Society</span>
+            <h2 id="pub-cta-h">Bangun Passport dan Journey Anda sendiri</h2>
+            <p>Satu profil untuk keahlian, projek, komunitas, dan setiap langkah Anda di ekosistem builder Indonesia.</p>
+          </div>
+          <div className="pub-cta-act">
+            <a href="/login?mode=daftar" className="ui-btn pub-cta-main">
+              Buat Passport gratis
+            </a>
+            <a href="/" className="ui-btn pub-cta-ghost">
+              Jelajahi catalystsociety.id
+              <Icon name="arrow" className="pub-arrow" />
+            </a>
+          </div>
         </div>
+        <ul className="pub-values">
+          {NILAI.map((n) => (
+            <li key={n.title}>
+              <span className="pub-value-ico" aria-hidden>
+                <Icon name={n.icon} />
+              </span>
+              <b>{n.title}</b>
+              <p>{n.text}</p>
+            </li>
+          ))}
+        </ul>
       </div>
+      <footer className="pub-end-foot">
+        <a href="/" className="pub-end-brand" aria-label="Catalyst Society">
+          <BrandMark />
+          <span translate="no">
+            <b>CATALYST</b>
+            <small>PASSPORT</small>
+          </span>
+        </a>
+        <span>© 2026 PT Katalis Akselerasi Indonesia · Accelerating Future Builders.</span>
+      </footer>
     </section>
   );
 }

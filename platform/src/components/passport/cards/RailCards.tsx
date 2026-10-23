@@ -193,7 +193,8 @@ export function CertificatesCard({ certificates, owner = false }: { certificates
 
 /* ---------- pita nilai ---------- */
 
-const NILAI = [
+/** Empat nilai Catalyst Passport: pita bawah dasbor dan penutup profil publik. */
+export const NILAI = [
   { icon: 's-showcase', title: 'Showcase Everything', text: 'Semua capaian, keahlian, dan pengalaman Anda dalam satu tempat.' },
   { icon: 's-journey', title: 'Track Your Journey', text: 'Setiap langkah yang Anda ambil tercatat dan menjadi dampak.' },
   { icon: 's-network', title: 'Build Your Network', text: 'Terhubung dengan builders, mentor, investor, dan peluang.' },

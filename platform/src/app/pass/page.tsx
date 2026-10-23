@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { AboutCard, CommunitiesCard, JourneyPositionCard, ProjectsCard } from '@/components/passport/cards/ContentCards';
 import { HeroCard } from '@/components/passport/cards/HeroCard';
-import { CertificatesCard, PointsCard, ValueStrip } from '@/components/passport/cards/RailCards';
+import { CertificatesCard, PointsCard } from '@/components/passport/cards/RailCards';
 import { ToastProvider } from '@/components/ui/Toast';
 import { getRepo } from '@/lib/repo';
 import type { PassportBundle } from '@/lib/types';
@@ -70,13 +70,13 @@ export default function PublicProfile() {
             <main className="pass-board">
               <div className="pass-col">
                 <HeroCard profile={p} communities={b.communities.length} badges={b.badges.length} />
-                <AboutCard profile={p} />
                 <ProjectsCard projects={b.projects} />
                 <CommunitiesCard slugs={b.communities} />
                 <JourneyPositionCard profile={p} journey={b.journey} />
               </div>
               <div className="pass-col">
                 <PointsCard profile={p} events={[]} />
+                <AboutCard profile={p} />
                 <PublicCv profile={p} />
                 <CertificatesCard certificates={b.certificates} />
               </div>
@@ -84,7 +84,6 @@ export default function PublicProfile() {
           )}
         </div>
         {b && <PublicCta />}
-        {b && <ValueStrip />}
       </ToastProvider>
     </div>
   );
